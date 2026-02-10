@@ -14,6 +14,7 @@ import {
   DEMO_BATCHES, DEMO_LOGS,
   type ExpressionData, type ClinicalRecord, type Batch, type SafetyLog
 } from '@/data/gse62452';
+import { DEMO_IMMUNE_DATA, type ImmuneMarkerEntry } from '@/data/immuneData';
 
 const Index = () => {
   const [tab, setTab] = useState(0);
@@ -21,6 +22,7 @@ const Index = () => {
   const [clin, setClin] = useState<ClinicalRecord[] | null>(null);
   const [batches, setBatches] = useState<Batch[]>(DEMO_BATCHES);
   const [logs, setLogs] = useState<SafetyLog[]>(DEMO_LOGS);
+  const [immuneData, setImmuneData] = useState<ImmuneMarkerEntry[]>(DEMO_IMMUNE_DATA);
   const { sessions, saveSession, deleteSession, autoSave } = useSessionPersistence();
 
   useEffect(() => {
@@ -29,6 +31,7 @@ const Index = () => {
       setTab(sessions.current.tab);
       setBatches(sessions.current.batches);
       setLogs(sessions.current.logs);
+      if (sessions.current.immuneData) setImmuneData(sessions.current.immuneData);
     }
   }, []); // only on mount
 
@@ -40,14 +43,14 @@ const Index = () => {
   // Autosave on state changes (debounced)
   useEffect(() => {
     const timer = setTimeout(() => {
-      autoSave({ tab, batches, logs });
+      autoSave({ tab, batches, logs, immuneData });
     }, 2000);
     return () => clearTimeout(timer);
-  }, [tab, batches, logs]);
+  }, [tab, batches, logs, immuneData]);
 
   const handleSave = useCallback((name: string) => {
-    saveSession(name, { tab, batches, logs });
-  }, [tab, batches, logs, saveSession]);
+    saveSession(name, { tab, batches, logs, immuneData });
+  }, [tab, batches, logs, immuneData, saveSession]);
 
   const handleLoad = useCallback((name: string) => {
     const s = sessions.saved.find(s => s.name === name);
@@ -55,6 +58,7 @@ const Index = () => {
     setTab(s.tab);
     setBatches(s.batches);
     setLogs(s.logs);
+    if (s.immuneData) setImmuneData(s.immuneData);
   }, [sessions]);
 
   return (
@@ -79,7 +83,7 @@ const Index = () => {
       </main>
       <footer className="border-t border-border py-5 mt-12 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[11px] text-muted-foreground font-medium">Onco — Genomic Research Platform</p>
+          <p className="text-[11px] text-muted-foreground font-medium">OncoSync — Pancreatic Cancer Vaccine Companion</p>
           <p className="text-[11px] text-muted-foreground">Data: GSE62452 (GEO) • Research use only</p>
         </div>
       </footer>
