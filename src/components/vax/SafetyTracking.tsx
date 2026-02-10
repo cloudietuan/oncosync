@@ -1,0 +1,322 @@
+import { useState, useMemo } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis } from 'recharts';
+import StatCard from './StatCard';
+import AlertBox from './AlertBox';
+import type { SafetyLog } from '@/data/gse62452';
+
+interface SafetyTrackingProps {
+  logs: SafetyLog[];
+  setLogs: (logs: SafetyLog[]) => void;
+}
+
+const profiles = [
+  { id: 'SIM-001', name: 'Patient A' },
+  { id: 'SIM-002', name: 'Patient B' },
+  { id: 'SIM-003', name: 'Patient C' },
+];
+
+const COLORS = { mild: '#10b981', moderate: '#f59e0b', severe: '#ef4444' };
+
+const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
+  const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [form, setForm] = useState<{ profile_id: string; dose: number; date: string; symptom: string; severity: 'mild' | 'moderate' | 'severe' }>({ profile_id: 'SIM-001', dose: 1, date: '', symptom: '', severity: 'mild' });
+
+  const hasSevere = logs.some(l => l.severity === 'severe');
+
+  const analytics = useMemo(() => {
+    const totalLogs = logs.length;
+    const uniquePatients = new Set(logs.map(l => l.profile_id)).size;
+    const maxDose = Math.max(...logs.map(l => l.dose), 0);
+    const severityCounts = { mild: 0, moderate: 0, severe: 0 };
+    logs.forEach(l => severityCounts[l.severity]++);
+    const symptomCounts: Record<string, number> = {};
+    logs.forEach(l => {
+      const s = l.symptom.toLowerCase();
+      symptomCounts[s] = (symptomCounts[s] || 0) + 1;
+    });
+    const topSymptoms = Object.entries(symptomCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([symptom, count]) => ({
+        symptom: symptom.charAt(0).toUpperCase() + symptom.slice(1),
+        count,
+        pct: ((count / totalLogs) * 100).toFixed(0),
+      }));
+    const byPatient: Record<string, { total: number; mild: number; moderate: number; severe: number }> = {};
+    logs.forEach(l => {
+      if (!byPatient[l.profile_id]) byPatient[l.profile_id] = { total: 0, mild: 0, moderate: 0, severe: 0 };
+      byPatient[l.profile_id].total++;
+      byPatient[l.profile_id][l.severity]++;
+    });
+    return { totalLogs, uniquePatients, maxDose, severityCounts, topSymptoms, byPatient };
+  }, [logs]);
+
+  const pieData = [
+    { name: 'Grade 1 (Mild)', value: analytics.severityCounts.mild },
+    { name: 'Grade 2 (Moderate)', value: analytics.severityCounts.moderate },
+    { name: 'Grade 3 (Severe)', value: analytics.severityCounts.severe },
+  ];
+
+  const scatterData = [...logs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map(l => ({
+    date: l.date,
+    dose: l.dose,
+    severity: l.severity,
+    label: `${l.profile_id}: ${l.symptom} (${l.severity})`,
+  }));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLogs([...logs, { ...form, ts: new Date().toISOString() } as SafetyLog]);
+    setShowModal(false);
+    setForm({ profile_id: 'SIM-001', dose: 1, date: '', symptom: '', severity: 'mild' });
+  };
+
+  const exportSafetyTable = () => {
+    const { severityCounts, topSymptoms } = analytics;
+    let csv = 'Adverse Event,Grade 1 (Mild),Grade 2 (Moderate),Grade 3 (Severe),Total\n';
+    topSymptoms.forEach(s => {
+      const symptomLogs = logs.filter(l => l.symptom.toLowerCase() === s.symptom.toLowerCase());
+      const g1 = symptomLogs.filter(l => l.severity === 'mild').length;
+      const g2 = symptomLogs.filter(l => l.severity === 'moderate').length;
+      const g3 = symptomLogs.filter(l => l.severity === 'severe').length;
+      csv += `${s.symptom},${g1},${g2},${g3},${g1 + g2 + g3}\n`;
+    });
+    csv += `\nTOTAL,${severityCounts.mild},${severityCounts.moderate},${severityCounts.severe},${logs.length}\n`;
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'safety_summary.csv';
+    a.click();
+  };
+
+  return (
+    <div className="space-y-6 animate-in">
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="vax-section-title">Safety Monitoring</h2>
+          <p className="vax-section-desc">Adverse event tracking and CTCAE grading</p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={exportSafetyTable} className="vax-btn-secondary">Export CSV</button>
+          <button onClick={() => setShowModal(true)} className="vax-btn-primary">+ Log Event</button>
+        </div>
+      </div>
+
+      <AlertBox variant="info" icon="ℹ" title="Simulated Data" description="This module demonstrates safety tracking with simulated patient profiles." />
+
+      {hasSevere && (
+        <AlertBox variant="error" icon="⚠" title="Severe Event Detected" description="One or more Grade 3 adverse events have been logged." />
+      )}
+
+      <div className="grid grid-cols-5 gap-4">
+        <StatCard label="Total Events" value={analytics.totalLogs} />
+        <StatCard label="Patients" value={analytics.uniquePatients} />
+        <StatCard label="Max Dose" value={analytics.maxDose || '—'} />
+        <StatCard label="Mild (G1)" value={analytics.severityCounts.mild} sub={`${((analytics.severityCounts.mild / analytics.totalLogs) * 100 || 0).toFixed(0)}%`} />
+        <StatCard label="Moderate+ (G2-3)" value={analytics.severityCounts.moderate + analytics.severityCounts.severe} />
+      </div>
+
+      <div className="vax-tab-bar">
+        {['dashboard', 'timeline', 'by-patient', 'safety-table'].map(tab => (
+          <button key={tab} onClick={() => setActiveTab(tab)} className={`vax-tab-btn ${activeTab === tab ? 'active' : ''}`}>
+            {tab === 'dashboard' ? 'Dashboard' : tab === 'timeline' ? 'Timeline' : tab === 'by-patient' ? 'By Patient' : 'Safety Table'}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'dashboard' && (
+        <div className="grid grid-cols-2 gap-4">
+          <div className="vax-card">
+            <h3 className="font-semibold text-sm mb-4">Adverse Events by Frequency</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={analytics.topSymptoms}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
+                <XAxis dataKey="symptom" stroke="#a1a1aa" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={80} />
+                <YAxis stroke="#a1a1aa" />
+                <Tooltip />
+                <Bar dataKey="count" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="vax-card">
+            <h3 className="font-semibold text-sm mb-4">Severity Distribution</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                  {pieData.map((_, i) => (
+                    <Cell key={i} fill={[COLORS.mild, COLORS.moderate, COLORS.severe][i]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'timeline' && (
+        <div className="vax-card">
+          <h3 className="font-semibold text-sm mb-4">Adverse Events Timeline</h3>
+          <ResponsiveContainer width="100%" height={360}>
+            <ScatterChart>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
+              <XAxis dataKey="date" name="Date" stroke="#a1a1aa" />
+              <YAxis dataKey="dose" name="Dose" domain={[0, 4]} stroke="#a1a1aa" label={{ value: 'Dose Number', angle: -90, position: 'insideLeft' }} />
+              <ZAxis range={[100, 100]} />
+              <Tooltip content={({ payload }) => {
+                if (!payload?.length) return null;
+                const d = payload[0].payload;
+                return <div className="bg-card border border-border rounded-lg p-2 text-xs shadow-lg">{d.label}</div>;
+              }} />
+              <Scatter data={scatterData.filter(d => d.severity === 'mild')} fill={COLORS.mild} name="Mild" />
+              <Scatter data={scatterData.filter(d => d.severity === 'moderate')} fill={COLORS.moderate} name="Moderate" shape="diamond" />
+              <Scatter data={scatterData.filter(d => d.severity === 'severe')} fill={COLORS.severe} name="Severe" shape="cross" />
+            </ScatterChart>
+          </ResponsiveContainer>
+          <div className="flex gap-6 justify-center mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500" /><span className="text-xs text-muted-foreground">Mild</span></div>
+            <div className="flex items-center gap-2"><span className="w-3 h-3 bg-amber-500 rotate-45" /><span className="text-xs text-muted-foreground">Moderate</span></div>
+            <div className="flex items-center gap-2"><span className="text-red-500 font-bold text-sm">✕</span><span className="text-xs text-muted-foreground">Severe</span></div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'by-patient' && (
+        <div className="grid grid-cols-3 gap-4">
+          {profiles.map(p => {
+            const pData = analytics.byPatient[p.id] || { total: 0, mild: 0, moderate: 0, severe: 0 };
+            const pLogs = logs.filter(l => l.profile_id === p.id);
+            return (
+              <div key={p.id} className="vax-card">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 className="font-semibold">{p.name}</h4>
+                    <p className="text-xs text-muted-foreground font-mono">{p.id}</p>
+                  </div>
+                  <span className="vax-badge-blue">{pData.total} events</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="text-center p-3 rounded-lg bg-emerald-50">
+                    <div className="text-xl font-bold text-emerald-600">{pData.mild}</div>
+                    <div className="text-xs text-muted-foreground">Mild</div>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-amber-50">
+                    <div className="text-xl font-bold text-amber-600">{pData.moderate}</div>
+                    <div className="text-xs text-muted-foreground">Mod</div>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-red-50">
+                    <div className="text-xl font-bold text-red-600">{pData.severe}</div>
+                    <div className="text-xs text-muted-foreground">Sev</div>
+                  </div>
+                </div>
+                {pLogs.length > 0 && (
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                    {pLogs.slice(0, 5).map((l, i) => (
+                      <div key={i} className="flex justify-between items-center text-xs p-2 rounded bg-muted">
+                        <span>Dose {l.dose}: {l.symptom}</span>
+                        <span className={l.severity === 'mild' ? 'vax-badge-green' : l.severity === 'moderate' ? 'vax-badge-amber' : 'vax-badge-red'}>{l.severity}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {activeTab === 'safety-table' && (
+        <div className="vax-card">
+          <h3 className="font-semibold text-sm mb-4">Adverse Event Summary — CTCAE Grading</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Adverse Event</th>
+                <th className="text-center">Grade 1 (Mild)</th>
+                <th className="text-center">Grade 2 (Moderate)</th>
+                <th className="text-center">Grade 3 (Severe)</th>
+                <th className="text-center">Total</th>
+                <th className="text-center">% Patients</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analytics.topSymptoms.map(s => {
+                const symptomLogs = logs.filter(l => l.symptom.toLowerCase() === s.symptom.toLowerCase());
+                const g1 = symptomLogs.filter(l => l.severity === 'mild').length;
+                const g2 = symptomLogs.filter(l => l.severity === 'moderate').length;
+                const g3 = symptomLogs.filter(l => l.severity === 'severe').length;
+                const patientsAffected = new Set(symptomLogs.map(l => l.profile_id)).size;
+                return (
+                  <tr key={s.symptom}>
+                    <td>{s.symptom}</td>
+                    <td className="text-center text-emerald-600">{g1 || '—'}</td>
+                    <td className="text-center text-amber-600">{g2 || '—'}</td>
+                    <td className="text-center text-red-600">{g3 || '—'}</td>
+                    <td className="text-center font-medium">{s.count}</td>
+                    <td className="text-center">{((patientsAffected / analytics.uniquePatients) * 100).toFixed(0)}%</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-border">
+                <td className="font-semibold">TOTAL</td>
+                <td className="text-center font-semibold text-emerald-600">{analytics.severityCounts.mild}</td>
+                <td className="text-center font-semibold text-amber-600">{analytics.severityCounts.moderate}</td>
+                <td className="text-center font-semibold text-red-600">{analytics.severityCounts.severe}</td>
+                <td className="text-center font-bold">{analytics.totalLogs}</td>
+                <td className="text-center">—</td>
+              </tr>
+            </tfoot>
+          </table>
+          <p className="text-xs text-muted-foreground mt-4">Grading based on CTCAE v5.0 criteria.</p>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="vax-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="vax-modal" onClick={e => e.stopPropagation()}>
+            <h3 className="text-base font-semibold mb-5">Log Adverse Event</h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="vax-label">Patient</label>
+                  <select className="vax-input" value={form.profile_id} onChange={e => setForm({ ...form, profile_id: e.target.value })}>
+                    {profiles.map(p => <option key={p.id} value={p.id}>{p.name} ({p.id})</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="vax-label">Dose Number</label>
+                  <input className="vax-input" type="number" min="1" max="10" value={form.dose} onChange={e => setForm({ ...form, dose: parseInt(e.target.value) || 1 })} required />
+                </div>
+              </div>
+              <div>
+                <label className="vax-label">Date</label>
+                <input className="vax-input" type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} required />
+              </div>
+              <div>
+                <label className="vax-label">Symptom / Adverse Event</label>
+                <input className="vax-input" type="text" value={form.symptom} onChange={e => setForm({ ...form, symptom: e.target.value })} placeholder="e.g., Injection site pain" required />
+              </div>
+              <div>
+                <label className="vax-label">Severity (CTCAE)</label>
+                <select className="vax-input" value={form.severity} onChange={e => setForm({ ...form, severity: e.target.value as 'mild' | 'moderate' | 'severe' })}>
+                  <option value="mild">Grade 1 — Mild</option>
+                  <option value="moderate">Grade 2 — Moderate</option>
+                  <option value="severe">Grade 3 — Severe</option>
+                </select>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="submit" className="vax-btn-primary flex-1">Save Event</button>
+                <button type="button" onClick={() => setShowModal(false)} className="vax-btn-secondary">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SafetyTracking;

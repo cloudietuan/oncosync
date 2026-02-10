@@ -2,87 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 98%;
+    --foreground: 240 6% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 6% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 240 6% 10%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 4% 16%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --violet: 258 90% 66%;
+    --violet-foreground: 0 0% 100%;
+
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 240 6% 10%;
+    --foreground: 0 0% 98%;
+    --card: 240 4% 16%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 4% 16%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 217 91% 60%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +90,204 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  *:focus-visible {
+    @apply outline-2 outline-primary outline-offset-2 rounded;
   }
 }
+
+@layer components {
+  .vax-card {
+    @apply bg-card border border-border rounded-xl p-5 shadow-sm;
+  }
+
+  .vax-card-compact {
+    @apply bg-card border border-border rounded-xl p-4 shadow-sm;
+  }
+
+  .vax-btn {
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg font-medium text-[13px] cursor-pointer transition-all duration-150 border-none;
+  }
+
+  .vax-btn-primary {
+    @apply vax-btn bg-primary text-primary-foreground hover:bg-blue-600;
+  }
+
+  .vax-btn-secondary {
+    @apply vax-btn bg-card text-foreground border border-border hover:bg-muted;
+  }
+
+  .vax-btn-ghost {
+    @apply vax-btn bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground;
+  }
+
+  .vax-badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium;
+  }
+
+  .vax-badge-blue {
+    @apply vax-badge bg-blue-50 text-blue-700;
+  }
+
+  .vax-badge-green {
+    @apply vax-badge bg-emerald-50 text-emerald-700;
+  }
+
+  .vax-badge-amber {
+    @apply vax-badge bg-amber-50 text-amber-700;
+  }
+
+  .vax-badge-red {
+    @apply vax-badge bg-red-50 text-red-700;
+  }
+
+  .vax-badge-violet {
+    @apply vax-badge bg-violet-50 text-violet-700;
+  }
+
+  .vax-badge-gray {
+    @apply vax-badge bg-muted text-muted-foreground;
+  }
+
+  .vax-input {
+    @apply bg-card border border-border rounded-lg px-3 py-2.5 text-foreground text-[13px] w-full transition-all duration-150;
+  }
+
+  .vax-input:hover {
+    @apply border-zinc-300;
+  }
+
+  .vax-input:focus {
+    @apply outline-none border-primary ring-[3px] ring-primary/10;
+  }
+
+  .vax-input::placeholder {
+    @apply text-muted-foreground;
+  }
+
+  .vax-label {
+    @apply block text-[13px] font-medium text-muted-foreground mb-1.5;
+  }
+
+  .vax-nav-tab {
+    @apply py-3 px-5 text-[13px] font-medium text-muted-foreground cursor-pointer transition-all duration-150 border-b-2 border-transparent bg-transparent border-l-0 border-r-0 border-t-0;
+  }
+
+  .vax-nav-tab:hover {
+    @apply text-secondary-foreground;
+  }
+
+  .vax-nav-tab.active {
+    @apply text-primary border-b-primary;
+  }
+
+  .vax-section-title {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .vax-section-desc {
+    @apply text-[13px] text-muted-foreground mt-0.5;
+  }
+
+  .vax-alert {
+    @apply flex gap-3 p-4 rounded-[10px];
+  }
+
+  .vax-alert-info {
+    @apply vax-alert bg-blue-50 border border-blue-200;
+  }
+
+  .vax-alert-warning {
+    @apply vax-alert bg-amber-50 border border-amber-200;
+  }
+
+  .vax-alert-success {
+    @apply vax-alert bg-emerald-50 border border-emerald-200;
+  }
+
+  .vax-alert-error {
+    @apply vax-alert bg-red-50 border border-red-200;
+  }
+
+  .vax-tab-bar {
+    @apply flex gap-1 border-b border-border mb-5;
+  }
+
+  .vax-tab-btn {
+    @apply py-2.5 px-4 text-[13px] font-medium text-muted-foreground bg-transparent border-none cursor-pointer border-b-2 border-transparent -mb-px transition-all duration-150;
+  }
+
+  .vax-tab-btn:hover {
+    @apply text-secondary-foreground;
+  }
+
+  .vax-tab-btn.active {
+    @apply text-primary border-b-primary;
+  }
+
+  .vax-file-upload {
+    @apply border-2 border-dashed border-border rounded-[10px] p-5 text-center cursor-pointer transition-all duration-150;
+  }
+
+  .vax-file-upload:hover {
+    @apply border-primary bg-blue-50/30;
+  }
+
+  .vax-modal-overlay {
+    @apply fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm;
+  }
+
+  .vax-modal {
+    @apply bg-card rounded-2xl p-6 max-w-[480px] w-full mx-4 shadow-xl;
+  }
+
+  .animate-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Table styling */
+table {
+  @apply w-full;
+  border-collapse: collapse;
+}
+
+th {
+  @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted border-b border-border;
+}
+
+th:first-child {
+  @apply rounded-tl-lg;
+}
+
+th:last-child {
+  @apply rounded-tr-lg;
+}
+
+td {
+  @apply px-4 py-3 border-b border-border text-[13px];
+}
+
+tr:last-child td {
+  @apply border-b-0;
+}
+
+tr:hover td {
+  @apply bg-muted;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
