@@ -5,6 +5,7 @@ import Overview from '@/components/vax/Overview';
 import WetLab from '@/components/vax/WetLab';
 import Analysis from '@/components/vax/Analysis';
 import Simulation from '@/components/vax/Simulation';
+import ImmuneTracking from '@/components/vax/ImmuneTracking';
 import SafetyTracking from '@/components/vax/SafetyTracking';
 import Reports from '@/components/vax/Reports';
 import SessionManager from '@/components/vax/SessionManager';
@@ -78,8 +79,9 @@ const Index = () => {
         {tab === 1 && <WetLab batches={batches} setBatches={setBatches} />}
         {tab === 2 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
         {tab === 3 && <Simulation expr={expr} clin={clin} />}
-        {tab === 4 && <SafetyTracking logs={logs} setLogs={setLogs} />}
-        {tab === 5 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} />}
+        {tab === 4 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} />}
+        {tab === 5 && <SafetyTracking logs={logs} setLogs={setLogs} />}
+        {tab === 6 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} />}
       </main>
       <footer className="border-t border-border py-5 mt-12 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
