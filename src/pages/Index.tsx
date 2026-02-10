@@ -79,7 +79,7 @@ const Index = () => {
       </main>
       <footer className="border-t border-border py-5 mt-12 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[11px] text-muted-foreground font-medium">Vax Research Platform — Qβ–ApoC1 VLP Vaccine Analysis</p>
+          <p className="text-[11px] text-muted-foreground font-medium">Onco — Genomic Research Platform</p>
           <p className="text-[11px] text-muted-foreground">Data: GSE62452 (GEO) • Research use only</p>
         </div>
       </footer>
