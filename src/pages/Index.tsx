@@ -37,10 +37,10 @@ const Index = () => {
         {tab === 4 && <SafetyTracking logs={logs} setLogs={setLogs} />}
         {tab === 5 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} />}
       </main>
-      <footer className="border-t border-border py-6 mt-8 bg-card">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <p className="text-xs text-muted-foreground">Vax Research Platform — Qβ–ApoC1 VLP Vaccine Analysis</p>
-          <p className="text-xs text-muted-foreground mt-1">Data: GSE62452 (GEO) • For research and educational purposes only</p>
+      <footer className="border-t border-border py-5 mt-12 bg-card">
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+          <p className="text-[11px] text-muted-foreground font-medium">Vax Research Platform — Qβ–ApoC1 VLP Vaccine Analysis</p>
+          <p className="text-[11px] text-muted-foreground">Data: GSE62452 (GEO) • Research use only</p>
         </div>
       </footer>
     </div>
