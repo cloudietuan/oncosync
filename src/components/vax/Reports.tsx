@@ -53,7 +53,7 @@ const Reports = ({ expr, clin, batches, logs }: ReportsProps) => {
         <p className="vax-section-desc">Generate documentation and export data</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="vax-card">
           <h3 className="font-semibold text-sm mb-4">Export Options</h3>
           <div className="space-y-3">
@@ -95,7 +95,7 @@ const Reports = ({ expr, clin, batches, logs }: ReportsProps) => {
         </div>
       </div>
 
-      <div className="vax-card">
+      <div className="vax-card overflow-x-auto">
         <h3 className="font-semibold text-sm mb-4">Data Sources</h3>
         <table>
           <thead><tr><th>Source</th><th>Description</th><th>Link</th></tr></thead>

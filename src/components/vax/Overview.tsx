@@ -24,7 +24,7 @@ const Overview = ({ expr, clin, batches, logs, setTab }: OverviewProps) => (
       description="Targeting APOC1 with a Qβ bacteriophage VLP vaccine may improve survival outcomes in pancreatic cancer by modulating tumor-associated lipid metabolism."
     />
 
-    <div className="grid grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
       <StatCard label="Genes" value={expr?.genes?.length || 0} sub="Immune panel" />
       <StatCard label="Samples" value={expr?.samples?.length || 0} sub="GSE62452" />
       <StatCard label="Clinical Records" value={clin?.length || 0} sub="With survival" />
@@ -32,7 +32,7 @@ const Overview = ({ expr, clin, batches, logs, setTab }: OverviewProps) => (
       <StatCard label="Safety Events" value={logs.length} sub="Logged" />
     </div>
 
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <button onClick={() => setTab(2)} className="vax-card-compact text-left hover:border-blue-200 transition-colors group">
         <div className="flex items-start justify-between">
           <div>
@@ -62,7 +62,7 @@ const Overview = ({ expr, clin, batches, logs, setTab }: OverviewProps) => (
       </button>
     </div>
 
-    <div className="vax-card">
+    <div className="vax-card overflow-x-auto">
       <h3 className="font-semibold text-sm mb-4">Data Sources</h3>
       <table>
         <thead>
