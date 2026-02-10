@@ -7,8 +7,8 @@ const VaxHeader = () => (
           <span className="text-white font-bold text-sm sm:text-base tracking-tighter relative z-10" style={{ fontFamily: "'JetBrains Mono', monospace" }}>◎</span>
         </div>
         <div className="min-w-0">
-          <h1 className="text-[14px] sm:text-[15px] font-bold text-foreground tracking-tight truncate">Onco</h1>
-          <p className="text-[10px] sm:text-[11px] text-muted-foreground font-medium tracking-wide hidden sm:block">Genomic Research Platform</p>
+          <h1 className="text-[14px] sm:text-[15px] font-bold text-foreground tracking-tight truncate">OncoSync</h1>
+          <p className="text-[10px] sm:text-[11px] text-muted-foreground font-medium tracking-wide hidden sm:block">Pancreatic Cancer Vaccine Companion</p>
         </div>
       </div>
       <span className="vax-badge-amber shrink-0 text-[10px] sm:text-[11px]">Research Use Only</span>

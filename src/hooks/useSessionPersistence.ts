@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { ExpressionData, ClinicalRecord, Batch, SafetyLog } from '@/data/gse62452';
+import type { Batch, SafetyLog } from '@/data/gse62452';
+import type { ImmuneMarkerEntry } from '@/data/immuneData';
 
 const STORAGE_KEY = 'vax-session';
 
@@ -7,6 +8,7 @@ export interface VaxSession {
   tab: number;
   batches: Batch[];
   logs: SafetyLog[];
+  immuneData: ImmuneMarkerEntry[];
   savedAt: string;
   name: string;
 }
