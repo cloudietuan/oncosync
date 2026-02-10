@@ -2,27 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 240 6% 10%;
+    --background: 220 14% 96%;
+    --foreground: 224 71% 4%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 6% 10%;
+    --card-foreground: 224 71% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 6% 10%;
+    --popover-foreground: 224 71% 4%;
 
-    --primary: 217 91% 60%;
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 4% 16%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 224 71% 4%;
 
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 217 91% 60%;
+    --accent: 221 83% 53%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -37,11 +39,11 @@
     --violet: 258 90% 66%;
     --violet-foreground: 0 0% 100%;
 
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 217 91% 60%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
 
-    --radius: 0.75rem;
+    --radius: 0.625rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -50,37 +52,37 @@
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 221 83% 53%;
   }
 
   .dark {
-    --background: 240 6% 10%;
-    --foreground: 0 0% 98%;
-    --card: 240 4% 16%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 4% 16%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 217 91% 60%;
+    --background: 224 71% 4%;
+    --foreground: 210 20% 98%;
+    --card: 224 50% 8%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 50% 8%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 240 4% 16%;
-    --accent-foreground: 0 0% 98%;
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 218 11% 65%;
+    --accent: 215 28% 17%;
+    --accent-foreground: 210 20% 98%;
     --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 217 91% 60%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 221 83% 53%;
+    --sidebar-background: 224 71% 4%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 221 83% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 215 28% 17%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 215 28% 17%;
+    --sidebar-ring: 221 83% 53%;
   }
 }
 
@@ -91,9 +93,11 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 14px;
     line-height: 1.6;
+    letter-spacing: -0.006em;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
   *:focus-visible {
@@ -103,23 +107,38 @@
 
 @layer components {
   .vax-card {
-    @apply bg-card border border-border rounded-xl p-5 shadow-sm;
+    @apply bg-card border border-border rounded-xl p-5;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04), 0 1px 2px -1px rgba(0,0,0,0.04);
   }
 
   .vax-card-compact {
-    @apply bg-card border border-border rounded-xl p-4 shadow-sm;
+    @apply bg-card border border-border rounded-xl p-4;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04), 0 1px 2px -1px rgba(0,0,0,0.04);
   }
 
   .vax-btn {
-    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg font-medium text-[13px] cursor-pointer transition-all duration-150 border-none;
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg font-medium text-[13px] cursor-pointer transition-all duration-150 border-none;
+    letter-spacing: -0.01em;
   }
 
   .vax-btn-primary {
-    @apply vax-btn bg-primary text-primary-foreground hover:bg-blue-600;
+    @apply vax-btn text-white;
+    background: hsl(221, 83%, 53%);
+    box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.25);
+  }
+
+  .vax-btn-primary:hover {
+    background: hsl(221, 83%, 47%);
+    box-shadow: 0 2px 4px 0 rgba(37, 99, 235, 0.3);
   }
 
   .vax-btn-secondary {
-    @apply vax-btn bg-card text-foreground border border-border hover:bg-muted;
+    @apply vax-btn bg-card text-foreground border border-border;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+  }
+
+  .vax-btn-secondary:hover {
+    @apply bg-muted;
   }
 
   .vax-btn-ghost {
@@ -127,27 +146,37 @@
   }
 
   .vax-badge {
-    @apply inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium;
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold tracking-wide;
   }
 
   .vax-badge-blue {
-    @apply vax-badge bg-blue-50 text-blue-700;
+    @apply vax-badge;
+    background: hsl(214, 95%, 95%);
+    color: hsl(221, 83%, 40%);
   }
 
   .vax-badge-green {
-    @apply vax-badge bg-emerald-50 text-emerald-700;
+    @apply vax-badge;
+    background: hsl(152, 76%, 94%);
+    color: hsl(162, 87%, 28%);
   }
 
   .vax-badge-amber {
-    @apply vax-badge bg-amber-50 text-amber-700;
+    @apply vax-badge;
+    background: hsl(48, 96%, 93%);
+    color: hsl(28, 80%, 35%);
   }
 
   .vax-badge-red {
-    @apply vax-badge bg-red-50 text-red-700;
+    @apply vax-badge;
+    background: hsl(0, 93%, 96%);
+    color: hsl(0, 72%, 40%);
   }
 
   .vax-badge-violet {
-    @apply vax-badge bg-violet-50 text-violet-700;
+    @apply vax-badge;
+    background: hsl(263, 70%, 96%);
+    color: hsl(263, 70%, 42%);
   }
 
   .vax-badge-gray {
@@ -155,15 +184,17 @@
   }
 
   .vax-input {
-    @apply bg-card border border-border rounded-lg px-3 py-2.5 text-foreground text-[13px] w-full transition-all duration-150;
+    @apply bg-card border border-border rounded-lg px-3 py-2 text-foreground text-[13px] w-full transition-all duration-150;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.04);
   }
 
   .vax-input:hover {
-    @apply border-zinc-300;
+    border-color: hsl(220, 13%, 82%);
   }
 
   .vax-input:focus {
-    @apply outline-none border-primary ring-[3px] ring-primary/10;
+    @apply outline-none border-primary;
+    box-shadow: 0 0 0 3px hsl(221, 83%, 53%, 0.12);
   }
 
   .vax-input::placeholder {
@@ -171,23 +202,27 @@
   }
 
   .vax-label {
-    @apply block text-[13px] font-medium text-muted-foreground mb-1.5;
+    @apply block text-[12px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5;
   }
 
   .vax-nav-tab {
-    @apply py-3 px-5 text-[13px] font-medium text-muted-foreground cursor-pointer transition-all duration-150 border-b-2 border-transparent bg-transparent border-l-0 border-r-0 border-t-0;
+    @apply py-3 px-5 text-[13px] font-medium text-muted-foreground cursor-pointer transition-all duration-150 border-b-2 border-transparent bg-transparent;
+    border-left: none;
+    border-right: none;
+    border-top: none;
   }
 
   .vax-nav-tab:hover {
-    @apply text-secondary-foreground;
+    color: hsl(224, 71%, 4%);
   }
 
   .vax-nav-tab.active {
-    @apply text-primary border-b-primary;
+    color: hsl(221, 83%, 53%);
+    border-bottom-color: hsl(221, 83%, 53%);
   }
 
   .vax-section-title {
-    @apply text-lg font-semibold text-foreground;
+    @apply text-xl font-bold text-foreground tracking-tight;
   }
 
   .vax-section-desc {
@@ -195,23 +230,31 @@
   }
 
   .vax-alert {
-    @apply flex gap-3 p-4 rounded-[10px];
+    @apply flex gap-3 p-4 rounded-xl;
   }
 
   .vax-alert-info {
-    @apply vax-alert bg-blue-50 border border-blue-200;
+    @apply vax-alert;
+    background: hsl(214, 95%, 97%);
+    border: 1px solid hsl(214, 95%, 88%);
   }
 
   .vax-alert-warning {
-    @apply vax-alert bg-amber-50 border border-amber-200;
+    @apply vax-alert;
+    background: hsl(48, 96%, 97%);
+    border: 1px solid hsl(48, 96%, 78%);
   }
 
   .vax-alert-success {
-    @apply vax-alert bg-emerald-50 border border-emerald-200;
+    @apply vax-alert;
+    background: hsl(152, 76%, 97%);
+    border: 1px solid hsl(152, 76%, 80%);
   }
 
   .vax-alert-error {
-    @apply vax-alert bg-red-50 border border-red-200;
+    @apply vax-alert;
+    background: hsl(0, 93%, 97%);
+    border: 1px solid hsl(0, 93%, 88%);
   }
 
   .vax-tab-bar {
@@ -223,35 +266,40 @@
   }
 
   .vax-tab-btn:hover {
-    @apply text-secondary-foreground;
+    color: hsl(224, 71%, 4%);
   }
 
   .vax-tab-btn.active {
-    @apply text-primary border-b-primary;
+    color: hsl(221, 83%, 53%);
+    border-bottom-color: hsl(221, 83%, 53%);
   }
 
   .vax-file-upload {
-    @apply border-2 border-dashed border-border rounded-[10px] p-5 text-center cursor-pointer transition-all duration-150;
+    @apply border-2 border-dashed border-border rounded-xl p-5 text-center cursor-pointer transition-all duration-150;
   }
 
   .vax-file-upload:hover {
-    @apply border-primary bg-blue-50/30;
+    border-color: hsl(221, 83%, 53%);
+    background: hsl(214, 95%, 98%);
   }
 
   .vax-modal-overlay {
-    @apply fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm;
+    @apply fixed inset-0 flex items-center justify-center z-50;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
 
   .vax-modal {
-    @apply bg-card rounded-2xl p-6 max-w-[480px] w-full mx-4 shadow-xl;
+    @apply bg-card rounded-2xl p-6 max-w-[480px] w-full mx-4;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
 
   .animate-in {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn 0.25s ease-out;
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
 }
@@ -263,7 +311,8 @@ table {
 }
 
 th {
-  @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted border-b border-border;
+  @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border;
+  background: hsl(220, 14%, 97%);
 }
 
 th:first-child {
@@ -283,11 +332,19 @@ tr:last-child td {
 }
 
 tr:hover td {
-  @apply bg-muted;
+  background: hsl(220, 14%, 97%);
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
+::-webkit-scrollbar-thumb { background: hsl(220, 9%, 80%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(220, 9%, 64%); }
+
+/* Recharts tooltip styling */
+.recharts-default-tooltip {
+  @apply rounded-lg border border-border bg-card text-foreground;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}

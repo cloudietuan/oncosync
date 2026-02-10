@@ -14,10 +14,10 @@ const variantClass: Record<string, string> = {
 
 const AlertBox = ({ variant, icon, title, description }: AlertBoxProps) => (
   <div className={variantClass[variant]}>
-    <span className="text-lg flex-shrink-0">{icon}</span>
+    <span className="text-base flex-shrink-0 mt-0.5">{icon}</span>
     <div>
-      <div className="text-[13px] font-semibold">{title}</div>
-      <div className="text-xs text-muted-foreground mt-0.5">{description}</div>
+      <div className="text-[13px] font-semibold tracking-tight">{title}</div>
+      <div className="text-[12px] text-muted-foreground mt-0.5 leading-relaxed">{description}</div>
     </div>
   </div>
 );
