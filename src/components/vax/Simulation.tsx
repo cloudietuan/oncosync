@@ -56,7 +56,6 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
         bootstrapResults[Math.floor(params.nBootstrap * 0.975)]
       ];
 
-      // Create histogram bins
       const min = bootstrapResults[0];
       const max = bootstrapResults[bootstrapResults.length - 1];
       const binCount = 30;
@@ -89,7 +88,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
 
       <AlertBox variant="warning" icon="⚠" title="Simulation Disclaimer" description="This is a hypothetical model assuming treatment effects not clinically established. For educational exploration only." />
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
         <div className="vax-card">
           <h3 className="font-semibold text-sm mb-4">Parameters</h3>
           <div className="space-y-5">
@@ -115,7 +114,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
           </div>
         </div>
 
-        <div className="vax-card col-span-3">
+        <div className="vax-card lg:col-span-3">
           {results ? (
             <>
               <h3 className="font-semibold text-sm mb-2">Bootstrap Distribution of Survival Benefit</h3>
@@ -128,7 +127,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
                   <Bar dataKey="count" fill="#8b5cf6" />
                 </BarChart>
               </ResponsiveContainer>
-              <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-violet-600">{results.meanBenefit.toFixed(0)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Mean Benefit (days)</div>
@@ -144,7 +143,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
               </div>
             </>
           ) : (
-            <div className="flex items-center justify-center h-80 text-muted-foreground">
+            <div className="flex items-center justify-center h-60 lg:h-80 text-muted-foreground">
               Configure parameters and run simulation
             </div>
           )}

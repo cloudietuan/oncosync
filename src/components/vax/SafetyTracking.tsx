@@ -92,12 +92,12 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
 
   return (
     <div className="space-y-6 animate-in">
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
         <div>
           <h2 className="vax-section-title">Safety Monitoring</h2>
           <p className="vax-section-desc">Adverse event tracking and CTCAE grading</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <button onClick={exportSafetyTable} className="vax-btn-secondary">Export CSV</button>
           <button onClick={() => setShowModal(true)} className="vax-btn-primary">+ Log Event</button>
         </div>
@@ -109,7 +109,7 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
         <AlertBox variant="error" icon="⚠" title="Severe Event Detected" description="One or more Grade 3 adverse events have been logged." />
       )}
 
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatCard label="Total Events" value={analytics.totalLogs} />
         <StatCard label="Patients" value={analytics.uniquePatients} />
         <StatCard label="Max Dose" value={analytics.maxDose || '—'} />
@@ -117,16 +117,16 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
         <StatCard label="Moderate+ (G2-3)" value={analytics.severityCounts.moderate + analytics.severityCounts.severe} />
       </div>
 
-      <div className="vax-tab-bar">
+      <div className="vax-tab-bar overflow-x-auto">
         {['dashboard', 'timeline', 'by-patient', 'safety-table'].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} className={`vax-tab-btn ${activeTab === tab ? 'active' : ''}`}>
+          <button key={tab} onClick={() => setActiveTab(tab)} className={`vax-tab-btn whitespace-nowrap ${activeTab === tab ? 'active' : ''}`}>
             {tab === 'dashboard' ? 'Dashboard' : tab === 'timeline' ? 'Timeline' : tab === 'by-patient' ? 'By Patient' : 'Safety Table'}
           </button>
         ))}
       </div>
 
       {activeTab === 'dashboard' && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="vax-card">
             <h3 className="font-semibold text-sm mb-4">Adverse Events by Frequency</h3>
             <ResponsiveContainer width="100%" height={300}>
@@ -174,7 +174,7 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
               <Scatter data={scatterData.filter(d => d.severity === 'severe')} fill={COLORS.severe} name="Severe" shape="cross" />
             </ScatterChart>
           </ResponsiveContainer>
-          <div className="flex gap-6 justify-center mt-4 pt-4 border-t border-border">
+          <div className="flex gap-6 justify-center mt-4 pt-4 border-t border-border flex-wrap">
             <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500" /><span className="text-xs text-muted-foreground">Mild</span></div>
             <div className="flex items-center gap-2"><span className="w-3 h-3 bg-amber-500 rotate-45" /><span className="text-xs text-muted-foreground">Moderate</span></div>
             <div className="flex items-center gap-2"><span className="text-red-500 font-bold text-sm">✕</span><span className="text-xs text-muted-foreground">Severe</span></div>
@@ -183,7 +183,7 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
       )}
 
       {activeTab === 'by-patient' && (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {profiles.map(p => {
             const pData = analytics.byPatient[p.id] || { total: 0, mild: 0, moderate: 0, severe: 0 };
             const pLogs = logs.filter(l => l.profile_id === p.id);
@@ -227,7 +227,7 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
       )}
 
       {activeTab === 'safety-table' && (
-        <div className="vax-card">
+        <div className="vax-card overflow-x-auto">
           <h3 className="font-semibold text-sm mb-4">Adverse Event Summary — CTCAE Grading</h3>
           <table>
             <thead>
@@ -279,7 +279,7 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
           <div className="vax-modal" onClick={e => e.stopPropagation()}>
             <h3 className="text-base font-semibold mb-5">Log Adverse Event</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="vax-label">Patient</label>
                   <select className="vax-input" value={form.profile_id} onChange={e => setForm({ ...form, profile_id: e.target.value })}>

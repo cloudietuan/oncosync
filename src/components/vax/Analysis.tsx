@@ -122,13 +122,13 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
 
       <AlertBox variant="success" icon="✓" title="GSE62452 Data Loaded" description={`${expr?.genes?.length || 0} genes × ${expr?.samples?.length || 0} samples with survival outcomes from GEO.`} />
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FileUpload label="Upload Expression CSV" onLoad={handleExprUpload} hint="gene × sample matrix" />
           <FileUpload label="Upload Clinical CSV" onLoad={handleClinUpload} hint="sample_id, time, event" />
         </div>
         <div className="vax-card-compact">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="vax-label">Target Gene</label>
               <select className="vax-input" value={targetGene} onChange={e => setTargetGene(e.target.value)}>
@@ -159,14 +159,14 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
 
       {analysisResults && (
         <>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <StatCard label="High Expression" value={analysisResults.highN} sub={`≥ ${analysisResults.threshold.toFixed(2)}`} />
             <StatCard label="Low Expression" value={analysisResults.lowN} sub={`< ${analysisResults.threshold.toFixed(2)}`} />
             <StatCard label="Median OS (High)" value={typeof analysisResults.medianHigh === 'number' ? `${analysisResults.medianHigh}d` : String(analysisResults.medianHigh)} />
             <StatCard label="Median OS (Low)" value={typeof analysisResults.medianLow === 'number' ? `${analysisResults.medianLow}d` : String(analysisResults.medianLow)} />
           </div>
 
-          <div className="vax-tab-bar">
+          <div className="vax-tab-bar overflow-x-auto">
             {['km', 'cox', 'correlation', ...(hasAnyCovariates ? ['multivariate'] : [])].map(tab => (
               <button key={tab} onClick={() => setAnalysisTab(tab)} className={`vax-tab-btn ${analysisTab === tab ? 'active' : ''}`}>
                 {tab === 'km' ? 'Kaplan-Meier' : tab === 'cox' ? 'Cox Regression' : tab === 'multivariate' ? 'Multivariate' : 'Correlations'}
@@ -211,7 +211,7 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
           )}
 
           {analysisTab === 'correlation' && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="vax-card">
                 <h3 className="font-semibold text-sm mb-4">Gene Correlations with {targetGene}</h3>
                 <ResponsiveContainer width="100%" height={320}>

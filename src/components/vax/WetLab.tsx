@@ -21,12 +21,12 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
 
   return (
     <div className="space-y-6 animate-in">
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
         <div>
           <h2 className="vax-section-title">Lab Records</h2>
           <p className="vax-section-desc">Qβ VLP production and conjugation tracking</p>
         </div>
-        <button onClick={() => setShowForm(!showForm)} className="vax-btn-primary">
+        <button onClick={() => setShowForm(!showForm)} className="vax-btn-primary shrink-0">
           {showForm ? 'Cancel' : '+ New Batch'}
         </button>
       </div>
@@ -34,7 +34,7 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
       {showForm && (
         <div className="vax-card">
           <h3 className="font-semibold text-sm mb-4">Log New Batch</h3>
-          <form onSubmit={handleSubmit} className="grid grid-cols-4 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="vax-label">Batch ID</label>
               <input className="vax-input" value={form.id} onChange={e => setForm({ ...form, id: e.target.value })} placeholder="QB-2024-XXX" required />
@@ -71,7 +71,7 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
               <label className="vax-label">SDS-PAGE (kDa)</label>
               <input className="vax-input" type="number" step="0.1" value={form.sds} onChange={e => setForm({ ...form, sds: e.target.value })} placeholder="~3.5" />
             </div>
-            <div className="col-span-3">
+            <div className="sm:col-span-2 lg:col-span-3">
               <label className="vax-label">Notes</label>
               <input className="vax-input" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Observations..." />
             </div>
@@ -82,7 +82,7 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
         </div>
       )}
 
-      <div className="vax-card">
+      <div className="vax-card overflow-x-auto">
         <table>
           <thead>
             <tr>
@@ -110,7 +110,7 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
 
       <div className="vax-card">
         <h3 className="font-semibold text-sm mb-4">Protocol Overview</h3>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <div className="text-xs font-medium text-blue-600 mb-1">1. Expression</div>
             <p className="text-xs text-muted-foreground">E. coli BL21(DE3) with IPTG induction at 18°C overnight</p>
