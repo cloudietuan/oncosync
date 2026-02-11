@@ -42,8 +42,6 @@ const validDate = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d);
 /* ──────────────── Scoring Engine ──────────────── */
 function computeScore(tp: Timepoint, baseline: Timepoint | null): ScoreResult {
   const drivers: string[] = [];
-
-  // --- Primary (70%) ---
   const primaryScores: number[] = [];
   const elispot = num(tp.elispotIfng);
   const cd8 = num(tp.cd8IfngPct);
@@ -81,7 +79,6 @@ function computeScore(tp: Timepoint, baseline: Timepoint | null): ScoreResult {
 
   const primaryAvg = primaryScores.length ? primaryScores.reduce((a, b) => a + b, 0) / primaryScores.length : null;
 
-  // --- Labs (20%) ---
   const labScores: number[] = [];
   const alcV = num(tp.alc);
   if (alcV !== null) { const s = clamp(((alcV - 0.5) / 3.0) * 100); labScores.push(s); drivers.push(`ALC ${alcV} → ${s.toFixed(0)}`); }
@@ -89,7 +86,6 @@ function computeScore(tp: Timepoint, baseline: Timepoint | null): ScoreResult {
   if (crpV !== null) { const s = clamp(100 - (crpV / 20) * 100); labScores.push(s); drivers.push(`CRP ${crpV} → ${s.toFixed(0)}`); }
   const labAvg = labScores.length ? labScores.reduce((a, b) => a + b, 0) / labScores.length : null;
 
-  // --- Symptoms (10%) ---
   const sympScores: number[] = [];
   const temp = num(tp.maxTempF);
   if (temp !== null) { const s = clamp(((temp - 98.6) / 3.0) * 100); sympScores.push(s); drivers.push(`Temp ${temp}°F → ${s.toFixed(0)}`); }
@@ -100,48 +96,109 @@ function computeScore(tp: Timepoint, baseline: Timepoint | null): ScoreResult {
   if (aches.length) { const s = clamp((aches.reduce((a, b) => a + b, 0) / (aches.length * 3)) * 100); sympScores.push(s); }
   const sympAvg = sympScores.length ? sympScores.reduce((a, b) => a + b, 0) / sympScores.length : null;
 
-  // --- Weighted average ---
   const parts: { w: number; v: number }[] = [];
   if (primaryAvg !== null) parts.push({ w: 70, v: primaryAvg });
   if (labAvg !== null) parts.push({ w: 20, v: labAvg });
   if (sympAvg !== null) parts.push({ w: 10, v: sympAvg });
 
-  let score = 50; // default if nothing
+  let score = 50;
   if (parts.length) {
     const totalW = parts.reduce((a, p) => a + p.w, 0);
     score = parts.reduce((a, p) => a + (p.w / totalW) * p.v, 0);
   }
 
-  // --- Confounders ---
   const confCount = [tp.steroids, tp.infectionSymptoms, tp.chemoWithin7d].filter(Boolean).length;
   const penalty = confCount === 0 ? 0 : confCount === 1 ? 5 : confCount === 2 ? 10 : 15;
   if (penalty) drivers.push(`Confounder penalty: -${penalty}`);
   score = clamp(score - penalty);
 
-  // --- Confidence ---
   const hasAssay = elispot !== null || cd8 !== null;
   const hasLab = alcV !== null || crpV !== null;
   const confidence = hasAssay && hasLab ? 'High' : (hasAssay || hasLab) ? 'Moderate' : 'Low';
-
   const tier = score >= 70 ? 'High' : score >= 40 ? 'Moderate' : 'Low';
   return { proxyScore: Math.round(score), tier, confidence, drivers };
 }
 
-/* ──────────────── Component ──────────────── */
+/* ──── Collapsible Section ──── */
+const Section = ({ title, tag, tagClass, defaultOpen = true, children }: {
+  title: string; tag?: string; tagClass?: string; defaultOpen?: boolean; children: React.ReactNode;
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-t border-border pt-2">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between py-1.5 text-left group"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">{title}</span>
+          {tag && <span className={`vax-badge text-[10px] ${tagClass || 'vax-badge-gray'}`}>{tag}</span>}
+        </div>
+        <span className="text-muted-foreground text-[11px] transition-transform" style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}>▼</span>
+      </button>
+      {open && <div className="pt-2 pb-1">{children}</div>}
+    </div>
+  );
+};
+
+/* ──── Score Gauge ──── */
+const ScoreGauge = ({ score, tier, confidence }: { score: number; tier: string; confidence: string }) => {
+  const pct = score / 100;
+  const color = tier === 'High' ? 'hsl(160,84%,39%)' : tier === 'Moderate' ? 'hsl(38,92%,50%)' : 'hsl(0,84%,60%)';
+  return (
+    <div className="flex items-center gap-4">
+      <div className="relative w-16 h-16 flex-shrink-0">
+        <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(220,13%,91%)" strokeWidth="3" />
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke={color} strokeWidth="3"
+            strokeDasharray={`${pct * 100} ${100 - pct * 100}`} strokeLinecap="round" />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-sm font-bold" style={{ color }}>{score}</span>
+        </div>
+      </div>
+      <div>
+        <span className={`vax-badge ${tier === 'High' ? 'vax-badge-green' : tier === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-red'}`}>{tier}</span>
+        <div className="text-[10px] text-muted-foreground mt-0.5">{confidence} confidence</div>
+      </div>
+    </div>
+  );
+};
+
+/* ──── Compact Input ──── */
+const CI = ({ label, value, onChange, type = 'text', placeholder, min, max, step, className = '' }: {
+  label: string; value: string; onChange: (v: string) => void;
+  type?: string; placeholder?: string; min?: string; max?: string; step?: string; className?: string;
+}) => (
+  <div className={className}>
+    <label className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">{label}</label>
+    <input className="vax-input py-1.5 text-[12px]" type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} min={min} max={max} step={step} />
+  </div>
+);
+
+/* ──────────────── Main Component ──────────────── */
 const TcellProxy = () => {
   const [patient, setPatient] = useState<PatientBaseline>({
     patientId: '', age: '', sex: '', cancerStage: '', treatmentType: '', immunosuppressants: '', autoimmuneHx: '',
   });
   const [vaccine, setVaccine] = useState<VaccineDetails>({ antigen: '', adjuvant: '', injectionSite: '', notes: '' });
   const [timepoints, setTimepoints] = useState<Timepoint[]>([]);
+  const [activeTP, setActiveTP] = useState<string | null>(null);
+  const [contextOpen, setContextOpen] = useState(true);
 
-  const addTP = () => setTimepoints(p => [...p, emptyTP()]);
-  const removeTP = (id: string) => setTimepoints(p => p.filter(t => t.id !== id));
+  const addTP = () => {
+    const tp = emptyTP();
+    setTimepoints(p => [...p, tp]);
+    setActiveTP(tp.id);
+  };
+  const removeTP = (id: string) => {
+    setTimepoints(p => p.filter(t => t.id !== id));
+    setActiveTP(prev => prev === id ? null : prev);
+  };
   const updateTP = useCallback((id: string, field: string, value: string | boolean) => {
     setTimepoints(p => p.map(t => t.id === id ? { ...t, [field]: value } : t));
   }, []);
 
-  // baseline = earliest valid-dated timepoint
   const baseline = useMemo(() => {
     const dated = timepoints.filter(t => validDate(t.date)).sort((a, b) => a.date.localeCompare(b.date));
     return dated.length ? dated[0] : null;
@@ -162,15 +219,18 @@ const TcellProxy = () => {
   }, [scored]);
 
   const latest = chartData.length ? chartData[chartData.length - 1] : null;
+  const datedCount = timepoints.filter(t => validDate(t.date)).length;
 
   const loadDemo = () => {
     setPatient({ patientId: 'DEMO-001', age: '58', sex: 'F', cancerStage: 'III', treatmentType: 'Vaccine + chemo', immunosuppressants: 'None', autoimmuneHx: 'None' });
     setVaccine({ antigen: 'ApoC-1', adjuvant: 'Qβ VLP', injectionSite: 'Left deltoid', notes: 'Phase I trial participant' });
-    setTimepoints([
+    const tps = [
       { ...emptyTP(), date: '2026-02-01', doseNumber: '0 (baseline)', elispotIfng: '40', cd8IfngPct: '0.4', alc: '1.2', crp: '6.0', maxTempF: '98.6', fatigue: '1' },
       { ...emptyTP(), date: '2026-02-10', doseNumber: '1', elispotIfng: '170', cd8IfngPct: '1.7', alc: '1.6', crp: '3.2', maxTempF: '100.2', fatigue: '6', myalgia: '2', chills: '1', injectionSiteRxn: '2' },
       { ...emptyTP(), date: '2026-02-24', doseNumber: '2', elispotIfng: '220', cd8IfngPct: '2.3', alc: '1.8', crp: '2.1', maxTempF: '99.1', fatigue: '3', myalgia: '1', injectionSiteRxn: '1' },
-    ]);
+    ];
+    setTimepoints(tps);
+    setActiveTP(tps[0].id);
   };
 
   const exportJSON = () => {
@@ -190,225 +250,282 @@ const TcellProxy = () => {
     a.click();
   };
 
-  const datedCount = timepoints.filter(t => validDate(t.date)).length;
+  const activeScoredIdx = timepoints.findIndex(t => t.id === activeTP);
+  const activeResult = activeScoredIdx >= 0 ? scored[activeScoredIdx] : null;
 
   return (
-    <div className="space-y-6 animate-in">
-      {/* Header */}
-      <div>
-        <h2 className="vax-section-title">T-Cell Activation Proxy</h2>
-        <p className="vax-section-desc">Proxy trend visualization; not diagnostic.</p>
+    <div className="animate-in">
+      {/* ─── Calculator Header ─── */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">Tc</div>
+            <div>
+              <h2 className="vax-section-title text-lg">T-Cell Activation Proxy</h2>
+              <p className="text-[11px] text-muted-foreground">Proxy trend calculator · Not diagnostic</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <button onClick={addTP} className="vax-btn-primary text-[12px] py-1.5 px-3">+ Timepoint</button>
+          <button onClick={loadDemo} className="vax-btn-secondary text-[12px] py-1.5 px-3">Demo Data</button>
+          <button onClick={exportJSON} className="vax-btn-secondary text-[12px] py-1.5 px-3">↓ JSON</button>
+        </div>
       </div>
 
-      <div className="vax-alert-warning text-[12px] font-medium flex items-start gap-2 p-3 rounded-xl">
+      <div className="vax-alert-warning text-[11px] font-medium flex items-center gap-2 p-2.5 rounded-lg mb-4">
         <span>⚠️</span>
         <span>Educational prototype. Not validated. Not for clinical decision-making.</span>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex flex-wrap gap-2">
-        <button onClick={addTP} className="vax-btn-primary">+ Add Timepoint</button>
-        <button onClick={loadDemo} className="vax-btn-secondary">Load Demo Data</button>
-        <button onClick={exportJSON} className="vax-btn-secondary">Export JSON</button>
+      {/* ─── Score Display Strip ─── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        {chartData.map((d, i) => (
+          <button
+            key={d.date}
+            onClick={() => {
+              const match = timepoints.find(t => t.date === d.date);
+              if (match) setActiveTP(match.id);
+            }}
+            className={`vax-card-compact text-center transition-all ${
+              timepoints.find(t => t.date === d.date)?.id === activeTP ? 'ring-2 ring-primary' : 'hover:border-primary/30'
+            }`}
+          >
+            <div className="text-[10px] text-muted-foreground font-medium">{d.date}</div>
+            <div className={`text-2xl font-bold mt-0.5 ${d.proxyScore >= 70 ? 'text-emerald-600' : d.proxyScore >= 40 ? 'text-amber-600' : 'text-red-500'}`}>
+              {d.proxyScore}
+            </div>
+            <div className="flex justify-center gap-1 mt-1">
+              <span className={`vax-badge text-[9px] ${d.tier === 'High' ? 'vax-badge-green' : d.tier === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-red'}`}>{d.tier}</span>
+              <span className={`vax-badge text-[9px] ${d.confidence === 'High' ? 'vax-badge-blue' : d.confidence === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-gray'}`}>{d.confidence}</span>
+            </div>
+          </button>
+        ))}
+        {chartData.length === 0 && (
+          <div className="col-span-full vax-card-compact text-center text-muted-foreground text-[12px] py-4">
+            No scored timepoints. Add timepoints or load demo data.
+          </div>
+        )}
       </div>
 
-      {/* Chart + Latest Summary */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="vax-card lg:col-span-2">
-          <h3 className="font-semibold text-sm mb-3">Proxy Score Trend</h3>
-          {datedCount < 2 && (
-            <div className="vax-alert-info text-[12px] p-3 rounded-lg mb-3">
-              <span>ℹ️ Add at least 2 timepoints with valid dates (YYYY-MM-DD) to render the curve.</span>
+      {/* ─── Main Layout: Chart + Active Timepoint ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
+        {/* Chart */}
+        <div className="vax-card lg:col-span-3">
+          <h3 className="font-semibold text-[13px] mb-2">Proxy Score Trend</h3>
+          {datedCount < 2 ? (
+            <div className="h-[220px] flex items-center justify-center text-muted-foreground text-[12px] flex-col gap-2">
+              <span className="text-2xl">📊</span>
+              <span>Add ≥2 dated timepoints to render curve</span>
             </div>
-          )}
-          {datedCount >= 2 ? (
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 5, left: 0 }}>
+          ) : (
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
-                <ReferenceLine y={70} stroke="hsl(160,84%,39%)" strokeDasharray="6 3" label={{ value: 'High', position: 'right', fontSize: 10, fill: 'hsl(160,84%,39%)' }} />
-                <ReferenceLine y={40} stroke="hsl(38,92%,50%)" strokeDasharray="6 3" label={{ value: 'Moderate', position: 'right', fontSize: 10, fill: 'hsl(38,92%,50%)' }} />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={30} />
+                <ReferenceLine y={70} stroke="hsl(160,84%,39%)" strokeDasharray="6 3" />
+                <ReferenceLine y={40} stroke="hsl(38,92%,50%)" strokeDasharray="6 3" />
                 <Tooltip
                   content={({ active, payload }) => {
                     if (!active || !payload?.length) return null;
                     const d = payload[0].payload;
                     return (
-                      <div className="bg-card border border-border rounded-lg p-3 text-[12px] shadow-lg max-w-[260px]">
-                        <div className="font-semibold">{d.date}</div>
-                        <div>Score: <span className="font-bold">{d.proxyScore}</span> — {d.tier}</div>
+                      <div className="bg-card border border-border rounded-lg p-2.5 text-[11px] shadow-lg max-w-[240px]">
+                        <div className="font-semibold">{d.date} — Score: {d.proxyScore} ({d.tier})</div>
                         <div className="text-muted-foreground">Confidence: {d.confidence}</div>
-                        {d.drivers?.slice(0, 4).map((dr: string, i: number) => <div key={i} className="text-muted-foreground">• {dr}</div>)}
+                        {d.drivers?.slice(0, 3).map((dr: string, i: number) => <div key={i} className="text-muted-foreground">• {dr}</div>)}
                       </div>
                     );
                   }}
                 />
-                <Line type="monotone" dataKey="proxyScore" stroke="hsl(221,83%,53%)" strokeWidth={2.5} dot={{ r: 4, fill: 'hsl(221,83%,53%)' }} />
+                <Line type="monotone" dataKey="proxyScore" stroke="hsl(221,83%,53%)" strokeWidth={2.5} dot={{ r: 4, fill: 'hsl(221,83%,53%)' }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
-          ) : (
-            <div className="h-[280px] flex items-center justify-center text-muted-foreground text-sm">No chart data yet</div>
           )}
         </div>
 
-        <div className="vax-card">
-          <h3 className="font-semibold text-sm mb-3">Latest Summary</h3>
-          {latest ? (
-            <div className="space-y-3">
-              <div className="text-center">
-                <div className={`text-4xl font-bold ${latest.proxyScore >= 70 ? 'text-emerald-600' : latest.proxyScore >= 40 ? 'text-amber-600' : 'text-red-500'}`}>{latest.proxyScore}</div>
-                <div className="text-[11px] text-muted-foreground mt-1">{latest.date}</div>
+        {/* Latest Summary */}
+        <div className="vax-card lg:col-span-2">
+          <h3 className="font-semibold text-[13px] mb-3">
+            {activeResult ? `Timepoint ${activeScoredIdx + 1} Result` : 'Latest Result'}
+          </h3>
+          {(activeResult || latest) ? (() => {
+            const r = activeResult?.result || { proxyScore: latest!.proxyScore, tier: latest!.tier, confidence: latest!.confidence, drivers: latest!.drivers };
+            return (
+              <div className="space-y-3">
+                <ScoreGauge score={r.proxyScore} tier={r.tier} confidence={r.confidence} />
+                <div className="border-t border-border pt-2 space-y-0.5">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Scoring Breakdown</div>
+                  {r.drivers.map((d, i) => (
+                    <div key={i} className="text-[11px] text-muted-foreground flex items-start gap-1">
+                      <span className="text-primary mt-px">›</span> {d}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex justify-center gap-2">
-                <span className={`vax-badge ${latest.tier === 'High' ? 'vax-badge-green' : latest.tier === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-red'}`}>{latest.tier} Activation</span>
-                <span className={`vax-badge ${latest.confidence === 'High' ? 'vax-badge-blue' : latest.confidence === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-gray'}`}>{latest.confidence} Conf.</span>
-              </div>
-              <div className="border-t border-border pt-2">
-                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Key Drivers</div>
-                {latest.drivers.map((d, i) => <div key={i} className="text-[12px] text-muted-foreground">• {d}</div>)}
-              </div>
+            );
+          })() : (
+            <div className="text-center py-6 text-muted-foreground text-[12px]">
+              <span className="text-2xl block mb-1">🧮</span>
+              Enter data to compute proxy score
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No scored timepoints yet.</p>
           )}
         </div>
       </div>
 
-      {/* Patient Baseline */}
-      <div className="vax-card">
-        <h3 className="font-semibold text-sm mb-4">Patient Baseline</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {([
-            ['patientId', 'Patient ID'], ['age', 'Age'], ['sex', 'Sex'], ['cancerStage', 'Cancer Stage'],
-            ['treatmentType', 'Treatment'], ['immunosuppressants', 'Immunosuppressants'], ['autoimmuneHx', 'Autoimmune Hx'],
-          ] as const).map(([k, label]) => (
-            <div key={k}>
-              <label className="vax-label">{label}</label>
-              <input className="vax-input" value={patient[k]} onChange={e => setPatient(p => ({ ...p, [k]: e.target.value }))} />
+      {/* ─── Patient & Vaccine Context (Collapsible) ─── */}
+      <div className="vax-card mb-4">
+        <button onClick={() => setContextOpen(!contextOpen)} className="w-full flex items-center justify-between">
+          <h3 className="font-semibold text-[13px]">Patient & Vaccine Context</h3>
+          <span className="text-muted-foreground text-[11px]">{contextOpen ? '▼' : '▶'}</span>
+        </button>
+        {contextOpen && (
+          <div className="mt-3 space-y-3">
+            <div className="grid grid-cols-3 sm:grid-cols-7 gap-2">
+              {([
+                ['patientId', 'ID'], ['age', 'Age'], ['sex', 'Sex'], ['cancerStage', 'Stage'],
+                ['treatmentType', 'Tx Type'], ['immunosuppressants', 'Immunosupp.'], ['autoimmuneHx', 'AI Hx'],
+              ] as const).map(([k, label]) => (
+                <CI key={k} label={label} value={patient[k]} onChange={v => setPatient(p => ({ ...p, [k]: v }))} />
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Vaccine Details */}
-      <div className="vax-card">
-        <h3 className="font-semibold text-sm mb-4">Vaccine Details</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div><label className="vax-label">Antigen</label><input className="vax-input" value={vaccine.antigen} onChange={e => setVaccine(v => ({ ...v, antigen: e.target.value }))} /></div>
-          <div><label className="vax-label">Adjuvant / Platform</label><input className="vax-input" value={vaccine.adjuvant} onChange={e => setVaccine(v => ({ ...v, adjuvant: e.target.value }))} /></div>
-          <div><label className="vax-label">Injection Site</label><input className="vax-input" value={vaccine.injectionSite} onChange={e => setVaccine(v => ({ ...v, injectionSite: e.target.value }))} /></div>
-        </div>
-        <div className="mt-3">
-          <label className="vax-label">Notes</label>
-          <textarea className="vax-input min-h-[60px]" value={vaccine.notes} onChange={e => setVaccine(v => ({ ...v, notes: e.target.value }))} />
-        </div>
-      </div>
-
-      {/* Timepoints */}
-      {timepoints.map((tp, idx) => {
-        const sr = scored[idx]?.result;
-        return (
-          <div key={tp.id} className="vax-card space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm">Timepoint {idx + 1}</h3>
-              <div className="flex items-center gap-2">
-                {sr && <span className={`vax-badge ${sr.tier === 'High' ? 'vax-badge-green' : sr.tier === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-red'}`}>Score: {sr.proxyScore}</span>}
-                <button onClick={() => removeTP(tp.id)} className="vax-btn-ghost text-destructive text-[12px]">✕ Remove</button>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              <CI label="Antigen" value={vaccine.antigen} onChange={v => setVaccine(p => ({ ...p, antigen: v }))} />
+              <CI label="Adjuvant" value={vaccine.adjuvant} onChange={v => setVaccine(p => ({ ...p, adjuvant: v }))} />
+              <CI label="Inj. Site" value={vaccine.injectionSite} onChange={v => setVaccine(p => ({ ...p, injectionSite: v }))} />
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Notes</label>
+                <textarea className="vax-input py-1.5 text-[12px] min-h-[32px]" rows={1} value={vaccine.notes} onChange={e => setVaccine(p => ({ ...p, notes: e.target.value }))} />
               </div>
             </div>
-
-            {/* Date / Dose */}
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Date & Dose</div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div><label className="vax-label">Date (YYYY-MM-DD)</label><input className="vax-input" placeholder="2026-01-15" value={tp.date} onChange={e => updateTP(tp.id, 'date', e.target.value)} /></div>
-                <div><label className="vax-label">Dose #</label><input className="vax-input" placeholder='0 (baseline)' value={tp.doseNumber} onChange={e => updateTP(tp.id, 'doseNumber', e.target.value)} /></div>
-                <div><label className="vax-label">RECIST</label>
-                  <select className="vax-input" value={tp.imagingRecist} onChange={e => updateTP(tp.id, 'imagingRecist', e.target.value)}>
-                    <option value="">—</option><option>SD</option><option>PR</option><option>CR</option><option>PD</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Direct Immune Assays */}
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Direct Immune Assays <span className="vax-badge-blue ml-1">High weight</span></div>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                {([['elispotIfng', 'ELISpot IFN-γ'], ['cd8IfngPct', 'CD8 IFN-γ %'], ['cd4ActivatedPct', 'CD4 Act. %'], ['il2', 'IL-2'], ['tnfAlpha', 'TNF-α']] as const).map(([k, l]) => (
-                  <div key={k}><label className="vax-label">{l}</label><input className="vax-input" type="number" value={tp[k]} onChange={e => updateTP(tp.id, k, e.target.value)} /></div>
-                ))}
-              </div>
-            </div>
-
-            {/* General Labs */}
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">General Labs <span className="vax-badge-amber ml-1">Moderate weight</span></div>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                {([['alc', 'ALC'], ['crp', 'CRP'], ['esr', 'ESR'], ['wbc', 'WBC'], ['nlr', 'NLR']] as const).map(([k, l]) => (
-                  <div key={k}><label className="vax-label">{l}</label><input className="vax-input" type="number" value={tp[k]} onChange={e => updateTP(tp.id, k, e.target.value)} /></div>
-                ))}
-              </div>
-            </div>
-
-            {/* Symptoms */}
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Reported Symptoms <span className="vax-badge-gray ml-1">Low weight</span></div>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                <div><label className="vax-label">Max Temp (°F)</label><input className="vax-input" type="number" step="0.1" value={tp.maxTempF} onChange={e => updateTP(tp.id, 'maxTempF', e.target.value)} /></div>
-                <div><label className="vax-label">Fatigue (0–10)</label><input className="vax-input" type="number" min="0" max="10" value={tp.fatigue} onChange={e => updateTP(tp.id, 'fatigue', e.target.value)} /></div>
-                <div><label className="vax-label">Myalgia (0–3)</label><input className="vax-input" type="number" min="0" max="3" value={tp.myalgia} onChange={e => updateTP(tp.id, 'myalgia', e.target.value)} /></div>
-                <div><label className="vax-label">Chills (0–3)</label><input className="vax-input" type="number" min="0" max="3" value={tp.chills} onChange={e => updateTP(tp.id, 'chills', e.target.value)} /></div>
-                <div><label className="vax-label">Inj. Site Rxn (0–3)</label><input className="vax-input" type="number" min="0" max="3" value={tp.injectionSiteRxn} onChange={e => updateTP(tp.id, 'injectionSiteRxn', e.target.value)} /></div>
-              </div>
-            </div>
-
-            {/* Confounders */}
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Confounders</div>
-              <div className="flex flex-wrap gap-4">
-                {([['steroids', 'Steroids'], ['infectionSymptoms', 'Infection Symptoms'], ['chemoWithin7d', 'Chemo within 7d']] as const).map(([k, l]) => (
-                  <label key={k} className="flex items-center gap-2 text-[13px] cursor-pointer">
-                    <input type="checkbox" checked={tp[k] as boolean} onChange={e => updateTP(tp.id, k, e.target.checked)} className="rounded border-border" />
-                    {l}
-                  </label>
-                ))}
-                {(() => { const c = [tp.steroids, tp.infectionSymptoms, tp.chemoWithin7d].filter(Boolean).length; return c ? <span className="vax-badge-red">Penalty: -{c === 1 ? 5 : c === 2 ? 10 : 15}</span> : null; })()}
-              </div>
-            </div>
-
-            {/* Tumor Monitoring + Notes */}
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Tumor Monitoring & Notes</div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div><label className="vax-label">Tumor Marker</label><input className="vax-input" placeholder="CA19-9" value={tp.tumorMarker} onChange={e => updateTP(tp.id, 'tumorMarker', e.target.value)} /></div>
-                <div><label className="vax-label">Marker Value</label><input className="vax-input" type="number" value={tp.tumorMarkerValue} onChange={e => updateTP(tp.id, 'tumorMarkerValue', e.target.value)} /></div>
-                <div><label className="vax-label">Tumor Size Δ%</label><input className="vax-input" type="number" value={tp.tumorSizeChangePct} onChange={e => updateTP(tp.id, 'tumorSizeChangePct', e.target.value)} /></div>
-              </div>
-              <div className="mt-3">
-                <label className="vax-label">Clinician Notes</label>
-                <textarea className="vax-input min-h-[50px]" value={tp.clinicianNotes} onChange={e => updateTP(tp.id, 'clinicianNotes', e.target.value)} />
-              </div>
-            </div>
-
-            {/* Score output */}
-            {sr && (
-              <div className="bg-muted rounded-lg p-3 space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-lg">{sr.proxyScore}</span>
-                  <span className={`vax-badge ${sr.tier === 'High' ? 'vax-badge-green' : sr.tier === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-red'}`}>{sr.tier}</span>
-                  <span className={`vax-badge ${sr.confidence === 'High' ? 'vax-badge-blue' : sr.confidence === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-gray'}`}>{sr.confidence} Confidence</span>
-                </div>
-                <div className="text-[11px] text-muted-foreground">{sr.drivers.join(' · ')}</div>
-              </div>
-            )}
           </div>
-        );
-      })}
+        )}
+      </div>
+
+      {/* ─── Timepoint Tabs ─── */}
+      {timepoints.length > 0 && (
+        <div className="vax-card">
+          {/* Tab strip */}
+          <div className="flex items-center gap-1 border-b border-border pb-2 mb-3 overflow-x-auto">
+            {timepoints.map((tp, idx) => {
+              const sr = scored[idx]?.result;
+              const isActive = tp.id === activeTP;
+              return (
+                <button
+                  key={tp.id}
+                  onClick={() => setActiveTP(tp.id)}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all ${
+                    isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  <span>T{idx + 1}</span>
+                  {sr && <span className="ml-1.5 opacity-80">{sr.proxyScore}</span>}
+                </button>
+              );
+            })}
+            <button onClick={addTP} className="flex-shrink-0 px-2 py-1.5 rounded-lg text-[12px] text-muted-foreground hover:bg-muted">+</button>
+          </div>
+
+          {/* Active timepoint form */}
+          {activeTP && (() => {
+            const idx = timepoints.findIndex(t => t.id === activeTP);
+            if (idx < 0) return null;
+            const tp = timepoints[idx];
+            const sr = scored[idx]?.result;
+            const confCount = [tp.steroids, tp.infectionSymptoms, tp.chemoWithin7d].filter(Boolean).length;
+
+            return (
+              <div className="space-y-1">
+                {/* Score readout bar */}
+                {sr && (
+                  <div className="flex items-center justify-between bg-muted rounded-lg px-3 py-2 mb-2">
+                    <div className="flex items-center gap-3">
+                      <span className={`text-xl font-bold ${sr.proxyScore >= 70 ? 'text-emerald-600' : sr.proxyScore >= 40 ? 'text-amber-600' : 'text-red-500'}`}>{sr.proxyScore}</span>
+                      <span className={`vax-badge text-[10px] ${sr.tier === 'High' ? 'vax-badge-green' : sr.tier === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-red'}`}>{sr.tier}</span>
+                      <span className={`vax-badge text-[10px] ${sr.confidence === 'High' ? 'vax-badge-blue' : sr.confidence === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-gray'}`}>{sr.confidence}</span>
+                    </div>
+                    <button onClick={() => removeTP(tp.id)} className="text-[11px] text-destructive hover:underline">Remove</button>
+                  </div>
+                )}
+
+                {/* Date & Dose — always visible */}
+                <div className="grid grid-cols-3 gap-2 pb-2">
+                  <CI label="Date (YYYY-MM-DD)" value={tp.date} onChange={v => updateTP(tp.id, 'date', v)} placeholder="2026-01-15" />
+                  <CI label="Dose #" value={tp.doseNumber} onChange={v => updateTP(tp.id, 'doseNumber', v)} placeholder="0 (baseline)" />
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">RECIST</label>
+                    <select className="vax-input py-1.5 text-[12px]" value={tp.imagingRecist} onChange={e => updateTP(tp.id, 'imagingRecist', e.target.value)}>
+                      <option value="">—</option><option>SD</option><option>PR</option><option>CR</option><option>PD</option>
+                    </select>
+                  </div>
+                </div>
+
+                <Section title="Direct Immune Assays" tag="70% weight" tagClass="vax-badge-blue">
+                  <div className="grid grid-cols-5 gap-2">
+                    <CI label="ELISpot IFN-γ" value={tp.elispotIfng} onChange={v => updateTP(tp.id, 'elispotIfng', v)} type="number" />
+                    <CI label="CD8 IFN-γ %" value={tp.cd8IfngPct} onChange={v => updateTP(tp.id, 'cd8IfngPct', v)} type="number" />
+                    <CI label="CD4 Act. %" value={tp.cd4ActivatedPct} onChange={v => updateTP(tp.id, 'cd4ActivatedPct', v)} type="number" />
+                    <CI label="IL-2" value={tp.il2} onChange={v => updateTP(tp.id, 'il2', v)} type="number" />
+                    <CI label="TNF-α" value={tp.tnfAlpha} onChange={v => updateTP(tp.id, 'tnfAlpha', v)} type="number" />
+                  </div>
+                </Section>
+
+                <Section title="General Labs" tag="20% weight" tagClass="vax-badge-amber">
+                  <div className="grid grid-cols-5 gap-2">
+                    <CI label="ALC" value={tp.alc} onChange={v => updateTP(tp.id, 'alc', v)} type="number" />
+                    <CI label="CRP" value={tp.crp} onChange={v => updateTP(tp.id, 'crp', v)} type="number" />
+                    <CI label="ESR" value={tp.esr} onChange={v => updateTP(tp.id, 'esr', v)} type="number" />
+                    <CI label="WBC" value={tp.wbc} onChange={v => updateTP(tp.id, 'wbc', v)} type="number" />
+                    <CI label="NLR" value={tp.nlr} onChange={v => updateTP(tp.id, 'nlr', v)} type="number" />
+                  </div>
+                </Section>
+
+                <Section title="Reported Symptoms" tag="10% weight" tagClass="vax-badge-gray">
+                  <div className="grid grid-cols-5 gap-2">
+                    <CI label="Temp °F" value={tp.maxTempF} onChange={v => updateTP(tp.id, 'maxTempF', v)} type="number" step="0.1" />
+                    <CI label="Fatigue 0–10" value={tp.fatigue} onChange={v => updateTP(tp.id, 'fatigue', v)} type="number" min="0" max="10" />
+                    <CI label="Myalgia 0–3" value={tp.myalgia} onChange={v => updateTP(tp.id, 'myalgia', v)} type="number" min="0" max="3" />
+                    <CI label="Chills 0–3" value={tp.chills} onChange={v => updateTP(tp.id, 'chills', v)} type="number" min="0" max="3" />
+                    <CI label="Inj. Site 0–3" value={tp.injectionSiteRxn} onChange={v => updateTP(tp.id, 'injectionSiteRxn', v)} type="number" min="0" max="3" />
+                  </div>
+                </Section>
+
+                <Section title="Confounders" defaultOpen={confCount > 0}>
+                  <div className="flex flex-wrap gap-4 items-center">
+                    {([['steroids', 'Steroids'], ['infectionSymptoms', 'Infection'], ['chemoWithin7d', 'Chemo ≤7d']] as const).map(([k, l]) => (
+                      <label key={k} className="flex items-center gap-1.5 text-[12px] cursor-pointer">
+                        <input type="checkbox" checked={tp[k] as boolean} onChange={e => updateTP(tp.id, k, e.target.checked)} className="rounded border-border w-3.5 h-3.5" />
+                        {l}
+                      </label>
+                    ))}
+                    {confCount > 0 && <span className="vax-badge-red text-[10px]">−{confCount === 1 ? 5 : confCount === 2 ? 10 : 15} pts</span>}
+                  </div>
+                </Section>
+
+                <Section title="Tumor & Notes" defaultOpen={false}>
+                  <div className="grid grid-cols-4 gap-2">
+                    <CI label="Marker" value={tp.tumorMarker} onChange={v => updateTP(tp.id, 'tumorMarker', v)} placeholder="CA19-9" />
+                    <CI label="Value" value={tp.tumorMarkerValue} onChange={v => updateTP(tp.id, 'tumorMarkerValue', v)} type="number" />
+                    <CI label="Size Δ%" value={tp.tumorSizeChangePct} onChange={v => updateTP(tp.id, 'tumorSizeChangePct', v)} type="number" />
+                    <div></div>
+                  </div>
+                  <div className="mt-2">
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">Notes</label>
+                    <textarea className="vax-input py-1.5 text-[12px] min-h-[40px]" rows={2} value={tp.clinicianNotes} onChange={e => updateTP(tp.id, 'clinicianNotes', e.target.value)} />
+                  </div>
+                </Section>
+              </div>
+            );
+          })()}
+        </div>
+      )}
 
       {timepoints.length === 0 && (
-        <div className="vax-card text-center py-10 text-muted-foreground">
-          <p className="text-sm">No timepoints yet. Click <strong>"Add Timepoint"</strong> or <strong>"Load Demo Data"</strong> to begin.</p>
+        <div className="vax-card text-center py-8 text-muted-foreground">
+          <div className="text-3xl mb-2">🧮</div>
+          <p className="text-[13px] font-medium">T-Cell Activation Calculator</p>
+          <p className="text-[11px] mt-1">Click <strong>+ Timepoint</strong> or <strong>Demo Data</strong> to begin computing proxy scores.</p>
         </div>
       )}
     </div>
