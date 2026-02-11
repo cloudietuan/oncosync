@@ -1,8 +1,12 @@
 import { useMemo } from 'react';
 import { jsPDF } from 'jspdf';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, ResponsiveContainer,
+} from 'recharts';
 import AlertBox from './AlertBox';
 import type { ExpressionData, ClinicalRecord, Batch, SafetyLog } from '@/data/gse62452';
 import type { ImmuneMarkerEntry } from '@/data/immuneData';
+import { type TcellProxyState, computeAllScores, validDate } from '@/lib/tcellProxy';
 
 interface ReportsProps {
   expr: ExpressionData | null;
@@ -10,6 +14,7 @@ interface ReportsProps {
   batches: Batch[];
   logs: SafetyLog[];
   immuneData: ImmuneMarkerEntry[];
+  tcellProxy?: TcellProxyState;
 }
 
 const profiles = [
@@ -18,7 +23,7 @@ const profiles = [
   { id: 'SIM-003', name: 'Patient C' },
 ];
 
-const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
+const Reports = ({ expr, clin, batches, logs, immuneData, tcellProxy }: ReportsProps) => {
   const immuneSummary = useMemo(() => {
     return profiles.map(p => {
       const entries = immuneData.filter(e => e.profile_id === p.id).sort((a, b) => a.date.localeCompare(b.date));
@@ -30,7 +35,6 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
       const lastCa = entries[entries.length - 1].ca19_9;
       const ca19_9Trend = lastCa < firstCa ? `↓ ${firstCa.toFixed(0)} → ${lastCa.toFixed(0)}` : lastCa > firstCa ? `↑ ${firstCa.toFixed(0)} → ${lastCa.toFixed(0)}` : `→ ${lastCa.toFixed(0)}`;
 
-      // Decay half-life
       const peakIdx = entries.reduce((best, e, i) => e.igg > entries[best].igg ? i : best, 0);
       const postPeak = entries.slice(peakIdx).filter((e, i) => i === 0 || (e.dose === '—' && e.igg <= peakIgg));
       let halfLife = '∞';
@@ -56,6 +60,19 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
       return { ...p, peakIgg, currentIgg, halfLife, ca19_9Trend, classification };
     });
   }, [immuneData]);
+
+  // T-Cell Proxy computed scores
+  const proxyScored = useMemo(() => {
+    if (!tcellProxy?.timepoints?.length) return [];
+    return computeAllScores(tcellProxy.timepoints);
+  }, [tcellProxy]);
+
+  const proxyChartData = useMemo(() => {
+    return proxyScored
+      .filter(s => validDate(s.tp.date))
+      .sort((a, b) => a.tp.date.localeCompare(b.tp.date))
+      .map(s => ({ date: s.tp.date, proxyScore: s.result.proxyScore, tier: s.result.tier }));
+  }, [proxyScored]);
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -83,7 +100,23 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
       doc.text(`Classification: ${p.classification}`, 30, y); y += 8;
     });
 
-    doc.setFontSize(12); doc.text('4. Methods', 20, y); y += 8;
+    // T-Cell Proxy section
+    if (proxyScored.length > 0) {
+      y += 4;
+      doc.setFontSize(12); doc.text('4. T-Cell Activation Proxy', 20, y); y += 8;
+      doc.setFontSize(9);
+      doc.text(`Patient: ${tcellProxy?.patient?.patientId || '—'} | Antigen: ${tcellProxy?.vaccine?.antigen || '—'}`, 25, y); y += 6;
+      proxyScored.filter(s => validDate(s.tp.date)).sort((a, b) => a.tp.date.localeCompare(b.tp.date)).forEach(s => {
+        doc.text(`${s.tp.date} (Dose ${s.tp.doseNumber || '—'}): Score ${s.result.proxyScore} — ${s.result.tier} [${s.result.confidence}]`, 30, y); y += 5;
+      });
+      y += 4;
+      doc.setFontSize(8); doc.setTextColor(200, 100, 0);
+      doc.text('T-Cell Proxy: Educational prototype. Not validated. Not for clinical decision-making.', 25, y); y += 8;
+      doc.setTextColor(24, 24, 27);
+    }
+
+    const methodsSection = proxyScored.length > 0 ? '5' : '4';
+    doc.setFontSize(12); doc.text(`${methodsSection}. Methods`, 20, y); y += 8;
     doc.setFontSize(9);
     ['Kaplan-Meier survival with log-rank test', 'Cox proportional hazards regression', 'Pearson correlation analysis', 'Bootstrap resampling (n=500)', 'Exponential decay modeling for antibody half-life'].forEach(m => { doc.text('• ' + m, 25, y); y += 5; });
     doc.setFontSize(8); doc.setTextColor(128, 128, 128); doc.text(`Generated: ${new Date().toISOString()}`, 20, 280);
@@ -98,6 +131,11 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
       batches,
       safetyLogs: logs,
       immuneData,
+      tcellProxy: tcellProxy ? {
+        patient: tcellProxy.patient,
+        vaccine: tcellProxy.vaccine,
+        scores: proxyScored.map(s => ({ date: s.tp.date, dose: s.tp.doseNumber, ...s.result })),
+      } : null,
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -118,6 +156,22 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
     a.click();
   };
 
+  const exportProxyCSV = () => {
+    if (!proxyScored.length) return;
+    const header = 'date,dose,elispot,cd8_pct,alc,crp,temp_f,fatigue,proxy_score,tier,confidence,drivers\n';
+    const rows = proxyScored
+      .filter(s => validDate(s.tp.date))
+      .sort((a, b) => a.tp.date.localeCompare(b.tp.date))
+      .map(s =>
+        `${s.tp.date},${s.tp.doseNumber},${s.tp.elispotIfng},${s.tp.cd8IfngPct},${s.tp.alc},${s.tp.crp},${s.tp.maxTempF},${s.tp.fatigue},${s.result.proxyScore},${s.result.tier},${s.result.confidence},"${s.result.drivers.join('; ')}"`
+      ).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `oncosync_tcell_proxy_${tcellProxy?.patient?.patientId || 'export'}.csv`;
+    a.click();
+  };
+
   return (
     <div className="space-y-6 animate-in">
       <div>
@@ -132,6 +186,7 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
             <button onClick={generatePDF} className="vax-btn-secondary w-full">📄 PDF Report</button>
             <button onClick={exportJSON} className="vax-btn-secondary w-full">💾 JSON Export</button>
             <button onClick={exportImmuneCSV} className="vax-btn-secondary w-full">🧬 Immune Data CSV</button>
+            <button onClick={exportProxyCSV} disabled={!proxyScored.length} className={`vax-btn-secondary w-full ${!proxyScored.length ? 'opacity-50 cursor-not-allowed' : ''}`}>🧮 Proxy Scores CSV</button>
           </div>
         </div>
 
@@ -158,6 +213,12 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
               <span className="text-sm">Immune Entries</span>
               <span className="text-emerald-600 font-medium">✓ {immuneData.length}</span>
             </div>
+            <div className="flex justify-between items-center p-3 rounded-lg bg-muted">
+              <span className="text-sm">T-Cell Proxy</span>
+              <span className={proxyScored.length ? 'text-emerald-600 font-medium' : 'text-muted-foreground'}>
+                {proxyScored.length ? `✓ ${proxyScored.length} timepoints` : '—'}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -169,6 +230,7 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
             <div><span className="font-medium text-foreground">Simulation:</span> Bootstrap resampling</div>
             <div><span className="font-medium text-foreground">Safety:</span> CTCAE v5.0 grading</div>
             <div><span className="font-medium text-foreground">Immune:</span> Exponential decay, Pearson correlation</div>
+            <div><span className="font-medium text-foreground">T-Cell Proxy:</span> Weighted composite (70/20/10), delta-from-baseline</div>
           </div>
         </div>
       </div>
@@ -205,6 +267,66 @@ const Reports = ({ expr, clin, batches, logs, immuneData }: ReportsProps) => {
           </tbody>
         </table>
       </div>
+
+      {/* T-Cell Proxy Summary */}
+      {proxyScored.length > 0 && (
+        <div className="vax-card">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-sm">T-Cell Activation Proxy Summary</h3>
+            <span className="vax-badge-violet">Proxy · Not diagnostic</span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Mini chart */}
+            <div>
+              <ResponsiveContainer width="100%" height={180}>
+                <LineChart data={proxyChartData} margin={{ top: 5, right: 15, bottom: 5, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={30} />
+                  <ReferenceLine y={70} stroke="hsl(160,84%,39%)" strokeDasharray="6 3" />
+                  <ReferenceLine y={40} stroke="hsl(38,92%,50%)" strokeDasharray="6 3" />
+                  <Line type="monotone" dataKey="proxyScore" stroke="hsl(258,90%,66%)" strokeWidth={2} dot={{ r: 3, fill: 'hsl(258,90%,66%)' }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Dose</th>
+                    <th className="text-center">Score</th>
+                    <th className="text-center">Tier</th>
+                    <th className="text-center">Confidence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {proxyScored.filter(s => validDate(s.tp.date)).sort((a, b) => a.tp.date.localeCompare(b.tp.date)).map((s, i) => (
+                    <tr key={i}>
+                      <td className="font-mono text-xs">{s.tp.date}</td>
+                      <td className="text-xs">{s.tp.doseNumber || '—'}</td>
+                      <td className="text-center font-bold">{s.result.proxyScore}</td>
+                      <td className="text-center">
+                        <span className={`vax-badge text-[10px] ${s.result.tier === 'High' ? 'vax-badge-green' : s.result.tier === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-red'}`}>{s.result.tier}</span>
+                      </td>
+                      <td className="text-center">
+                        <span className={`vax-badge text-[10px] ${s.result.confidence === 'High' ? 'vax-badge-blue' : s.result.confidence === 'Moderate' ? 'vax-badge-amber' : 'vax-badge-gray'}`}>{s.result.confidence}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="mt-3 text-[11px] text-muted-foreground">
+            Patient: {tcellProxy?.patient?.patientId || '—'} · Antigen: {tcellProxy?.vaccine?.antigen || '—'} · Platform: {tcellProxy?.vaccine?.adjuvant || '—'}
+          </div>
+        </div>
+      )}
 
       <div className="vax-card overflow-x-auto">
         <h3 className="font-semibold text-sm mb-4">Data Sources</h3>
