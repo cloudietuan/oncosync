@@ -79,7 +79,7 @@ const Index = () => {
         {tab === 1 && <WetLab batches={batches} setBatches={setBatches} />}
         {tab === 2 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
         {tab === 3 && <Simulation expr={expr} clin={clin} />}
-        {tab === 4 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} />}
+        {tab === 4 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} logs={logs} />}
         {tab === 5 && <SafetyTracking logs={logs} setLogs={setLogs} />}
         {tab === 6 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} />}
       </main>
