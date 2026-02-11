@@ -1,23 +1,30 @@
 import { useState, useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis, LineChart, Line } from 'recharts';
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
 import type { SafetyLog } from '@/data/gse62452';
+import type { ImmuneMarkerEntry } from '@/data/immuneData';
 
 interface SafetyTrackingProps {
   logs: SafetyLog[];
   setLogs: (logs: SafetyLog[]) => void;
+  immuneData: ImmuneMarkerEntry[];
 }
 
 const profiles = [
-  { id: 'SIM-001', name: 'Patient A' },
-  { id: 'SIM-002', name: 'Patient B' },
-  { id: 'SIM-003', name: 'Patient C' },
+  { id: 'SIM-001', name: 'Patient A', color: '#10b981' },
+  { id: 'SIM-002', name: 'Patient B', color: '#f43f5e' },
+  { id: 'SIM-003', name: 'Patient C', color: '#3b82f6' },
 ];
 
 const COLORS = { mild: '#10b981', moderate: '#f59e0b', severe: '#ef4444' };
 
-const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
+const formatDate = (d: string) => {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [form, setForm] = useState<{ profile_id: string; dose: number; date: string; symptom: string; severity: 'mild' | 'moderate' | 'severe' }>({ profile_id: 'SIM-001', dose: 1, date: '', symptom: '', severity: 'mild' });
@@ -51,6 +58,34 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
     });
     return { totalLogs, uniquePatients, maxDose, severityCounts, topSymptoms, byPatient };
   }, [logs]);
+
+  // IgG sparkline data per patient
+  const iggSparkData = useMemo(() => {
+    const result: Record<string, { date: string; igg: number }[]> = {};
+    profiles.forEach(p => {
+      result[p.id] = immuneData
+        .filter(e => e.profile_id === p.id)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .map(e => ({ date: formatDate(e.date), igg: e.igg }));
+    });
+    return result;
+  }, [immuneData]);
+
+  // Concurrent IgG lookup: find closest immune entry for a given patient+date
+  const getConcurrentIgg = (profileId: string, date: string): string => {
+    const entries = immuneData
+      .filter(e => e.profile_id === profileId)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    if (entries.length === 0) return '—';
+    const targetTime = new Date(date).getTime();
+    let closest = entries[0];
+    let minDiff = Math.abs(new Date(entries[0].date).getTime() - targetTime);
+    entries.forEach(e => {
+      const diff = Math.abs(new Date(e.date).getTime() - targetTime);
+      if (diff < minDiff) { minDiff = diff; closest = e; }
+    });
+    return closest.igg.toFixed(1);
+  };
 
   const pieData = [
     { name: 'Grade 1 (Mild)', value: analytics.severityCounts.mild },
@@ -187,6 +222,7 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
           {profiles.map(p => {
             const pData = analytics.byPatient[p.id] || { total: 0, mild: 0, moderate: 0, severe: 0 };
             const pLogs = logs.filter(l => l.profile_id === p.id);
+            const sparkData = iggSparkData[p.id] || [];
             return (
               <div key={p.id} className="vax-card">
                 <div className="flex justify-between items-start mb-4">
@@ -196,6 +232,21 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
                   </div>
                   <span className="vax-badge-blue">{pData.total} events</span>
                 </div>
+
+                {/* IgG Sparkline */}
+                {sparkData.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1">IgG Trend</p>
+                    <div className="h-12">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={sparkData}>
+                          <Line type="monotone" dataKey="igg" stroke={p.color} strokeWidth={2} dot={false} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   <div className="text-center p-3 rounded-lg bg-emerald-50">
                     <div className="text-xl font-bold text-emerald-600">{pData.mild}</div>
@@ -238,6 +289,7 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
                 <th className="text-center">Grade 3 (Severe)</th>
                 <th className="text-center">Total</th>
                 <th className="text-center">% Patients</th>
+                <th className="text-center">Concurrent IgG</th>
               </tr>
             </thead>
             <tbody>
@@ -247,6 +299,12 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
                 const g2 = symptomLogs.filter(l => l.severity === 'moderate').length;
                 const g3 = symptomLogs.filter(l => l.severity === 'severe').length;
                 const patientsAffected = new Set(symptomLogs.map(l => l.profile_id)).size;
+                // Average concurrent IgG across all instances of this symptom
+                const iggValues = symptomLogs.map(l => {
+                  const val = getConcurrentIgg(l.profile_id, l.date);
+                  return val !== '—' ? parseFloat(val) : null;
+                }).filter((v): v is number => v !== null);
+                const avgIgg = iggValues.length > 0 ? (iggValues.reduce((a, b) => a + b, 0) / iggValues.length).toFixed(1) : '—';
                 return (
                   <tr key={s.symptom}>
                     <td>{s.symptom}</td>
@@ -255,6 +313,7 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
                     <td className="text-center text-red-600">{g3 || '—'}</td>
                     <td className="text-center font-medium">{s.count}</td>
                     <td className="text-center">{((patientsAffected / analytics.uniquePatients) * 100).toFixed(0)}%</td>
+                    <td className="text-center font-mono text-xs">{avgIgg} AU/mL</td>
                   </tr>
                 );
               })}
@@ -267,10 +326,11 @@ const SafetyTracking = ({ logs, setLogs }: SafetyTrackingProps) => {
                 <td className="text-center font-semibold text-red-600">{analytics.severityCounts.severe}</td>
                 <td className="text-center font-bold">{analytics.totalLogs}</td>
                 <td className="text-center">—</td>
+                <td className="text-center">—</td>
               </tr>
             </tfoot>
           </table>
-          <p className="text-xs text-muted-foreground mt-4">Grading based on CTCAE v5.0 criteria.</p>
+          <p className="text-xs text-muted-foreground mt-4">Grading based on CTCAE v5.0 criteria. Concurrent IgG shows average antibody level at the time of each adverse event.</p>
         </div>
       )}
 
