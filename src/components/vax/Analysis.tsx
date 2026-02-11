@@ -3,6 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart
 import StatCard from './StatCard';
 import FileUpload from './FileUpload';
 import AlertBox from './AlertBox';
+import InfoTooltip from './InfoTooltip';
 import { jStat, kaplanMeier, logRankTest, coxPH, coxMultivariate, type MultiCoxResult } from '@/lib/statistics';
 import type { ExpressionData, ClinicalRecord } from '@/data/gse62452';
 
@@ -116,7 +117,10 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
   return (
     <div className="space-y-6 animate-in">
       <div>
-        <h2 className="vax-section-title">Expression Analysis</h2>
+        <h2 className="vax-section-title flex items-center gap-2">
+          Expression Analysis
+          <InfoTooltip term="Expression Analysis" definition="Statistical analysis of gene expression levels from microarray or RNA-seq data, used to identify biomarkers associated with patient outcomes." />
+        </h2>
         <p className="vax-section-desc">Survival analysis and gene correlations from GSE62452</p>
       </div>
 
@@ -130,20 +134,20 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
         <div className="vax-card-compact">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="vax-label">Target Gene</label>
+              <label className="vax-label flex items-center gap-1">Target Gene <InfoTooltip term="Target Gene" definition="The gene whose expression level is used to stratify patients into high vs low groups for survival analysis." /></label>
               <select className="vax-input" value={targetGene} onChange={e => setTargetGene(e.target.value)}>
                 {expr?.genes?.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
             <div>
-              <label className="vax-label">Split Method</label>
+              <label className="vax-label flex items-center gap-1">Split Method <InfoTooltip term="Split Method" definition="How patients are divided into high/low groups. Median uses the middle value; mean uses the average expression level as the cutoff." /></label>
               <select className="vax-input" value={splitMethod} onChange={e => setSplitMethod(e.target.value)}>
                 <option value="median">Median</option>
                 <option value="mean">Mean</option>
               </select>
             </div>
             <div>
-              <label className="vax-label">Covariates</label>
+              <label className="vax-label flex items-center gap-1">Covariates <InfoTooltip term="Covariates" definition="Additional clinical variables (age, sex, tumor stage) included in multivariate models to control for confounding factors." /></label>
               <div className="flex gap-4 mt-2">
                 {(['age', 'sex', 'stage'] as const).map(c => (
                   <label key={c} className="flex items-center gap-2 text-[13px] text-muted-foreground cursor-pointer">
@@ -159,10 +163,10 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
 
       {analysisResults && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <StatCard label="High Expression" value={analysisResults.highN} sub={`≥ ${analysisResults.threshold.toFixed(2)}`} />
-            <StatCard label="Low Expression" value={analysisResults.lowN} sub={`< ${analysisResults.threshold.toFixed(2)}`} />
-            <StatCard label="Median OS (High)" value={typeof analysisResults.medianHigh === 'number' ? `${analysisResults.medianHigh}d` : String(analysisResults.medianHigh)} />
+           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            <StatCard label="High Expression" value={analysisResults.highN} sub={`≥ ${analysisResults.threshold.toFixed(2)}`} tooltip={{ term: "High Expression", definition: "Patients whose gene expression level is at or above the cutoff threshold." }} />
+            <StatCard label="Low Expression" value={analysisResults.lowN} sub={`< ${analysisResults.threshold.toFixed(2)}`} tooltip={{ term: "Low Expression", definition: "Patients whose gene expression level is below the cutoff threshold." }} />
+            <StatCard label="Median OS (High)" value={typeof analysisResults.medianHigh === 'number' ? `${analysisResults.medianHigh}d` : String(analysisResults.medianHigh)} tooltip={{ term: "Median OS", definition: "Median Overall Survival — the time at which 50% of patients in the group have experienced the event (death). 'NR' means not reached." }} />
             <StatCard label="Median OS (Low)" value={typeof analysisResults.medianLow === 'number' ? `${analysisResults.medianLow}d` : String(analysisResults.medianLow)} />
           </div>
 
@@ -176,8 +180,11 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
 
           {analysisTab === 'km' && (
             <div className="vax-card">
-              <h3 className="font-semibold text-sm mb-2">Kaplan-Meier Survival by {targetGene} Expression</h3>
-              <p className="text-xs text-muted-foreground mb-4">Log-rank p = {analysisResults.logRank.p.toFixed(4)}</p>
+               <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                Kaplan-Meier Survival by {targetGene} Expression
+                <InfoTooltip term="Kaplan-Meier Curve" definition="A non-parametric statistic that estimates survival probability over time. The step-down pattern shows when events (deaths) occur in each group." />
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">Log-rank p = {analysisResults.logRank.p.toFixed(4)} <InfoTooltip term="Log-rank p-value" definition="Tests whether there is a statistically significant difference in survival between the two groups. p < 0.05 is typically considered significant." /></p>
               <ResponsiveContainer width="100%" height={380}>
                 <LineChart data={analysisResults.kmData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
@@ -193,10 +200,13 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
           )}
 
           {analysisTab === 'cox' && (
-            <div className="vax-card">
-              <h3 className="font-semibold text-sm mb-4">Cox Proportional Hazards — Univariate</h3>
+             <div className="vax-card">
+              <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
+                Cox Proportional Hazards — Univariate
+                <InfoTooltip term="Cox Regression" definition="A statistical model that estimates the hazard ratio (HR) — the relative risk of death associated with each unit increase in gene expression. HR > 1 means higher risk; HR < 1 means lower risk." />
+              </h3>
               <table>
-                <thead><tr><th>Variable</th><th>Hazard Ratio</th><th>95% CI</th><th>p-value</th><th>Interpretation</th></tr></thead>
+                <thead><tr><th>Variable</th><th>Hazard Ratio <InfoTooltip term="Hazard Ratio" definition="The ratio of hazard rates between groups. HR=2.0 means twice the risk of death compared to the reference." /></th><th>95% CI</th><th>p-value</th><th>Interpretation</th></tr></thead>
                 <tbody>
                   <tr>
                     <td className="font-medium">{targetGene}</td>

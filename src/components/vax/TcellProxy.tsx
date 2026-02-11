@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer,
 } from 'recharts';
+import InfoTooltip from './InfoTooltip';
 import {
   type PatientBaseline, type VaccineDetails, type Timepoint, type TcellProxyState,
   emptyTP, emptyPatient, emptyVaccine, validDate, computeScore,
@@ -159,7 +160,10 @@ const TcellProxy = ({ initialState, onStateChange }: TcellProxyProps) => {
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">Tc</div>
             <div>
-              <h2 className="vax-section-title text-lg">T-Cell Activation Proxy</h2>
+              <h2 className="vax-section-title text-lg flex items-center gap-2">
+                T-Cell Activation Proxy
+                <InfoTooltip term="T-Cell Activation Proxy" definition="A weighted composite score (0-100) estimating cellular immune activation using direct assays (70%), general labs (20%), and symptoms (10%). Not a direct T-cell measurement — it's a proxy inferred from available markers." />
+              </h2>
               <p className="text-[11px] text-muted-foreground">Proxy trend calculator · Not diagnostic</p>
             </div>
           </div>
