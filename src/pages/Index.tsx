@@ -75,7 +75,7 @@ const Index = () => {
             onDelete={deleteSession}
           />
         </div>
-        {tab === 0 && <Overview expr={expr} clin={clin} batches={batches} logs={logs} setTab={setTab} />}
+        {tab === 0 && <Overview expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} setTab={setTab} />}
         {tab === 1 && <WetLab batches={batches} setBatches={setBatches} />}
         {tab === 2 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
         {tab === 3 && <Simulation expr={expr} clin={clin} />}
