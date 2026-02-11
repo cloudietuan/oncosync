@@ -5,7 +5,7 @@ interface VaxNavProps {
   setTab: (tab: number) => void;
 }
 
-const tabs = ['Overview', 'Lab Records', 'Analysis', 'Simulation', 'Immune Tracking', 'Safety', 'Export'];
+const tabs = ['Overview', 'Lab Records', 'Analysis', 'Simulation', 'Immune Tracking', 'Safety', 'Export', 'T-Cell Proxy'];
 
 const VaxNav = ({ tab, setTab }: VaxNavProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
