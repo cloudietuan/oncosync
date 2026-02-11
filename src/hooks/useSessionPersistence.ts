@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Batch, SafetyLog } from '@/data/gse62452';
 import type { ImmuneMarkerEntry } from '@/data/immuneData';
+import type { TcellProxyState } from '@/lib/tcellProxy';
 
 const STORAGE_KEY = 'vax-session';
 
@@ -9,6 +10,7 @@ export interface VaxSession {
   batches: Batch[];
   logs: SafetyLog[];
   immuneData: ImmuneMarkerEntry[];
+  tcellProxy?: TcellProxyState;
   savedAt: string;
   name: string;
 }
