@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis, LineChart, Line } from 'recharts';
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
+import InfoTooltip from './InfoTooltip';
 import type { SafetyLog } from '@/data/gse62452';
 import type { ImmuneMarkerEntry } from '@/data/immuneData';
 
@@ -129,7 +130,10 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
     <div className="space-y-6 animate-in">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
         <div>
-          <h2 className="vax-section-title">Safety Monitoring</h2>
+          <h2 className="vax-section-title flex items-center gap-2">
+            Safety Monitoring
+            <InfoTooltip term="Safety Monitoring" definition="Systematic tracking and grading of adverse events (side effects) experienced by patients during vaccine trials, using CTCAE standardized criteria." />
+          </h2>
           <p className="vax-section-desc">Adverse event tracking and CTCAE grading</p>
         </div>
         <div className="flex gap-2 shrink-0">
@@ -145,11 +149,11 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
       )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        <StatCard label="Total Events" value={analytics.totalLogs} />
+        <StatCard label="Total Events" value={analytics.totalLogs} tooltip={{ term: "Total Events", definition: "The total number of adverse events reported across all patients and doses." }} />
         <StatCard label="Patients" value={analytics.uniquePatients} />
         <StatCard label="Max Dose" value={analytics.maxDose || '—'} />
-        <StatCard label="Mild (G1)" value={analytics.severityCounts.mild} sub={`${((analytics.severityCounts.mild / analytics.totalLogs) * 100 || 0).toFixed(0)}%`} />
-        <StatCard label="Moderate+ (G2-3)" value={analytics.severityCounts.moderate + analytics.severityCounts.severe} />
+        <StatCard label="Mild (G1)" value={analytics.severityCounts.mild} sub={`${((analytics.severityCounts.mild / analytics.totalLogs) * 100 || 0).toFixed(0)}%`} tooltip={{ term: "CTCAE Grade 1", definition: "Mild adverse events — generally asymptomatic or mild symptoms requiring no intervention (e.g., low-grade fever, mild fatigue)." }} />
+        <StatCard label="Moderate+ (G2-3)" value={analytics.severityCounts.moderate + analytics.severityCounts.severe} tooltip={{ term: "CTCAE Grade 2-3", definition: "Grade 2: Moderate symptoms requiring minimal intervention. Grade 3: Severe or medically significant but not life-threatening, may require hospitalization." }} />
       </div>
 
       <div className="vax-tab-bar overflow-x-auto">
@@ -278,8 +282,11 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
       )}
 
       {activeTab === 'safety-table' && (
-        <div className="vax-card overflow-x-auto">
-          <h3 className="font-semibold text-sm mb-4">Adverse Event Summary — CTCAE Grading</h3>
+         <div className="vax-card overflow-x-auto">
+          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
+            Adverse Event Summary — CTCAE Grading
+            <InfoTooltip term="CTCAE" definition="Common Terminology Criteria for Adverse Events — a standardized system for grading the severity of adverse effects in clinical trials, ranging from Grade 1 (mild) to Grade 5 (death)." />
+          </h3>
           <table>
             <thead>
               <tr>
@@ -289,7 +296,7 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
                 <th className="text-center">Grade 3 (Severe)</th>
                 <th className="text-center">Total</th>
                 <th className="text-center">% Patients</th>
-                <th className="text-center">Concurrent IgG</th>
+                <th className="text-center">Concurrent IgG <InfoTooltip term="Concurrent IgG" definition="The average IgG antibody level measured at or near the time each adverse event was reported, to assess whether side effects correlate with immune response." /></th>
               </tr>
             </thead>
             <tbody>

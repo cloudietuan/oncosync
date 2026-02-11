@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import InfoTooltip from './InfoTooltip';
 import type { Batch } from '@/data/gse62452';
 
 interface WetLabProps {
@@ -23,7 +24,10 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
     <div className="space-y-6 animate-in">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
         <div>
-          <h2 className="vax-section-title">Lab Records</h2>
+          <h2 className="vax-section-title flex items-center gap-2">
+            Lab Records
+            <InfoTooltip term="Lab Records" definition="Wet lab documentation of VLP (Virus-Like Particle) production batches, including expression conditions, purification steps, and conjugation parameters." />
+          </h2>
           <p className="vax-section-desc">Qβ VLP production and conjugation tracking</p>
         </div>
         <button onClick={() => setShowForm(!showForm)} className="vax-btn-primary shrink-0">
@@ -86,7 +90,7 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
         <table>
           <thead>
             <tr>
-              <th>Batch ID</th><th>Date</th><th>Volume</th><th>IPTG</th><th>Induction</th><th>Linker</th><th>Peptide</th><th>SDS-PAGE</th><th>Status</th><th>Notes</th>
+              <th>Batch ID</th><th>Date</th><th>Volume</th><th>IPTG <InfoTooltip term="IPTG" definition="Isopropyl β-D-1-thiogalactopyranoside — a chemical inducer that triggers protein expression in E. coli bacteria carrying the VLP gene." /></th><th>Induction</th><th>Linker <InfoTooltip term="Linker" definition="A bifunctional crosslinker (e.g., SMPH) that chemically attaches the target antigen peptide to the surface of the VLP carrier." /></th><th>Peptide</th><th>SDS-PAGE <InfoTooltip term="SDS-PAGE" definition="Sodium Dodecyl Sulfate Polyacrylamide Gel Electrophoresis — a technique to verify protein size and confirm successful VLP-peptide conjugation." /></th><th>Status</th><th>Notes</th>
             </tr>
           </thead>
           <tbody>

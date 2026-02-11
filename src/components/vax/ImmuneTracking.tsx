@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
+import InfoTooltip from './InfoTooltip';
 import type { ImmuneMarkerEntry } from '@/data/immuneData';
 import type { SafetyLog } from '@/data/gse62452';
 
@@ -250,7 +251,10 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
     <div className="space-y-6 animate-in">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
         <div>
-          <h2 className="vax-section-title">Immune Tracking</h2>
+          <h2 className="vax-section-title flex items-center gap-2">
+            Immune Tracking
+            <InfoTooltip term="Immune Tracking" definition="Longitudinal monitoring of humoral and cellular immune markers to assess vaccine-induced immune responses over time." />
+          </h2>
           <p className="vax-section-desc">Antibody production curves, decay analysis, and immune marker monitoring</p>
         </div>
         <button onClick={() => setShowModal(true)} className="vax-btn-primary shrink-0">+ Log Immune Marker</button>
@@ -260,9 +264,9 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
       {alerts.map((a, i) => <AlertBox key={i} variant={a.variant} icon={a.icon} title={a.title} description={a.description} />)}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-        <StatCard label="Immune Entries" value={totalEntries} sub={`Across ${uniquePatients} patients`} />
-        <StatCard label="Avg IgG Response" value={`${latestIgg}`} sub="AU/mL (latest avg)" />
-        <StatCard label="Markers Tracked" value={7} sub="IgG, IgM, CD4, CD8, IFN-γ, IL-2, CA 19-9" />
+        <StatCard label="Immune Entries" value={totalEntries} sub={`Across ${uniquePatients} patients`} tooltip={{ term: "Immune Entries", definition: "Individual data points recording immune marker levels at a specific date for a given patient." }} />
+        <StatCard label="Avg IgG Response" value={`${latestIgg}`} sub="AU/mL (latest avg)" tooltip={{ term: "IgG Response", definition: "Immunoglobulin G — the most abundant antibody class. Rising IgG levels indicate the immune system is mounting a humoral response to the vaccine antigen." }} />
+        <StatCard label="Markers Tracked" value={7} sub="IgG, IgM, CD4, CD8, IFN-γ, IL-2, CA 19-9" tooltip={{ term: "Immune Markers", definition: "Blood-based biomarkers: IgG/IgM (antibodies), CD4/CD8 (T-cells), IFN-γ/IL-2 (cytokines), CA 19-9 (tumor marker)." }} />
       </div>
 
       <div className="vax-tab-bar overflow-x-auto">
@@ -277,7 +281,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
       {activeTab === 'overview' && (
         <div className="space-y-6">
           <div className="vax-card">
-            <h3 className="font-semibold text-sm mb-4">IgG Antibody Production Curve</h3>
+            <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">IgG Antibody Production Curve <InfoTooltip term="IgG Production Curve" definition="Tracks how IgG antibody levels change over time after each vaccine dose. A rising curve indicates the immune system is responding to the antigen." /></h3>
             <ResponsiveContainer width="100%" height={360}>
               <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
@@ -311,9 +315,12 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
             </ResponsiveContainer>
           </div>
           <div className="vax-card overflow-x-auto">
-            <h3 className="font-semibold text-sm mb-4">Antibody Decay Rate Analysis</h3>
+            <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
+              Antibody Decay Rate Analysis
+              <InfoTooltip term="Decay Rate" definition="The rate at which antibody levels decline after reaching their peak. Calculated using exponential decay fit. Half-life is the time for antibody levels to drop by 50%." />
+            </h3>
             <table>
-              <thead><tr><th>Patient</th><th className="text-center">Peak IgG</th><th className="text-center">Current IgG</th><th className="text-center">Decay Rate (k)</th><th className="text-center">Est. Half-Life (days)</th><th className="text-center">Status</th></tr></thead>
+              <thead><tr><th>Patient</th><th className="text-center">Peak IgG</th><th className="text-center">Current IgG</th><th className="text-center">Decay Rate (k) <InfoTooltip term="Decay Constant (k)" definition="The exponential decay constant. Higher k means faster antibody decline. Derived from the slope of ln(IgG) vs time." /></th><th className="text-center">Est. Half-Life (days) <InfoTooltip term="Half-Life" definition="The estimated time (in days) for antibody levels to drop to 50% of peak. Longer half-life indicates more durable immune response." /></th><th className="text-center">Status</th></tr></thead>
               <tbody>
                 {decayMetrics.map(m => (
                   <tr key={m.id}>
