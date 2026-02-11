@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
+import InfoTooltip from './InfoTooltip';
 import type { ExpressionData, ClinicalRecord, Batch, SafetyLog } from '@/data/gse62452';
 import type { ImmuneMarkerEntry } from '@/data/immuneData';
 
@@ -60,13 +61,13 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
     ))}
 
     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-      <StatCard label="Genes" value={expr?.genes?.length || 0} sub="Immune panel" />
-      <StatCard label="Samples" value={expr?.samples?.length || 0} sub="GSE62452" />
-      <StatCard label="Clinical Records" value={clin?.length || 0} sub="With survival" />
-      <StatCard label="VLP Batches" value={batches.length} sub={`${batches.filter(b => b.status === 'completed').length} completed`} />
-      <StatCard label="Safety Events" value={logs.length} sub="Logged" />
-      <StatCard label="Immune Entries" value={immuneData.length} sub={`Across ${immunePatients} patients`} />
-      <StatCard label="Avg IgG Response" value={avgIgg} sub="AU/mL (latest)" />
+      <StatCard label="Genes" value={expr?.genes?.length || 0} sub="Immune panel" tooltip={{ term: "Genes", definition: "Protein-coding regions of DNA measured on the expression microarray, used to identify differentially expressed targets." }} />
+      <StatCard label="Samples" value={expr?.samples?.length || 0} sub="GSE62452" tooltip={{ term: "Samples", definition: "Individual tissue specimens from the GSE62452 dataset, including tumor and adjacent normal pancreatic tissues." }} />
+      <StatCard label="Clinical Records" value={clin?.length || 0} sub="With survival" tooltip={{ term: "Clinical Records", definition: "Patient data including survival time, vital status, and staging, linked to expression profiles." }} />
+      <StatCard label="VLP Batches" value={batches.length} sub={`${batches.filter(b => b.status === 'completed').length} completed`} tooltip={{ term: "VLP Batches", definition: "Virus-Like Particle production runs. VLPs mimic virus structure without genetic material, serving as vaccine carriers." }} />
+      <StatCard label="Safety Events" value={logs.length} sub="Logged" tooltip={{ term: "Safety Events", definition: "Recorded adverse events graded using CTCAE (Common Terminology Criteria for Adverse Events) scale from 1-5." }} />
+      <StatCard label="Immune Entries" value={immuneData.length} sub={`Across ${immunePatients} patients`} tooltip={{ term: "Immune Entries", definition: "Longitudinal immune marker measurements (IgG, IgM, CD4/CD8, cytokines) collected per patient over time." }} />
+      <StatCard label="Avg IgG Response" value={avgIgg} sub="AU/mL (latest)" tooltip={{ term: "IgG Response", definition: "Immunoglobulin G — the most abundant antibody class. Higher levels indicate stronger humoral immune response to the vaccine antigen." }} />
     </div>
 
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

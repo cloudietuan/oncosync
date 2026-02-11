@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import VaxHeader from '@/components/vax/VaxHeader';
 import VaxNav from '@/components/vax/VaxNav';
+import OnboardingTour from '@/components/vax/OnboardingTour';
 import Overview from '@/components/vax/Overview';
 import WetLab from '@/components/vax/WetLab';
 import Analysis from '@/components/vax/Analysis';
@@ -74,6 +75,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <OnboardingTour />
       <VaxHeader />
       <VaxNav tab={tab} setTab={setTab} />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
