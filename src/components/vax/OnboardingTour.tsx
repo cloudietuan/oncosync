@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft, Lightbulb, MapPin } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Lightbulb, MapPin, Microscope, Compass, HelpCircle, Info, Rocket } from 'lucide-react';
 
 /* ── Per-tab contextual tips ── */
 const TAB_TIPS: Record<number, { title: string; tips: string[] }> = {
@@ -85,31 +85,31 @@ const TAB_TIPS: Record<number, { title: string; tips: string[] }> = {
 };
 
 /* ── Welcome tour steps (shown once on first visit) ── */
-const WELCOME_STEPS = [
+const WELCOME_STEPS: { title: string; description: string; Icon: typeof Microscope }[] = [
   {
-    title: 'Welcome to OncoSync 👋',
-    description: 'OncoSync is a research companion for pancreatic cancer vaccine development. Let\'s take a quick tour of the key features.',
-    icon: '🧬',
+    title: 'Welcome to OncoSync',
+    description: 'OncoSync is a research companion for pancreatic cancer vaccine development. Here is a quick tour of the key features.',
+    Icon: Microscope,
   },
   {
     title: 'Navigation',
     description: 'Use the tab bar at the top to switch between modules: Overview, Lab Records, Analysis, Simulation, Immune Tracking, Safety, Export, T-Cell Proxy, and Validation.',
-    icon: '🧭',
+    Icon: Compass,
   },
   {
     title: 'Contextual Help',
-    description: 'Each tab has its own set of tips! Click the 💡 button in the bottom-right corner to see tips specific to whichever tab you\'re currently viewing.',
-    icon: '💡',
+    description: 'Each tab has its own set of tips. Click the lightbulb button in the bottom-right corner to see tips specific to whichever tab you are currently viewing.',
+    Icon: Lightbulb,
   },
   {
     title: 'Info Tooltips',
-    description: 'Hover over the ⓘ icons throughout the app to learn what scientific terms, metrics, and lab parameters mean.',
-    icon: 'ℹ️',
+    description: 'Hover over the info icons throughout the app to learn what scientific terms, metrics, and lab parameters mean.',
+    Icon: Info,
   },
   {
-    title: 'You\'re all set!',
-    description: 'Start exploring the Overview dashboard. Remember: you can always click the 💡 button for tab-specific guidance. Happy researching!',
-    icon: '🚀',
+    title: 'Ready to Go',
+    description: 'Start exploring the Overview dashboard. You can always click the lightbulb button for tab-specific guidance.',
+    Icon: Rocket,
   },
 ];
 
@@ -167,12 +167,15 @@ const OnboardingTour = ({ currentTab = 0 }: OnboardingTourProps) => {
   // Welcome tour modal
   if (welcomeOpen) {
     const current = WELCOME_STEPS[welcomeStep];
+    const StepIcon = current.Icon;
     return (
       <div className="vax-modal-overlay" onClick={handleCloseWelcome}>
         <div className="vax-modal animate-in" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{current.icon}</span>
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <StepIcon size={18} className="text-primary" />
+              </div>
               <h3 className="font-bold text-base text-foreground">{current.title}</h3>
             </div>
             <button onClick={handleCloseWelcome} className="text-muted-foreground hover:text-foreground transition-colors p-1 -mr-1 -mt-1" aria-label="Close tour">
