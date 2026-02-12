@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, ResponsiveContainer, Cell } from 'recharts';
 import StatCard from './StatCard';
 import FileUpload from './FileUpload';
 import AlertBox from './AlertBox';
 import InfoTooltip from './InfoTooltip';
 import { StaggerGrid, StaggerItem, FadeSection } from './MotionWrappers';
+import { ChartSkeleton, StatGridSkeleton, TableSkeleton } from './ChartSkeleton';
 import { jStat, kaplanMeier, logRankTest, coxPH, coxMultivariate, type MultiCoxResult } from '@/lib/statistics';
 import type { ExpressionData, ClinicalRecord } from '@/data/gse62452';
 
@@ -20,6 +21,14 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
   const [splitMethod, setSplitMethod] = useState('median');
   const [covariates, setCovariates] = useState({ age: false, sex: false, stage: true });
   const [analysisTab, setAnalysisTab] = useState('km');
+  const [computing, setComputing] = useState(true);
+
+  // Brief delay to show skeleton while useMemo computes
+  useEffect(() => {
+    setComputing(true);
+    const t = setTimeout(() => setComputing(false), 400);
+    return () => clearTimeout(t);
+  }, [targetGene, splitMethod, covariates]);
 
   const handleExprUpload = (data: Record<string, string>[]) => {
     const geneCol = Object.keys(data[0]).find(k => ['gene', 'Gene', 'GENE'].includes(k));
@@ -162,7 +171,14 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
         </div>
       </div>
 
-      {analysisResults && (
+      {computing || !analysisResults ? (
+        <FadeSection>
+          <div className="space-y-4">
+            <StatGridSkeleton count={4} />
+            <ChartSkeleton height={420} bars={10} />
+          </div>
+        </FadeSection>
+      ) : (
         <>
            <StaggerGrid className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <StaggerItem><StatCard label="High Expression" value={analysisResults.highN} sub={`≥ ${analysisResults.threshold.toFixed(2)}`} tooltip={{ term: "High Expression", definition: "Patients whose gene expression level is at or above the cutoff threshold." }} /></StaggerItem>
@@ -180,6 +196,7 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
           </div>
 
           {analysisTab === 'km' && (
+            <FadeSection>
             <div className="vax-card">
                <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
                 Kaplan-Meier Survival by {targetGene} Expression
@@ -198,9 +215,11 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 </LineChart>
               </ResponsiveContainer>
             </div>
+            </FadeSection>
           )}
 
           {analysisTab === 'cox' && (
+            <FadeSection>
              <div className="vax-card">
               <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
                 Cox Proportional Hazards — Univariate
@@ -219,9 +238,11 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 </tbody>
               </table>
             </div>
+            </FadeSection>
           )}
 
           {analysisTab === 'correlation' && (
+            <FadeSection>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="vax-card">
                 <h3 className="font-semibold text-sm mb-4">Gene Correlations with {targetGene}</h3>
@@ -259,9 +280,11 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 </div>
               </div>
             </div>
+            </FadeSection>
           )}
 
           {analysisTab === 'multivariate' && analysisResults.multiResults && (
+            <FadeSection>
             <div className="vax-card">
               <h3 className="font-semibold text-sm mb-4">Multivariate Cox Regression</h3>
               <table>
@@ -280,6 +303,7 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 </tbody>
               </table>
             </div>
+            </FadeSection>
           )}
         </>
       )}
