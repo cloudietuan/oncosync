@@ -224,8 +224,8 @@ const TcellProxy = ({ initialState, onStateChange }: TcellProxyProps) => {
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={30} />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="hsl(270,9%,46%)" label={{ value: 'Date', position: 'insideBottom', offset: -2, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={30} stroke="hsl(270,9%,46%)" label={{ value: 'Proxy Score', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
                 <ReferenceLine y={70} stroke="hsl(160,84%,39%)" strokeDasharray="6 3" />
                 <ReferenceLine y={40} stroke="hsl(38,92%,50%)" strokeDasharray="6 3" />
                 <Tooltip
