@@ -6,6 +6,7 @@ import {
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
 import InfoTooltip from './InfoTooltip';
+import { StaggerGrid, StaggerItem } from './MotionWrappers';
 import type { ImmuneMarkerEntry } from '@/data/immuneData';
 import type { SafetyLog } from '@/data/gse62452';
 
@@ -248,7 +249,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
   const tabLabels: Record<string, string> = { overview: 'Overview', 'all-markers': 'All Markers', correlation: 'Correlation', comparison: 'Patient Comparison' };
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
         <div>
           <h2 className="vax-section-title flex items-center gap-2">
@@ -263,11 +264,11 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
       <AlertBox variant="info" icon="ℹ" title="Simulated Data" description="This module tracks immune response markers across 3 simulated patient profiles." />
       {alerts.map((a, i) => <AlertBox key={i} variant={a.variant} icon={a.icon} title={a.title} description={a.description} />)}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-        <StatCard label="Immune Entries" value={totalEntries} sub={`Across ${uniquePatients} patients`} tooltip={{ term: "Immune Entries", definition: "Individual data points recording immune marker levels at a specific date for a given patient." }} />
-        <StatCard label="Avg IgG Response" value={`${latestIgg}`} sub="AU/mL (latest avg)" tooltip={{ term: "IgG Response", definition: "Immunoglobulin G — the most abundant antibody class. Rising IgG levels indicate the immune system is mounting a humoral response to the vaccine antigen." }} />
-        <StatCard label="Markers Tracked" value={7} sub="IgG, IgM, CD4, CD8, IFN-γ, IL-2, CA 19-9" tooltip={{ term: "Immune Markers", definition: "Blood-based biomarkers: IgG/IgM (antibodies), CD4/CD8 (T-cells), IFN-γ/IL-2 (cytokines), CA 19-9 (tumor marker)." }} />
-      </div>
+      <StaggerGrid className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        <StaggerItem><StatCard label="Immune Entries" value={totalEntries} sub={`Across ${uniquePatients} patients`} tooltip={{ term: "Immune Entries", definition: "Individual data points recording immune marker levels at a specific date for a given patient." }} /></StaggerItem>
+        <StaggerItem><StatCard label="Avg IgG Response" value={`${latestIgg}`} sub="AU/mL (latest avg)" tooltip={{ term: "IgG Response", definition: "Immunoglobulin G — the most abundant antibody class. Rising IgG levels indicate the immune system is mounting a humoral response to the vaccine antigen." }} /></StaggerItem>
+        <StaggerItem><StatCard label="Markers Tracked" value={7} sub="IgG, IgM, CD4, CD8, IFN-γ, IL-2, CA 19-9" tooltip={{ term: "Immune Markers", definition: "Blood-based biomarkers: IgG/IgM (antibodies), CD4/CD8 (T-cells), IFN-γ/IL-2 (cytokines), CA 19-9 (tumor marker)." }} /></StaggerItem>
+      </StaggerGrid>
 
       <div className="vax-tab-bar overflow-x-auto">
         {Object.keys(tabLabels).map(tab => (

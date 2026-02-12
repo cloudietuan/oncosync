@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
 import InfoTooltip from './InfoTooltip';
+import { StaggerGrid, StaggerItem, FadeSection } from './MotionWrappers';
 import type { ExpressionData, ClinicalRecord, Batch, SafetyLog } from '@/data/gse62452';
 import type { ImmuneMarkerEntry } from '@/data/immuneData';
 
@@ -43,7 +44,7 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
   }, [immuneData]);
 
   return (
-  <div className="space-y-6 animate-in">
+  <div className="space-y-6">
     <div>
       <h2 className="vax-section-title">Research Dashboard</h2>
       <p className="vax-section-desc">Qβ–ApoC1 VLP vaccine development for pancreatic adenocarcinoma</p>
@@ -60,80 +61,90 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
       <AlertBox key={`immune-${i}`} variant={a.variant} icon={a.icon} title={a.title} description={a.description} />
     ))}
 
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
-      <StatCard label="Genes" value={expr?.genes?.length || 0} sub="Immune panel" tooltip={{ term: "Genes", definition: "Protein-coding regions of DNA measured on the expression microarray, used to identify differentially expressed targets." }} />
-      <StatCard label="Samples" value={expr?.samples?.length || 0} sub="GSE62452" tooltip={{ term: "Samples", definition: "Individual tissue specimens from the GSE62452 dataset, including tumor and adjacent normal pancreatic tissues." }} />
-      <StatCard label="Clinical Records" value={clin?.length || 0} sub="With survival" tooltip={{ term: "Clinical Records", definition: "Patient data including survival time, vital status, and staging, linked to expression profiles." }} />
-      <StatCard label="VLP Batches" value={batches.length} sub={`${batches.filter(b => b.status === 'completed').length} completed`} tooltip={{ term: "VLP Batches", definition: "Virus-Like Particle production runs. VLPs mimic virus structure without genetic material, serving as vaccine carriers." }} />
-      <StatCard label="Safety Events" value={logs.length} sub="Logged" tooltip={{ term: "Safety Events", definition: "Recorded adverse events graded using CTCAE (Common Terminology Criteria for Adverse Events) scale from 1-5." }} />
-      <StatCard label="Immune Entries" value={immuneData.length} sub={`Across ${immunePatients} patients`} tooltip={{ term: "Immune Entries", definition: "Longitudinal immune marker measurements (IgG, IgM, CD4/CD8, cytokines) collected per patient over time." }} />
-      <StatCard label="Avg IgG Response" value={avgIgg} sub="AU/mL (latest)" tooltip={{ term: "IgG Response", definition: "Immunoglobulin G — the most abundant antibody class. Higher levels indicate stronger humoral immune response to the vaccine antigen." }} />
-    </div>
+    <StaggerGrid className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+      <StaggerItem><StatCard label="Genes" value={expr?.genes?.length || 0} sub="Immune panel" tooltip={{ term: "Genes", definition: "Protein-coding regions of DNA measured on the expression microarray, used to identify differentially expressed targets." }} /></StaggerItem>
+      <StaggerItem><StatCard label="Samples" value={expr?.samples?.length || 0} sub="GSE62452" tooltip={{ term: "Samples", definition: "Individual tissue specimens from the GSE62452 dataset, including tumor and adjacent normal pancreatic tissues." }} /></StaggerItem>
+      <StaggerItem><StatCard label="Clinical Records" value={clin?.length || 0} sub="With survival" tooltip={{ term: "Clinical Records", definition: "Patient data including survival time, vital status, and staging, linked to expression profiles." }} /></StaggerItem>
+      <StaggerItem><StatCard label="VLP Batches" value={batches.length} sub={`${batches.filter(b => b.status === 'completed').length} completed`} tooltip={{ term: "VLP Batches", definition: "Virus-Like Particle production runs. VLPs mimic virus structure without genetic material, serving as vaccine carriers." }} /></StaggerItem>
+      <StaggerItem><StatCard label="Safety Events" value={logs.length} sub="Logged" tooltip={{ term: "Safety Events", definition: "Recorded adverse events graded using CTCAE (Common Terminology Criteria for Adverse Events) scale from 1-5." }} /></StaggerItem>
+      <StaggerItem><StatCard label="Immune Entries" value={immuneData.length} sub={`Across ${immunePatients} patients`} tooltip={{ term: "Immune Entries", definition: "Longitudinal immune marker measurements (IgG, IgM, CD4/CD8, cytokines) collected per patient over time." }} /></StaggerItem>
+      <StaggerItem><StatCard label="Avg IgG Response" value={avgIgg} sub="AU/mL (latest)" tooltip={{ term: "IgG Response", definition: "Immunoglobulin G — the most abundant antibody class. Higher levels indicate stronger humoral immune response to the vaccine antigen." }} /></StaggerItem>
+    </StaggerGrid>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <button onClick={() => setTab(2)} className="vax-card-compact text-left hover:border-blue-200 transition-colors group">
-        <div className="flex items-start justify-between">
-          <div>
-            <h4 className="font-semibold text-sm mb-1">Expression Analysis</h4>
-            <p className="text-xs text-muted-foreground">Kaplan-Meier survival curves, Cox regression, and gene correlations</p>
+    <StaggerGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <StaggerItem>
+        <button onClick={() => setTab(2)} className="vax-card-compact text-left hover:border-blue-200 transition-colors group w-full">
+          <div className="flex items-start justify-between">
+            <div>
+              <h4 className="font-semibold text-sm mb-1">Expression Analysis</h4>
+              <p className="text-xs text-muted-foreground">Kaplan-Meier survival curves, Cox regression, and gene correlations</p>
+            </div>
+            <span className="text-muted-foreground group-hover:text-blue-500 transition-colors">→</span>
           </div>
-          <span className="text-muted-foreground group-hover:text-blue-500 transition-colors">→</span>
-        </div>
-      </button>
-      <button onClick={() => setTab(3)} className="vax-card-compact text-left hover:border-violet-200 transition-colors group">
-        <div className="flex items-start justify-between">
-          <div>
-            <h4 className="font-semibold text-sm mb-1">VLP Simulation</h4>
-            <p className="text-xs text-muted-foreground">Bootstrap modeling of hypothetical vaccine response</p>
+        </button>
+      </StaggerItem>
+      <StaggerItem>
+        <button onClick={() => setTab(3)} className="vax-card-compact text-left hover:border-violet-200 transition-colors group w-full">
+          <div className="flex items-start justify-between">
+            <div>
+              <h4 className="font-semibold text-sm mb-1">VLP Simulation</h4>
+              <p className="text-xs text-muted-foreground">Bootstrap modeling of hypothetical vaccine response</p>
+            </div>
+            <span className="text-muted-foreground group-hover:text-violet-500 transition-colors">→</span>
           </div>
-          <span className="text-muted-foreground group-hover:text-violet-500 transition-colors">→</span>
-        </div>
-      </button>
-      <button onClick={() => setTab(4)} className="vax-card-compact text-left hover:border-emerald-200 transition-colors group">
-        <div className="flex items-start justify-between">
-          <div>
-            <h4 className="font-semibold text-sm mb-1">Immune Tracking</h4>
-            <p className="text-xs text-muted-foreground">Antibody production curves, decay analysis, and symptom-immune correlations</p>
+        </button>
+      </StaggerItem>
+      <StaggerItem>
+        <button onClick={() => setTab(4)} className="vax-card-compact text-left hover:border-emerald-200 transition-colors group w-full">
+          <div className="flex items-start justify-between">
+            <div>
+              <h4 className="font-semibold text-sm mb-1">Immune Tracking</h4>
+              <p className="text-xs text-muted-foreground">Antibody production curves, decay analysis, and symptom-immune correlations</p>
+            </div>
+            <span className="text-muted-foreground group-hover:text-emerald-500 transition-colors">→</span>
           </div>
-          <span className="text-muted-foreground group-hover:text-emerald-500 transition-colors">→</span>
-        </div>
-      </button>
-      <button onClick={() => setTab(5)} className="vax-card-compact text-left hover:border-amber-200 transition-colors group">
-        <div className="flex items-start justify-between">
-          <div>
-            <h4 className="font-semibold text-sm mb-1">Safety Monitoring</h4>
-            <p className="text-xs text-muted-foreground">Adverse event tracking and CTCAE grading</p>
+        </button>
+      </StaggerItem>
+      <StaggerItem>
+        <button onClick={() => setTab(5)} className="vax-card-compact text-left hover:border-amber-200 transition-colors group w-full">
+          <div className="flex items-start justify-between">
+            <div>
+              <h4 className="font-semibold text-sm mb-1">Safety Monitoring</h4>
+              <p className="text-xs text-muted-foreground">Adverse event tracking and CTCAE grading</p>
+            </div>
+            <span className="text-muted-foreground group-hover:text-amber-500 transition-colors">→</span>
           </div>
-          <span className="text-muted-foreground group-hover:text-amber-500 transition-colors">→</span>
-        </div>
-      </button>
-    </div>
+        </button>
+      </StaggerItem>
+    </StaggerGrid>
 
-    <div className="vax-card overflow-x-auto">
-      <h3 className="font-semibold text-sm mb-4">Data Sources</h3>
-      <table>
-        <thead>
-          <tr><th>Dataset</th><th>Description</th><th>Status</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span className="font-medium">GSE62452</span></td>
-            <td>Pancreatic adenocarcinoma expression + clinical outcomes</td>
-            <td><span className="vax-badge-green">Loaded</span></td>
-          </tr>
-          <tr>
-            <td><span className="font-medium">VLP Production</span></td>
-            <td>Internal wet lab batch records</td>
-            <td><span className="vax-badge-green">{batches.length} batches</span></td>
-          </tr>
-          <tr>
-            <td><span className="font-medium">Safety Logs</span></td>
-            <td>Simulated adverse event data</td>
-            <td><span className="vax-badge-gray">{logs.length} events</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <FadeSection delay={0.3}>
+      <div className="vax-card overflow-x-auto">
+        <h3 className="font-semibold text-sm mb-4">Data Sources</h3>
+        <table>
+          <thead>
+            <tr><th>Dataset</th><th>Description</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span className="font-medium">GSE62452</span></td>
+              <td>Pancreatic adenocarcinoma expression + clinical outcomes</td>
+              <td><span className="vax-badge-green">Loaded</span></td>
+            </tr>
+            <tr>
+              <td><span className="font-medium">VLP Production</span></td>
+              <td>Internal wet lab batch records</td>
+              <td><span className="vax-badge-green">{batches.length} batches</span></td>
+            </tr>
+            <tr>
+              <td><span className="font-medium">Safety Logs</span></td>
+              <td>Simulated adverse event data</td>
+              <td><span className="vax-badge-gray">{logs.length} events</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </FadeSection>
   </div>
   );
 };
