@@ -41,10 +41,15 @@ const VaxHeader = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setDark(!dark)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors relative overflow-hidden"
             aria-label="Toggle dark mode"
           >
-            {dark ? <Sun size={16} /> : <Moon size={16} />}
+            <span
+              key={dark ? 'sun' : 'moon'}
+              className="animate-fade-in"
+            >
+              {dark ? <Sun size={16} /> : <Moon size={16} />}
+            </span>
           </button>
           <span className="vax-badge-amber shrink-0 text-[10px] sm:text-[11px]">Research Use Only</span>
         </div>
