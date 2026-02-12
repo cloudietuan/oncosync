@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis, LineChart, Line } from 'recharts';
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
 import InfoTooltip from './InfoTooltip';
@@ -168,13 +168,14 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="vax-card">
             <h3 className="font-semibold text-sm mb-4">Adverse Events by Frequency</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={analytics.topSymptoms}>
+            <ResponsiveContainer width="100%" height={340}>
+              <BarChart data={analytics.topSymptoms} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
                 <XAxis dataKey="symptom" stroke="#a1a1aa" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={80} />
                 <YAxis stroke="#a1a1aa" />
                 <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" />
+                <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
+                <Bar dataKey="count" fill="#3b82f6" name="Event Count" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -182,7 +183,7 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
             <h3 className="font-semibold text-sm mb-4">Severity Distribution</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine>
                   {pieData.map((_, i) => (
                     <Cell key={i} fill={[COLORS.mild, COLORS.moderate, COLORS.severe][i]} />
                   ))}

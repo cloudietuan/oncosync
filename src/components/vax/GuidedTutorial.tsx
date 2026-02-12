@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X, ChevronRight, ChevronLeft, Play, SkipForward, BookOpen, CheckCircle2 } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, SkipForward, BookOpen, CheckCircle2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 /* ── Tutorial steps: each tied to a tab with detailed explanations ── */
@@ -54,14 +54,28 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: 'Kaplan-Meier Survival Curves',
     description: 'Visualize survival differences between patient groups.',
     detail:
-      'The Kaplan-Meier tab draws a step-curve showing the probability of survival over time for each group. The log-rank p-value tells you if the difference is statistically significant (p < 0.05 = significant). Each step down in the curve represents a patient event (death or censoring).',
+      'The Kaplan-Meier tab draws a step-curve showing the probability of survival over time for each group. The red line is "High" expression, the blue line is "Low" expression. The log-rank p-value tells you if the difference is statistically significant (p < 0.05 = significant). Each step down in the curve represents a patient event (death or censoring).',
   },
   {
     tab: 2,
-    title: 'Cox Regression & Covariates',
-    description: 'Quantify the risk associated with gene expression.',
+    title: 'Cox Regression — Hazard Ratio',
+    description: 'Quantify the survival risk associated with gene expression.',
     detail:
-      'The Cox Regression tab calculates a Hazard Ratio (HR). HR > 1 means higher expression is linked to worse survival; HR < 1 means better survival. You can enable covariates (age, sex, tumor stage) to run a multivariate analysis — this controls for confounding factors so you know the gene effect is independent.',
+      'Click the "Cox Regression" sub-tab to see the Hazard Ratio (HR) table. HR > 1 means higher gene expression is linked to worse survival (higher risk of death). HR < 1 means higher expression is protective. The 95% CI (Confidence Interval) tells you the range of uncertainty, and the p-value confirms statistical significance. This is the core statistical test for evaluating whether a gene is a valid vaccine target.',
+  },
+  {
+    tab: 2,
+    title: 'Multivariate Analysis & Covariates',
+    description: 'Control for confounding factors like age, sex, and tumor stage.',
+    detail:
+      'Enable the checkboxes for Age, Sex, and Stage under "Covariates" to unlock the Multivariate tab. This runs a multivariate Cox regression — it tests whether the gene effect is independent of other clinical factors. If the gene HR remains significant after adjusting for covariates, it strengthens the case that the gene itself drives survival differences.',
+  },
+  {
+    tab: 2,
+    title: 'Gene Correlations',
+    description: 'See which other genes are co-expressed with your target.',
+    detail:
+      'The Correlations tab shows a bar chart and table of Pearson r values between your target gene and every other gene in the panel. High positive correlation means genes are co-expressed; negative means they are inversely related. This helps identify gene networks and potential combination targets for multi-antigen vaccines.',
   },
   // Tab 3 — Simulation
   {
@@ -69,7 +83,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: 'VLP Simulation',
     description: 'Run bootstrap models to estimate vaccine response scenarios.',
     detail:
-      'This module uses your expression data to simulate how a VLP-based vaccine might perform. Adjust parameters like number of iterations and confidence intervals. Each simulation run generates a distribution of predicted outcomes, helping you estimate variability and set realistic expectations for clinical translation.',
+      'This module uses your expression data to simulate how a VLP-based vaccine might perform. Adjust three parameters: Assumed Efficacy (how effective the vaccine is), Bootstrap Iterations (number of random resamples), and High-APOC1 Response Bias (likelihood that high-expression patients respond). Click "Run Simulation" to generate a histogram of predicted survival benefit with 95% confidence intervals.',
   },
   // Tab 4 — Immune Tracking
   {
@@ -77,14 +91,21 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: 'Immune Tracking — Antibody Curves',
     description: 'Monitor IgG antibody production over time for each patient profile.',
     detail:
-      'The Overview sub-tab plots IgG (Immunoglobulin G) antibody levels for 3 patient profiles across multiple timepoints. The Antibody Decay Rate table shows the estimated half-life of each profile\'s immune response — longer half-life means the antibodies persist longer, suggesting a more durable vaccine effect.',
+      'The Overview sub-tab plots IgG (Immunoglobulin G) antibody levels for 3 simulated patient profiles across multiple timepoints. The dashed horizontal line marks the minimum protective threshold (20 AU/mL). The Antibody Decay Rate table below shows each profile\'s estimated half-life — longer half-life means more durable immunity.',
   },
   {
     tab: 4,
     title: 'All Markers & Correlation',
     description: 'View CD8+ T-cells, IFN-γ, CA 19-9, and IgG together.',
     detail:
-      'The "All Markers" sub-tab lets you select a patient profile and see all immune markers side-by-side: IgG (antibody response), CD8+ T-cells (killer cells), IFN-γ (inflammatory cytokine), and CA 19-9 (tumor marker). The Correlation sub-tab calculates Pearson r between IgG and symptom severity to check if immune response is linked to how the patient feels.',
+      'The "All Markers" sub-tab lets you select a patient profile and see all immune markers side-by-side: IgG (antibody response), CD8+ T-cells (killer cells), IFN-γ (inflammatory cytokine), and CA 19-9 (tumor marker). The Correlation sub-tab calculates Pearson r between IgG levels and symptom severity to check if immune response is linked to side effects.',
+  },
+  {
+    tab: 4,
+    title: 'Patient Comparison',
+    description: 'Compare immune response trends across all patients.',
+    detail:
+      'The Patient Comparison sub-tab shows cards for each patient with their current IgG level, trend direction (rising, falling, or stable), CA 19-9 level, and total symptom count. IgG sparklines give you a quick visual of each patient\'s immune trajectory.',
   },
   // Tab 5 — Safety
   {
@@ -92,14 +113,21 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     title: 'Safety Monitoring — Dashboard',
     description: 'Track adverse events and their severity after vaccine doses.',
     detail:
-      'The Dashboard shows the most common adverse events (injection site pain, fatigue, fever, etc.) and a severity distribution pie chart using CTCAE grading (Grade 1 = mild, Grade 2 = moderate, Grade 3 = severe). The Timeline view plots when adverse events occurred relative to each dose.',
+      'The Dashboard shows the most common adverse events (injection site pain, fatigue, fever, etc.) in a bar chart and a severity distribution pie chart using CTCAE grading (Grade 1 = mild, Grade 2 = moderate, Grade 3 = severe). The stat cards at the top show total events, patient count, and severity breakdown.',
   },
   {
     tab: 5,
-    title: 'Safety — Per-Patient View & Export',
-    description: 'Drill into individual patients and export safety data.',
+    title: 'Safety Timeline & By-Patient View',
+    description: 'See when adverse events occurred and drill into individual patients.',
     detail:
-      'The "By Patient" view shows per-patient adverse event breakdowns with IgG sparklines, so you can correlate immune response intensity with side effect severity. The Safety Table includes concurrent IgG at the time of each event. Click "Export CSV" to download a summary table formatted for regulatory reporting.',
+      'The Timeline view plots adverse events on a scatter chart by date and dose number, with different shapes for severity levels. The "By Patient" view shows per-patient cards with IgG sparklines and severity breakdowns, so you can correlate immune response intensity with side effect frequency.',
+  },
+  {
+    tab: 5,
+    title: 'Safety Table & CSV Export',
+    description: 'CTCAE-graded summary table with concurrent IgG levels.',
+    detail:
+      'The Safety Table follows CTCAE grading and shows how many events of each grade occurred for each symptom, along with the average IgG level at the time of each event. This helps determine if side effects are immune-mediated. Click "Export CSV" to download the table for regulatory reporting.',
   },
   // Tab 6 — Export / Reports
   {
@@ -119,18 +147,25 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     tab: 7,
-    title: 'Scoring Breakdown',
+    title: 'Scoring Breakdown & Limitations',
     description: 'Understand exactly what is driving the proxy score.',
     detail:
-      'The "Scoring Breakdown" panel shows a line-by-line explanation of each input marker, its weight, and its contribution to the final score. This transparency helps you identify which markers are most influential and where data gaps might be reducing confidence. Remember: this is a proxy estimation, not a direct T-cell measurement — see the disclaimer for limitations.',
+      'The "Scoring Breakdown" panel shows a line-by-line explanation of each input marker, its weight, and its contribution to the final score. This transparency helps you identify which markers are most influential and where data gaps might be reducing confidence. Important: this is a proxy estimation, not a direct T-cell measurement — see the disclaimer at the bottom for limitations.',
   },
   // Tab 8 — Validation
   {
     tab: 8,
-    title: 'Model Validation',
-    description: 'Evaluate model performance with ROC curves and calibration metrics.',
+    title: 'Validation — ROC Curves',
+    description: 'Evaluate model discrimination with ROC analysis.',
     detail:
-      'This tab generates ROC (Receiver Operating Characteristic) curves that plot sensitivity vs. specificity at every threshold. The AUC (Area Under the Curve) tells you overall discriminative ability — 1.0 is perfect, 0.5 is random guessing. Calibration plots show whether predicted probabilities match observed outcomes. Use these metrics to decide if your survival model is reliable enough for clinical decision-making.',
+      'Upload a CSV with patient data or use the GSE62452 Benchmark tab. The ROC (Receiver Operating Characteristic) curve plots sensitivity vs. specificity at every threshold. AUC (Area Under the Curve) tells you overall discriminative ability — 1.0 is perfect, 0.5 is random. The confusion matrix shows true/false positives and negatives at your chosen threshold.',
+  },
+  {
+    tab: 8,
+    title: 'Calibration & Benchmarking',
+    description: 'Check if predicted probabilities match observed outcomes.',
+    detail:
+      'The Calibration tab compares predicted proxy tiers (Low, Moderate, High) against actual response rates. A well-calibrated model shows increasing response rates across tiers. The Reliability Diagram should follow the diagonal — deviations indicate the model is over- or under-confident. Use these metrics to decide if your survival model is reliable for clinical decisions.',
   },
 ];
 
@@ -141,7 +176,6 @@ interface GuidedTutorialProps {
 const GuidedTutorial = ({ onNavigateTab }: GuidedTutorialProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
 
   const totalSteps = TUTORIAL_STEPS.length;
   const current = TUTORIAL_STEPS[step];
@@ -154,22 +188,9 @@ const GuidedTutorial = ({ onNavigateTab }: GuidedTutorialProps) => {
     }
   }, [step, isOpen, current, onNavigateTab]);
 
-  // Auto-play timer
-  useEffect(() => {
-    if (!isAutoPlaying || !isOpen) return;
-    const timer = setTimeout(() => {
-      if (step < totalSteps - 1) {
-        setStep(s => s + 1);
-      } else {
-        setIsAutoPlaying(false);
-      }
-    }, 8000);
-    return () => clearTimeout(timer);
-  }, [isAutoPlaying, step, isOpen, totalSteps]);
-
   const handleNext = useCallback(() => {
     if (step < totalSteps - 1) setStep(s => s + 1);
-    else { setIsOpen(false); setIsAutoPlaying(false); }
+    else { setIsOpen(false); }
   }, [step, totalSteps]);
 
   const handlePrev = useCallback(() => {
@@ -179,12 +200,10 @@ const GuidedTutorial = ({ onNavigateTab }: GuidedTutorialProps) => {
   const handleStart = useCallback(() => {
     setStep(0);
     setIsOpen(true);
-    setIsAutoPlaying(true);
   }, []);
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
-    setIsAutoPlaying(false);
   }, []);
 
   // Launch button
@@ -243,33 +262,20 @@ const GuidedTutorial = ({ onNavigateTab }: GuidedTutorialProps) => {
 
           {/* Controls */}
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handlePrev}
-                disabled={step === 0}
-                className="vax-btn-ghost text-[12px] py-1.5 px-3 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft size={14} /> Back
-              </button>
-              <button
-                onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                className="vax-btn-secondary text-[12px] py-1.5 px-3"
-                title={isAutoPlaying ? 'Pause auto-play' : 'Resume auto-play'}
-              >
-                {isAutoPlaying ? (
-                  <>Pause</>
-                ) : (
-                  <><Play size={12} /> Auto-play</>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={handlePrev}
+              disabled={step === 0}
+              className="vax-btn-ghost text-[12px] py-1.5 px-3 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={14} /> Back
+            </button>
 
-            {/* Step dots — grouped by tab */}
+            {/* Step dots */}
             <div className="hidden md:flex items-center gap-0.5">
-              {TUTORIAL_STEPS.map((s, i) => (
+              {TUTORIAL_STEPS.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => { setStep(i); setIsAutoPlaying(false); }}
+                  onClick={() => setStep(i)}
                   className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
                     i === step ? 'bg-primary w-4' : i < step ? 'bg-primary/40' : 'bg-border'
                   }`}
