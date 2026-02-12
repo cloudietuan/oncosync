@@ -123,6 +123,16 @@
 
   .vax-card:hover {
     box-shadow: 0 4px 12px 0 rgba(0,0,0,0.06), 0 2px 4px -1px rgba(0,0,0,0.04);
+    border-color: hsl(262, 83%, 58%, 0.3);
+  }
+
+  .dark .vax-card:hover {
+    box-shadow: 0 4px 12px 0 rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2);
+    border-color: hsl(262, 83%, 58%, 0.4);
+  }
+
+  .dark .vax-card-compact:hover {
+    border-color: hsl(262, 83%, 58%, 0.4) !important;
   }
 
   .vax-card-compact {
@@ -169,11 +179,19 @@
     background: hsl(262, 90%, 95%);
     color: hsl(262, 83%, 40%);
   }
+  .dark .vax-badge-blue {
+    background: hsl(262, 50%, 20%);
+    color: hsl(262, 83%, 75%);
+  }
 
   .vax-badge-green {
     @apply vax-badge;
     background: hsl(152, 76%, 94%);
     color: hsl(162, 87%, 28%);
+  }
+  .dark .vax-badge-green {
+    background: hsl(152, 40%, 15%);
+    color: hsl(152, 76%, 65%);
   }
 
   .vax-badge-amber {
@@ -181,17 +199,29 @@
     background: hsl(48, 96%, 93%);
     color: hsl(28, 80%, 35%);
   }
+  .dark .vax-badge-amber {
+    background: hsl(38, 50%, 15%);
+    color: hsl(38, 92%, 65%);
+  }
 
   .vax-badge-red {
     @apply vax-badge;
     background: hsl(0, 93%, 96%);
     color: hsl(0, 72%, 40%);
   }
+  .dark .vax-badge-red {
+    background: hsl(0, 50%, 15%);
+    color: hsl(0, 72%, 65%);
+  }
 
   .vax-badge-violet {
     @apply vax-badge;
     background: hsl(263, 70%, 96%);
     color: hsl(263, 70%, 42%);
+  }
+  .dark .vax-badge-violet {
+    background: hsl(263, 50%, 18%);
+    color: hsl(263, 70%, 72%);
   }
 
   .vax-badge-gray {
@@ -353,9 +383,9 @@ tr:last-child td {
   @apply border-b-0;
 }
 
-tr:hover td {
-  @apply bg-muted/50;
-}
+  tr:hover td {
+    @apply bg-primary/5;
+  }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

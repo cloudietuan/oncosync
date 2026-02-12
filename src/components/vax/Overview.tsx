@@ -73,46 +73,46 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
 
     <StaggerGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <StaggerItem>
-        <button onClick={() => setTab(2)} className="vax-card-compact text-left hover:border-blue-200 transition-colors group w-full">
+        <button onClick={() => setTab(2)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-sm mb-1">Expression Analysis</h4>
               <p className="text-xs text-muted-foreground">Kaplan-Meier survival curves, Cox regression, and gene correlations</p>
             </div>
-            <span className="text-muted-foreground group-hover:text-blue-500 transition-colors">→</span>
+            <span className="text-muted-foreground group-hover:text-primary transition-colors">→</span>
           </div>
         </button>
       </StaggerItem>
       <StaggerItem>
-        <button onClick={() => setTab(3)} className="vax-card-compact text-left hover:border-violet-200 transition-colors group w-full">
+        <button onClick={() => setTab(3)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-sm mb-1">VLP Simulation</h4>
               <p className="text-xs text-muted-foreground">Bootstrap modeling of hypothetical vaccine response</p>
             </div>
-            <span className="text-muted-foreground group-hover:text-violet-500 transition-colors">→</span>
+            <span className="text-muted-foreground group-hover:text-primary transition-colors">→</span>
           </div>
         </button>
       </StaggerItem>
       <StaggerItem>
-        <button onClick={() => setTab(4)} className="vax-card-compact text-left hover:border-emerald-200 transition-colors group w-full">
+        <button onClick={() => setTab(4)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-sm mb-1">Immune Tracking</h4>
               <p className="text-xs text-muted-foreground">Antibody production curves, decay analysis, and symptom-immune correlations</p>
             </div>
-            <span className="text-muted-foreground group-hover:text-emerald-500 transition-colors">→</span>
+            <span className="text-muted-foreground group-hover:text-primary transition-colors">→</span>
           </div>
         </button>
       </StaggerItem>
       <StaggerItem>
-        <button onClick={() => setTab(5)} className="vax-card-compact text-left hover:border-amber-200 transition-colors group w-full">
+        <button onClick={() => setTab(5)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-sm mb-1">Safety Monitoring</h4>
               <p className="text-xs text-muted-foreground">Adverse event tracking and CTCAE grading</p>
             </div>
-            <span className="text-muted-foreground group-hover:text-amber-500 transition-colors">→</span>
+            <span className="text-muted-foreground group-hover:text-primary transition-colors">→</span>
           </div>
         </button>
       </StaggerItem>

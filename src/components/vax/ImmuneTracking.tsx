@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   ReferenceLine, Legend, BarChart, Bar, Area, ComposedChart, ReferenceArea,
+  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
@@ -202,12 +203,50 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
         ...p,
         currentIgg: latest?.igg ?? 0,
         ca19_9: latest?.ca19_9 ?? 0,
+        cd8: latest?.cd8 ?? 0,
+        ifn_gamma: latest?.ifn_gamma ?? 0,
         trend,
         totalSymptoms: pLogs.length,
         sparkData,
       };
     });
   }, [immuneData, logs]);
+
+  // Radar chart data — normalize each marker to 0-100 scale across patients
+  const radarData = useMemo(() => {
+    const metrics = [
+      { key: 'igg', label: 'IgG', unit: 'AU/mL' },
+      { key: 'cd8', label: 'CD8+', unit: 'cells/µL' },
+      { key: 'ifn_gamma', label: 'IFN-γ', unit: 'pg/mL' },
+      { key: 'ca19_9_inv', label: 'CA19-9 (inv)', unit: 'lower=better' },
+      { key: 'symptom_inv', label: 'Tolerability', unit: 'fewer=better' },
+    ];
+
+    const rawValues: Record<string, Record<string, number>> = {};
+    patientComparison.forEach(p => {
+      rawValues[p.id] = {
+        igg: p.currentIgg,
+        cd8: p.cd8,
+        ifn_gamma: p.ifn_gamma,
+        ca19_9_inv: p.ca19_9 > 0 ? 100 / p.ca19_9 : 0, // invert so lower CA19-9 = higher score
+        symptom_inv: p.totalSymptoms > 0 ? 10 / p.totalSymptoms : 10,
+      };
+    });
+
+    // Find max per metric for normalization
+    const maxes: Record<string, number> = {};
+    metrics.forEach(m => {
+      maxes[m.key] = Math.max(...patientComparison.map(p => rawValues[p.id][m.key]), 1);
+    });
+
+    return metrics.map(m => {
+      const row: Record<string, string | number> = { metric: m.label };
+      patientComparison.forEach(p => {
+        row[p.id] = Math.round((rawValues[p.id][m.key] / maxes[m.key]) * 100);
+      });
+      return row;
+    });
+  }, [patientComparison]);
 
   // Alerts
   const alerts = useMemo(() => {
@@ -425,46 +464,88 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
 
       {/* ===== PATIENT COMPARISON SUB-TAB ===== */}
       {activeTab === 'comparison' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {patientComparison.map(p => (
-            <div key={p.id} className="vax-card space-y-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-semibold">{p.name}</h4>
-                  <p className="text-xs text-muted-foreground font-mono">{p.id}</p>
-                </div>
-                <span className={statusBadge(p.label)}>{p.label}</span>
-              </div>
+        <div className="space-y-6">
+          {/* Radar Chart */}
+          <div className="vax-card">
+            <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
+              Multi-Marker Profile Comparison
+              <InfoTooltip term="Radar Chart" definition="Compares normalized immune marker values across patients. Each axis represents a different metric scaled to 0–100, allowing visual comparison of response profiles." />
+            </h3>
+            <ResponsiveContainer width="100%" height={380}>
+              <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
+                <PolarGrid stroke="hsl(270,13%,70%)" />
+                <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11, fill: 'hsl(270,9%,46%)' }} />
+                <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9, fill: 'hsl(270,9%,46%)' }} />
+                {profiles.map(p => (
+                  <Radar key={p.id} name={p.name} dataKey={p.id} stroke={p.color} fill={p.color} fillOpacity={0.15} strokeWidth={2} />
+                ))}
+                <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
+                <Tooltip content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  return (
+                    <div className="bg-card border border-border rounded-lg p-3 text-xs shadow-lg">
+                      <div className="font-semibold mb-1">{label}</div>
+                      {payload.map((pt: any) => {
+                        const profile = profiles.find(pr => pr.id === pt.dataKey);
+                        return (
+                          <div key={pt.dataKey} className="flex items-center gap-2 py-0.5">
+                            <span className="w-2 h-2 rounded-full" style={{ background: pt.color }} />
+                            <span>{profile?.name}: {pt.value}%</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }} />
+              </RadarChart>
+            </ResponsiveContainer>
+            <p className="text-[11px] text-muted-foreground text-center mt-2">
+              Values normalized to 0–100 scale. CA 19-9 and symptom counts are inverted (higher = better).
+            </p>
+          </div>
 
-              {/* Sparkline */}
-              <div className="h-16">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={p.sparkData}>
-                    <Line type="monotone" dataKey="igg" stroke={p.color} strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-lg bg-muted/50 text-center">
-                  <div className="text-lg font-bold text-foreground">
-                    {p.currentIgg.toFixed(1)}
-                    <span className={`text-sm ml-1 ${p.trend === '↑' ? 'text-emerald-600' : p.trend === '↓' ? 'text-red-500' : 'text-muted-foreground'}`}>{p.trend}</span>
+          {/* Patient Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {patientComparison.map(p => (
+              <div key={p.id} className="vax-card space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-semibold">{p.name}</h4>
+                    <p className="text-xs text-muted-foreground font-mono">{p.id}</p>
                   </div>
-                  <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">IgG (AU/mL)</div>
+                  <span className={statusBadge(p.label)}>{p.label}</span>
                 </div>
-                <div className={`p-3 rounded-lg text-center ${p.ca19_9 > CA19_9_CUTOFF ? 'bg-red-50' : 'bg-emerald-50'}`}>
-                  <div className={`text-lg font-bold ${p.ca19_9 > CA19_9_CUTOFF ? 'text-red-600' : 'text-emerald-600'}`}>{p.ca19_9.toFixed(1)}</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">CA 19-9 (U/mL)</div>
-                </div>
-              </div>
 
-              <div className="flex items-center justify-between text-xs p-2 rounded bg-muted">
-                <span className="text-muted-foreground">Symptom Events</span>
-                <span className="font-semibold">{p.totalSymptoms}</span>
+                {/* Sparkline */}
+                <div className="h-16">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={p.sparkData}>
+                      <Line type="monotone" dataKey="igg" stroke={p.color} strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-lg bg-muted/50 text-center">
+                    <div className="text-lg font-bold text-foreground">
+                      {p.currentIgg.toFixed(1)}
+                      <span className={`text-sm ml-1 ${p.trend === '↑' ? 'text-emerald-600 dark:text-emerald-400' : p.trend === '↓' ? 'text-red-500 dark:text-red-400' : 'text-muted-foreground'}`}>{p.trend}</span>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">IgG (AU/mL)</div>
+                  </div>
+                  <div className={`p-3 rounded-lg text-center ${p.ca19_9 > CA19_9_CUTOFF ? 'bg-red-50 dark:bg-red-950/40' : 'bg-emerald-50 dark:bg-emerald-950/40'}`}>
+                    <div className={`text-lg font-bold ${p.ca19_9 > CA19_9_CUTOFF ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>{p.ca19_9.toFixed(1)}</div>
+                    <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">CA 19-9 (U/mL)</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs p-2 rounded bg-muted">
+                  <span className="text-muted-foreground">Symptom Events</span>
+                  <span className="font-semibold">{p.totalSymptoms}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
