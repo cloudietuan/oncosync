@@ -4,6 +4,7 @@ import StatCard from './StatCard';
 import FileUpload from './FileUpload';
 import AlertBox from './AlertBox';
 import InfoTooltip from './InfoTooltip';
+import { StaggerGrid, StaggerItem, FadeSection } from './MotionWrappers';
 import { jStat, kaplanMeier, logRankTest, coxPH, coxMultivariate, type MultiCoxResult } from '@/lib/statistics';
 import type { ExpressionData, ClinicalRecord } from '@/data/gse62452';
 
@@ -115,7 +116,7 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
   const hasAnyCovariates = Object.values(covariates).some(v => v);
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-6">
       <div>
         <h2 className="vax-section-title flex items-center gap-2">
           Expression Analysis
@@ -163,12 +164,12 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
 
       {analysisResults && (
         <>
-           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <StatCard label="High Expression" value={analysisResults.highN} sub={`≥ ${analysisResults.threshold.toFixed(2)}`} tooltip={{ term: "High Expression", definition: "Patients whose gene expression level is at or above the cutoff threshold." }} />
-            <StatCard label="Low Expression" value={analysisResults.lowN} sub={`< ${analysisResults.threshold.toFixed(2)}`} tooltip={{ term: "Low Expression", definition: "Patients whose gene expression level is below the cutoff threshold." }} />
-            <StatCard label="Median OS (High)" value={typeof analysisResults.medianHigh === 'number' ? `${analysisResults.medianHigh}d` : String(analysisResults.medianHigh)} tooltip={{ term: "Median OS", definition: "Median Overall Survival — the time at which 50% of patients in the group have experienced the event (death). 'NR' means not reached." }} />
-            <StatCard label="Median OS (Low)" value={typeof analysisResults.medianLow === 'number' ? `${analysisResults.medianLow}d` : String(analysisResults.medianLow)} />
-          </div>
+           <StaggerGrid className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            <StaggerItem><StatCard label="High Expression" value={analysisResults.highN} sub={`≥ ${analysisResults.threshold.toFixed(2)}`} tooltip={{ term: "High Expression", definition: "Patients whose gene expression level is at or above the cutoff threshold." }} /></StaggerItem>
+            <StaggerItem><StatCard label="Low Expression" value={analysisResults.lowN} sub={`< ${analysisResults.threshold.toFixed(2)}`} tooltip={{ term: "Low Expression", definition: "Patients whose gene expression level is below the cutoff threshold." }} /></StaggerItem>
+            <StaggerItem><StatCard label="Median OS (High)" value={typeof analysisResults.medianHigh === 'number' ? `${analysisResults.medianHigh}d` : String(analysisResults.medianHigh)} tooltip={{ term: "Median OS", definition: "Median Overall Survival — the time at which 50% of patients in the group have experienced the event (death). 'NR' means not reached." }} /></StaggerItem>
+            <StaggerItem><StatCard label="Median OS (Low)" value={typeof analysisResults.medianLow === 'number' ? `${analysisResults.medianLow}d` : String(analysisResults.medianLow)} /></StaggerItem>
+           </StaggerGrid>
 
           <div className="vax-tab-bar overflow-x-auto">
             {['km', 'cox', 'correlation', ...(hasAnyCovariates ? ['multivariate'] : [])].map(tab => (

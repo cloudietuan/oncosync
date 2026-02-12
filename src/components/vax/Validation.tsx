@@ -161,7 +161,7 @@ const Validation = ({ expr, clin }: ValidationProps) => {
   ];
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-6">
       <div>
         <h2 className="vax-section-title">Validation & Benchmarking</h2>
         <p className="vax-section-desc">Evaluate proxy scoring accuracy against known outcomes</p>

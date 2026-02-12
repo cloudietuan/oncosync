@@ -21,7 +21,7 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
   };
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
         <div>
           <h2 className="vax-section-title flex items-center gap-2">

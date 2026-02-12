@@ -153,7 +153,7 @@ const TcellProxy = ({ initialState, onStateChange }: TcellProxyProps) => {
   const activeResult = activeScoredIdx >= 0 ? scored[activeScoredIdx] : null;
 
   return (
-    <div className="animate-in">
+    <div>
       {/* ─── Calculator Header ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4">
         <div>

@@ -3,6 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
 import InfoTooltip from './InfoTooltip';
+import { StaggerGrid, StaggerItem } from './MotionWrappers';
 import type { SafetyLog } from '@/data/gse62452';
 import type { ImmuneMarkerEntry } from '@/data/immuneData';
 
@@ -127,7 +128,7 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
   };
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
         <div>
           <h2 className="vax-section-title flex items-center gap-2">
@@ -148,13 +149,13 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
         <AlertBox variant="error" icon="⚠" title="Severe Event Detected" description="One or more Grade 3 adverse events have been logged." />
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        <StatCard label="Total Events" value={analytics.totalLogs} tooltip={{ term: "Total Events", definition: "The total number of adverse events reported across all patients and doses." }} />
-        <StatCard label="Patients" value={analytics.uniquePatients} />
-        <StatCard label="Max Dose" value={analytics.maxDose || '—'} />
-        <StatCard label="Mild (G1)" value={analytics.severityCounts.mild} sub={`${((analytics.severityCounts.mild / analytics.totalLogs) * 100 || 0).toFixed(0)}%`} tooltip={{ term: "CTCAE Grade 1", definition: "Mild adverse events — generally asymptomatic or mild symptoms requiring no intervention (e.g., low-grade fever, mild fatigue)." }} />
-        <StatCard label="Moderate+ (G2-3)" value={analytics.severityCounts.moderate + analytics.severityCounts.severe} tooltip={{ term: "CTCAE Grade 2-3", definition: "Grade 2: Moderate symptoms requiring minimal intervention. Grade 3: Severe or medically significant but not life-threatening, may require hospitalization." }} />
-      </div>
+      <StaggerGrid className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <StaggerItem><StatCard label="Total Events" value={analytics.totalLogs} tooltip={{ term: "Total Events", definition: "The total number of adverse events reported across all patients and doses." }} /></StaggerItem>
+        <StaggerItem><StatCard label="Patients" value={analytics.uniquePatients} /></StaggerItem>
+        <StaggerItem><StatCard label="Max Dose" value={analytics.maxDose || '—'} /></StaggerItem>
+        <StaggerItem><StatCard label="Mild (G1)" value={analytics.severityCounts.mild} sub={`${((analytics.severityCounts.mild / analytics.totalLogs) * 100 || 0).toFixed(0)}%`} tooltip={{ term: "CTCAE Grade 1", definition: "Mild adverse events — generally asymptomatic or mild symptoms requiring no intervention (e.g., low-grade fever, mild fatigue)." }} /></StaggerItem>
+        <StaggerItem><StatCard label="Moderate+ (G2-3)" value={analytics.severityCounts.moderate + analytics.severityCounts.severe} tooltip={{ term: "CTCAE Grade 2-3", definition: "Grade 2: Moderate symptoms requiring minimal intervention. Grade 3: Severe or medically significant but not life-threatening, may require hospitalization." }} /></StaggerItem>
+      </StaggerGrid>
 
       <div className="vax-tab-bar overflow-x-auto">
         {['dashboard', 'timeline', 'by-patient', 'safety-table'].map(tab => (

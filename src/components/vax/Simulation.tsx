@@ -80,7 +80,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
   };
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-6">
       <div>
         <h2 className="vax-section-title">VLP Response Simulation</h2>
         <p className="vax-section-desc">Bootstrap modeling of hypothetical vaccine response</p>
