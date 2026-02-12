@@ -286,7 +286,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} />
+                <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} label={{ value: 'Date', position: 'insideBottom', offset: -12, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
                 <YAxis stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} label={{ value: 'IgG (AU/mL)', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
                 <Tooltip content={({ active, payload, label }) => {
                   if (!active || !payload?.length) return null;
@@ -326,10 +326,10 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
                 {decayMetrics.map(m => (
                   <tr key={m.id}>
                     <td className="font-medium">{m.name} <span className="text-muted-foreground font-mono text-xs">({m.id})</span></td>
-                    <td className="text-center">{m.peakIgg.toFixed(1)}</td>
-                    <td className="text-center">{m.currentIgg.toFixed(1)}</td>
-                    <td className="text-center font-mono text-xs">{m.k > 0 ? m.k.toFixed(4) : '—'}</td>
-                    <td className="text-center">{m.halfLife === Infinity ? '∞' : m.halfLife.toFixed(1)}</td>
+                    <td className="text-center">{m.peakIgg.toFixed(1)} AU/mL</td>
+                    <td className="text-center">{m.currentIgg.toFixed(1)} AU/mL</td>
+                    <td className="text-center font-mono text-xs">{m.k > 0 ? `${m.k.toFixed(4)} /day` : '—'}</td>
+                    <td className="text-center">{m.halfLife === Infinity ? '∞' : `${m.halfLife.toFixed(1)} days`}</td>
                     <td className="text-center"><span className={statusBadge(m.status)}>{m.status}</span></td>
                   </tr>
                 ))}
@@ -355,7 +355,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
             <ResponsiveContainer width="100%" height={400}>
               <ComposedChart data={allMarkersData} margin={{ top: 10, right: 60, left: 0, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} />
+                <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} label={{ value: 'Date', position: 'insideBottom', offset: -12, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
                 <YAxis yAxisId="left" stroke="#10b981" tick={{ fontSize: 11 }} label={{ value: 'IgG (AU/mL)', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: '#10b981' } }} />
                 <YAxis yAxisId="right" orientation="right" stroke="#3b82f6" tick={{ fontSize: 11 }} label={{ value: 'CD8+ (cells/µL)', angle: 90, position: 'insideRight', style: { fontSize: 10, fill: '#3b82f6' } }} />
                 <Tooltip />
@@ -372,7 +372,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
             <ResponsiveContainer width="100%" height={200}>
               <ComposedChart data={allMarkersData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} />
+                <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} label={{ value: 'Date', position: 'insideBottom', offset: -4, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
                 <YAxis stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} domain={[0, 'auto']} label={{ value: 'CA 19-9 (U/mL)', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
                 <Tooltip />
                 <ReferenceArea y1={CA19_9_CUTOFF} y2={200} fill="#ef4444" fillOpacity={0.06} />
@@ -395,8 +395,8 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
               <div className="vax-card">
                 <ResponsiveContainer width="100%" height={320}>
                   <ComposedChart data={weeklyData} margin={{ top: 10, right: 60, left: 0, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
-                    <XAxis dataKey="week" stroke="#a1a1aa" tick={{ fontSize: 11 }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
+                    <XAxis dataKey="week" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} />
                     <YAxis yAxisId="left" stroke={profile.color} tick={{ fontSize: 11 }} label={{ value: 'IgG (AU/mL)', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: profile.color } }} />
                     <YAxis yAxisId="right" orientation="right" stroke="#f59e0b" tick={{ fontSize: 11 }} domain={[0, 3]} label={{ value: 'Severity Score', angle: 90, position: 'insideRight', style: { fontSize: 10, fill: '#f59e0b' } }} />
                     <Tooltip />
