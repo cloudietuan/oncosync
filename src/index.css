@@ -213,7 +213,7 @@
   }
 
   .vax-nav-tab:hover {
-    color: hsl(270, 71%, 4%);
+    @apply text-foreground;
   }
 
   .vax-nav-tab.active {
@@ -274,7 +274,7 @@
   }
 
   .vax-tab-btn:hover {
-    color: hsl(270, 71%, 4%);
+    @apply text-foreground;
   }
 
   .vax-tab-btn.active {
