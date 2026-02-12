@@ -181,9 +181,22 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
           </div>
           <div className="vax-card">
             <h3 className="font-semibold text-sm mb-4">Severity Distribution</h3>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={340}>
               <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  dataKey="value"
+                  label={({ name, percent, x, y, textAnchor }) => (
+                    <text x={x} y={y} textAnchor={textAnchor} dominantBaseline="central" className="fill-foreground" style={{ fontSize: 12, fontWeight: 500 }}>
+                      {`${name} ${(percent * 100).toFixed(0)}%`}
+                    </text>
+                  )}
+                  labelLine={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }}
+                >
                   {pieData.map((_, i) => (
                     <Cell key={i} fill={[COLORS.mild, COLORS.moderate, COLORS.severe][i]} />
                   ))}
