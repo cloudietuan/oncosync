@@ -224,12 +224,13 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="vax-card">
                 <h3 className="font-semibold text-sm mb-4">Gene Correlations with {targetGene}</h3>
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={analysisResults.correlations.slice(0, 8)}>
+                <ResponsiveContainer width="100%" height={360}>
+                  <BarChart data={analysisResults.correlations.slice(0, 8)} margin={{ top: 5, right: 20, bottom: 25, left: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
                     <XAxis dataKey="gene" stroke="#a1a1aa" />
                     <YAxis domain={[-1, 1]} label={{ value: 'Pearson r', angle: -90, position: 'insideLeft' }} stroke="#a1a1aa" />
                     <Tooltip />
+                    <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                     <Bar dataKey="r" name="Pearson r">
                       {analysisResults.correlations.slice(0, 8).map((entry, index) => (
                         <Cell key={index} fill={entry.r > 0 ? '#3b82f6' : '#ef4444'} />
