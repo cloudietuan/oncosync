@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import LoadingScreen from '@/components/vax/LoadingScreen';
 import VaxHeader from '@/components/vax/VaxHeader';
 import VaxNav from '@/components/vax/VaxNav';
 import OnboardingTour from '@/components/vax/OnboardingTour';
@@ -24,6 +25,7 @@ import { DEMO_IMMUNE_DATA, type ImmuneMarkerEntry } from '@/data/immuneData';
 import type { TcellProxyState } from '@/lib/tcellProxy';
 
 const Index = () => {
+  const [appReady, setAppReady] = useState(false);
   const [tab, setTab] = useState(0);
   const [expr, setExpr] = useState<ExpressionData | null>(null);
   const [clin, setClin] = useState<ClinicalRecord[] | null>(null);
@@ -47,6 +49,9 @@ const Index = () => {
   useEffect(() => {
     setExpr({ genes: GSE62452_GENES, samples: GSE62452_SAMPLES, values: GSE62452_EXPR, fileName: 'GSE62452_expression.csv' });
     setClin(GSE62452_CLIN);
+    // Brief delay for loading screen
+    const t = setTimeout(() => setAppReady(true), 1600);
+    return () => clearTimeout(t);
   }, []);
 
   // Autosave on state changes (debounced)
@@ -77,6 +82,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <LoadingScreen isLoading={!appReady} />
       <OnboardingTour currentTab={tab} />
       <VaxHeader />
       <VaxNav tab={tab} setTab={setTab} />
