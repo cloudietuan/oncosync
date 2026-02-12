@@ -281,7 +281,7 @@ const Reports = ({ expr, clin, batches, logs, immuneData, tcellProxy }: ReportsP
             <div>
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={proxyChartData} margin={{ top: 5, right: 15, bottom: 5, left: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                   <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                   <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={30} />
                   <ReferenceLine y={70} stroke="hsl(160,84%,39%)" strokeDasharray="6 3" />

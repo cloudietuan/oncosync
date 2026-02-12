@@ -236,7 +236,7 @@ const Validation = ({ expr, clin }: ValidationProps) => {
               <h3 className="font-semibold text-sm mb-3">Proxy Score vs Survival (days)</h3>
               <ResponsiveContainer width="100%" height={280}>
                 <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                   <XAxis dataKey="proxyScore" name="Proxy Score" type="number" domain={[0, 100]} tick={{ fontSize: 10 }} label={{ value: 'Proxy Score', position: 'insideBottom', offset: -10, fontSize: 11 }} />
                   <YAxis dataKey="survival" name="Survival (days)" type="number" tick={{ fontSize: 10 }} label={{ value: 'Days', angle: -90, position: 'insideLeft', fontSize: 11 }} />
                   <ZAxis range={[40, 40]} />
@@ -281,7 +281,7 @@ const Validation = ({ expr, clin }: ValidationProps) => {
                   <h3 className="font-semibold text-[13px] mb-3">Predicted Tier vs Actual Response Rate</h3>
                   <ResponsiveContainer width="100%" height={260}>
                     <BarChart data={calResults} margin={{ top: 5, right: 20, bottom: 20, left: 10 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                       <XAxis dataKey="tier" tick={{ fontSize: 10 }} />
                       <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} label={{ value: '% Response', angle: -90, position: 'insideLeft', fontSize: 11 }} />
                       <Tooltip content={({ active, payload }) => {
@@ -348,7 +348,7 @@ const Validation = ({ expr, clin }: ValidationProps) => {
                     ...calResults.map(c => ({ predicted: c.predicted, actual: c.actual, perfect: c.predicted })),
                     { predicted: 100, actual: 100, perfect: 100 },
                   ]} margin={{ top: 5, right: 20, bottom: 20, left: 10 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                     <XAxis dataKey="predicted" tick={{ fontSize: 10 }} label={{ value: 'Predicted (Mean Score)', position: 'insideBottom', offset: -10, fontSize: 11 }} />
                     <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} label={{ value: 'Actual %', angle: -90, position: 'insideLeft', fontSize: 11 }} />
                     <Area type="monotone" dataKey="actual" stroke="hsl(221,83%,53%)" fill="hsl(221,83%,53%)" fillOpacity={0.15} dot={{ r: 4, fill: 'hsl(221,83%,53%)' }} />
@@ -395,7 +395,7 @@ const ROCPanel = ({ data, roc, confusion, threshold, setThreshold }: {
         <h3 className="font-semibold text-[13px] mb-3">ROC Curve (AUC = {roc.auc.toFixed(3)})</h3>
         <ResponsiveContainer width="100%" height={280}>
           <AreaChart data={roc.curve} margin={{ top: 5, right: 20, bottom: 20, left: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
             <XAxis dataKey="fpr" domain={[0, 1]} tick={{ fontSize: 10 }} label={{ value: '1 - Specificity', position: 'insideBottom', offset: -10, fontSize: 11 }} />
             <YAxis domain={[0, 1]} tick={{ fontSize: 10 }} label={{ value: 'Sensitivity', angle: -90, position: 'insideLeft', fontSize: 11 }} />
             <Tooltip content={({ active, payload }) => {
@@ -450,7 +450,7 @@ const ROCPanel = ({ data, roc, confusion, threshold, setThreshold }: {
       <h3 className="font-semibold text-[13px] mb-3">Score Distribution by Outcome</h3>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={buildHistogram(data)} margin={{ top: 5, right: 20, bottom: 20, left: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
           <XAxis dataKey="bin" tick={{ fontSize: 10 }} label={{ value: 'Proxy Score', position: 'insideBottom', offset: -10, fontSize: 11 }} />
           <YAxis tick={{ fontSize: 10 }} />
           <Tooltip />
