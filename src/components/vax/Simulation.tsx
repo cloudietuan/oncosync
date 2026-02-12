@@ -120,10 +120,10 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
             <>
               <h3 className="font-semibold text-sm mb-2">Bootstrap Distribution of Survival Benefit</h3>
               <ResponsiveContainer width="100%" height={340}>
-                <BarChart data={results.histogram} margin={{ top: 5, right: 20, bottom: 25, left: 10 }}>
+                <BarChart data={results.histogram} margin={{ top: 5, right: 20, bottom: 35, left: 15 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                  <XAxis dataKey="bin" label={{ value: 'Mean Survival Benefit (days)', position: 'insideBottom', offset: -10 }} stroke="hsl(270,9%,46%)" tick={{ fontSize: 10 }} interval={4} />
-                  <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} stroke="hsl(270,9%,46%)" />
+                  <XAxis dataKey="bin" label={{ value: 'Mean Survival Benefit (days)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" tick={{ fontSize: 10 }} interval={4} />
+                  <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
                   <Tooltip />
                   <Bar dataKey="count" fill="#8b5cf6" />
                 </BarChart>
