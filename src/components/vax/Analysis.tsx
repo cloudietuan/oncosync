@@ -185,13 +185,13 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 <InfoTooltip term="Kaplan-Meier Curve" definition="A non-parametric statistic that estimates survival probability over time. The step-down pattern shows when events (deaths) occur in each group." />
               </h3>
               <p className="text-xs text-muted-foreground mb-4">Log-rank p = {analysisResults.logRank.p.toFixed(4)} <InfoTooltip term="Log-rank p-value" definition="Tests whether there is a statistically significant difference in survival between the two groups. p < 0.05 is typically considered significant." /></p>
-              <ResponsiveContainer width="100%" height={380}>
-                <LineChart data={analysisResults.kmData}>
+              <ResponsiveContainer width="100%" height={420}>
+                <LineChart data={analysisResults.kmData} margin={{ top: 5, right: 20, bottom: 25, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
-                  <XAxis dataKey="t" label={{ value: 'Time (days)', position: 'insideBottom', offset: -5 }} stroke="#a1a1aa" />
+                  <XAxis dataKey="t" label={{ value: 'Time (days)', position: 'insideBottom', offset: -10 }} stroke="#a1a1aa" />
                   <YAxis domain={[0, 1.05]} label={{ value: 'Survival Probability', angle: -90, position: 'insideLeft' }} stroke="#a1a1aa" />
                   <Tooltip />
-                  <Legend />
+                  <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                   <Line type="stepAfter" dataKey="high" name={`High ${targetGene} (n=${analysisResults.highN})`} stroke="#ef4444" strokeWidth={2} dot={false} />
                   <Line type="stepAfter" dataKey="low" name={`Low ${targetGene} (n=${analysisResults.lowN})`} stroke="#3b82f6" strokeWidth={2} dot={false} />
                 </LineChart>
