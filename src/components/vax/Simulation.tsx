@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import AlertBox from './AlertBox';
+import { ChartSkeleton } from './ChartSkeleton';
 import { jStat } from '@/lib/statistics';
 import type { ExpressionData, ClinicalRecord } from '@/data/gse62452';
 
@@ -142,6 +143,8 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
                 </div>
               </div>
             </>
+          ) : running ? (
+            <ChartSkeleton height={340} bars={12} />
           ) : (
             <div className="flex items-center justify-center h-60 lg:h-80 text-muted-foreground">
               Configure parameters and run simulation
