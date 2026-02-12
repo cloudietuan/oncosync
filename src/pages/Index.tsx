@@ -12,6 +12,7 @@ import Reports from '@/components/vax/Reports';
 import TcellProxy from '@/components/vax/TcellProxy';
 import Validation from '@/components/vax/Validation';
 import SessionManager from '@/components/vax/SessionManager';
+import GuidedTutorial from '@/components/vax/GuidedTutorial';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import {
   GSE62452_GENES, GSE62452_SAMPLES, GSE62452_EXPR, GSE62452_CLIN,
@@ -96,6 +97,7 @@ const Index = () => {
         {tab === 6 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} tcellProxy={tcellProxy} />}
         {tab === 7 && <TcellProxy initialState={tcellProxy} onStateChange={handleTcellChange} />}
         {tab === 8 && <Validation expr={expr} clin={clin} />}
+        <GuidedTutorial onNavigateTab={setTab} />
       </main>
       <footer className="border-t border-border py-5 mt-12 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
