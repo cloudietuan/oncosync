@@ -181,20 +181,34 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
           </div>
           <div className="vax-card">
             <h3 className="font-semibold text-sm mb-4">Severity Distribution</h3>
-            <ResponsiveContainer width="100%" height={340}>
-              <PieChart>
+            <ResponsiveContainer width="100%" height={360}>
+              <PieChart margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
+                  innerRadius={55}
+                  outerRadius={90}
+                  paddingAngle={2}
                   dataKey="value"
-                  label={({ name, percent, x, y, textAnchor }) => (
-                    <text x={x} y={y} textAnchor={textAnchor} dominantBaseline="central" className="fill-foreground" style={{ fontSize: 12, fontWeight: 500 }}>
-                      {`${name} ${(percent * 100).toFixed(0)}%`}
-                    </text>
-                  )}
+                  label={({ name, percent, midAngle, outerRadius: oR, cx: cxVal, cy: cyVal }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius = oR + 28;
+                    const x = cxVal + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cyVal + radius * Math.sin(-midAngle * RADIAN);
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        textAnchor={x > cxVal ? 'start' : 'end'}
+                        dominantBaseline="central"
+                        className="fill-foreground"
+                        style={{ fontSize: 12, fontWeight: 500 }}
+                      >
+                        {`${name} ${(percent * 100).toFixed(0)}%`}
+                      </text>
+                    );
+                  }}
                   labelLine={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }}
                 >
                   {pieData.map((_, i) => (
