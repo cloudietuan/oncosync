@@ -234,27 +234,35 @@
   }
 
   .vax-alert-info {
-    @apply vax-alert;
-    background: hsl(262, 90%, 97%);
-    border: 1px solid hsl(262, 90%, 88%);
+    @apply vax-alert bg-purple-50 border border-purple-200;
+  }
+
+  .dark .vax-alert-info {
+    @apply bg-purple-950/40 border-purple-800/50;
   }
 
   .vax-alert-warning {
-    @apply vax-alert;
-    background: hsl(48, 96%, 97%);
-    border: 1px solid hsl(48, 96%, 78%);
+    @apply vax-alert bg-amber-50 border border-amber-200;
+  }
+
+  .dark .vax-alert-warning {
+    @apply bg-amber-950/40 border-amber-800/50;
   }
 
   .vax-alert-success {
-    @apply vax-alert;
-    background: hsl(152, 76%, 97%);
-    border: 1px solid hsl(152, 76%, 80%);
+    @apply vax-alert bg-emerald-50 border border-emerald-200;
+  }
+
+  .dark .vax-alert-success {
+    @apply bg-emerald-950/40 border-emerald-800/50;
   }
 
   .vax-alert-error {
-    @apply vax-alert;
-    background: hsl(0, 93%, 97%);
-    border: 1px solid hsl(0, 93%, 88%);
+    @apply vax-alert bg-red-50 border border-red-200;
+  }
+
+  .dark .vax-alert-error {
+    @apply bg-red-950/40 border-red-800/50;
   }
 
   .vax-tab-bar {
@@ -311,8 +319,7 @@ table {
 }
 
 th {
-  @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border;
-  background: hsl(220, 14%, 97%);
+  @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border bg-muted;
 }
 
 th:first-child {
@@ -332,7 +339,7 @@ tr:last-child td {
 }
 
 tr:hover td {
-  background: hsl(220, 14%, 97%);
+  @apply bg-muted/50;
 }
 
 /* Scrollbar */
