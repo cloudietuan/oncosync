@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import VaxHeader from '@/components/vax/VaxHeader';
 import VaxNav from '@/components/vax/VaxNav';
 import OnboardingTour from '@/components/vax/OnboardingTour';
@@ -88,15 +89,25 @@ const Index = () => {
             onDelete={deleteSession}
           />
         </div>
-        {tab === 0 && <Overview expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} setTab={setTab} />}
-        {tab === 1 && <WetLab batches={batches} setBatches={setBatches} />}
-        {tab === 2 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
-        {tab === 3 && <Simulation expr={expr} clin={clin} />}
-        {tab === 4 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} logs={logs} />}
-        {tab === 5 && <SafetyTracking logs={logs} setLogs={setLogs} immuneData={immuneData} />}
-        {tab === 6 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} tcellProxy={tcellProxy} />}
-        {tab === 7 && <TcellProxy initialState={tcellProxy} onStateChange={handleTcellChange} />}
-        {tab === 8 && <Validation expr={expr} clin={clin} />}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          >
+            {tab === 0 && <Overview expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} setTab={setTab} />}
+            {tab === 1 && <WetLab batches={batches} setBatches={setBatches} />}
+            {tab === 2 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
+            {tab === 3 && <Simulation expr={expr} clin={clin} />}
+            {tab === 4 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} logs={logs} />}
+            {tab === 5 && <SafetyTracking logs={logs} setLogs={setLogs} immuneData={immuneData} />}
+            {tab === 6 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} tcellProxy={tcellProxy} />}
+            {tab === 7 && <TcellProxy initialState={tcellProxy} onStateChange={handleTcellChange} />}
+            {tab === 8 && <Validation expr={expr} clin={clin} />}
+          </motion.div>
+        </AnimatePresence>
         <GuidedTutorial onNavigateTab={setTab} />
       </main>
       <footer className="border-t border-border py-5 mt-12 bg-card">

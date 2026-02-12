@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 interface VaxNavProps {
   tab: number;
@@ -14,15 +15,24 @@ const VaxNav = ({ tab, setTab }: VaxNavProps) => {
     <nav className="bg-card border-b border-border sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Desktop tabs */}
-        <div className="hidden sm:flex">
+        <div className="hidden sm:flex relative">
           {tabs.map((t, i) => (
             <button
               key={t}
               onClick={() => setTab(i)}
-              className={`vax-nav-tab ${tab === i ? 'active' : ''}`}
+              className={`relative py-3 px-5 text-[13px] font-medium cursor-pointer transition-colors duration-150 bg-transparent border-none ${
+                tab === i ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+              }`}
               aria-current={tab === i ? 'page' : undefined}
             >
               {t}
+              {tab === i && (
+                <motion.div
+                  layoutId="nav-underline"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
             </button>
           ))}
         </div>
@@ -34,10 +44,22 @@ const VaxNav = ({ tab, setTab }: VaxNavProps) => {
             className="w-full flex items-center justify-between py-3 text-[13px] font-medium"
           >
             <span className="text-primary">{tabs[tab]}</span>
-            <span className="text-muted-foreground">{mobileOpen ? '▲' : '▼'}</span>
+            <motion.span
+              className="text-muted-foreground"
+              animate={{ rotate: mobileOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              ▼
+            </motion.span>
           </button>
           {mobileOpen && (
-            <div className="pb-2 space-y-0.5">
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="pb-2 space-y-0.5 overflow-hidden"
+            >
               {tabs.map((t, i) => (
                 <button
                   key={t}
@@ -49,7 +71,7 @@ const VaxNav = ({ tab, setTab }: VaxNavProps) => {
                   {t}
                 </button>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
