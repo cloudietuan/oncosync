@@ -280,10 +280,10 @@ const Reports = ({ expr, clin, batches, logs, immuneData, tcellProxy }: ReportsP
             {/* Mini chart */}
             <div>
               <ResponsiveContainer width="100%" height={180}>
-                <LineChart data={proxyChartData} margin={{ top: 5, right: 15, bottom: 5, left: 0 }}>
+                <LineChart data={proxyChartData} margin={{ top: 5, right: 15, bottom: 30, left: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="hsl(270,9%,46%)" label={{ value: 'Date', position: 'insideBottom', offset: -2, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={30} stroke="hsl(270,9%,46%)" label={{ value: 'Score', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
+                  <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="hsl(270,9%,46%)" label={{ value: 'Date', position: 'insideBottom', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={35} stroke="hsl(270,9%,46%)" label={{ value: 'Score', angle: -90, position: 'insideLeft', offset: 8, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
                   <ReferenceLine y={70} stroke="hsl(160,84%,39%)" strokeDasharray="6 3" />
                   <ReferenceLine y={40} stroke="hsl(38,92%,50%)" strokeDasharray="6 3" />
                   <Line type="monotone" dataKey="proxyScore" stroke="hsl(258,90%,66%)" strokeWidth={2} dot={{ r: 3, fill: 'hsl(258,90%,66%)' }} />

@@ -204,10 +204,10 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
               </h3>
               <p className="text-xs text-muted-foreground mb-4">Log-rank p = {analysisResults.logRank.p.toFixed(4)} <InfoTooltip term="Log-rank p-value" definition="Tests whether there is a statistically significant difference in survival between the two groups. p < 0.05 is typically considered significant." /></p>
               <ResponsiveContainer width="100%" height={420}>
-                <LineChart data={analysisResults.kmData} margin={{ top: 5, right: 20, bottom: 25, left: 10 }}>
+                <LineChart data={analysisResults.kmData} margin={{ top: 5, right: 20, bottom: 35, left: 15 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                  <XAxis dataKey="t" label={{ value: 'Time (days)', position: 'insideBottom', offset: -10 }} stroke="hsl(270,9%,46%)" />
-                  <YAxis domain={[0, 1.05]} label={{ value: 'Survival Probability', angle: -90, position: 'insideLeft' }} stroke="hsl(270,9%,46%)" />
+                  <XAxis dataKey="t" label={{ value: 'Time (days)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
+                  <YAxis domain={[0, 1.05]} label={{ value: 'Survival Probability', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
                   <Tooltip />
                   <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                   <Line type="stepAfter" dataKey="high" name={`High ${targetGene} (n=${analysisResults.highN})`} stroke="#ef4444" strokeWidth={2} dot={false} />
@@ -247,10 +247,10 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
               <div className="vax-card">
                 <h3 className="font-semibold text-sm mb-4">Gene Correlations with {targetGene}</h3>
                 <ResponsiveContainer width="100%" height={360}>
-                  <BarChart data={analysisResults.correlations.slice(0, 8)} margin={{ top: 5, right: 20, bottom: 25, left: 10 }}>
+                  <BarChart data={analysisResults.correlations.slice(0, 8)} margin={{ top: 5, right: 20, bottom: 25, left: 15 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                    <XAxis dataKey="gene" stroke="hsl(270,9%,46%)" />
-                    <YAxis domain={[-1, 1]} label={{ value: 'Pearson r', angle: -90, position: 'insideLeft' }} stroke="hsl(270,9%,46%)" />
+                    <XAxis dataKey="gene" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} />
+                    <YAxis domain={[-1, 1]} label={{ value: 'Pearson r', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
                     <Tooltip />
                     <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                     <Bar dataKey="r" name="Pearson r">
