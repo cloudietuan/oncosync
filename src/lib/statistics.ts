@@ -128,15 +128,18 @@ export const coxPH = (
   }
   // Convert back: beta on standardized scale → original scale
   const betaOrig = useStd ? beta / sx : beta;
+  // Clamp final beta to prevent absurd HR values (keep HR in ~0.001 to ~1000 range)
+  const betaClamped = Math.max(-7, Math.min(7, betaOrig));
   const se = Math.abs(den) > 1e-8 ? 1 / Math.sqrt(Math.abs(den)) * (useStd ? 1 / sx : 1) : 0.5;
-  const hr = Math.exp(betaOrig);
-  const z = Math.abs(betaOrig) / se;
+  const seClamped = Math.min(se, 3); // prevent absurdly wide CIs
+  const hr = Math.exp(betaClamped);
+  const z = Math.abs(betaClamped) / seClamped;
   const p = Math.min(Math.max(Math.exp((-z * z) / 2) * 2, 0), 1);
   return {
     hr,
-    ci: [hr * Math.exp(-1.96 * se), hr * Math.exp(1.96 * se)],
+    ci: [hr * Math.exp(-1.96 * seClamped), hr * Math.exp(1.96 * seClamped)],
     p,
-    beta: betaOrig,
+    beta: betaClamped,
   };
 };
 
