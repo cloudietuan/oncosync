@@ -255,19 +255,54 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 <InfoTooltip term="Cox Regression" definition="Estimates the hazard ratio (HR) per standard deviation increase in expression. HR > 1 means higher risk; HR < 1 means protective." />
               </h3>
               <p className="text-[11px] text-muted-foreground mb-3">HR reported per SD increase in expression</p>
-              <div className="overflow-x-auto">
-              <table>
-                <thead><tr><th>Variable</th><th>HR (per SD) <InfoTooltip term="Hazard Ratio" definition="HR per standard deviation increase. HR=2.0 means each SD increase in expression doubles the risk of death." /></th><th>95% CI</th><th>p-value</th><th className="min-w-[120px]">Interpretation</th></tr></thead>
-                <tbody>
-                  <tr>
-                    <td className="font-medium">{targetGene}</td>
-                    <td><span className={analysisResults.cox.hr > 1 ? 'text-red-600' : 'text-green-600'}>{analysisResults.cox.hr.toFixed(3)}</span></td>
-                    <td className="whitespace-nowrap">{analysisResults.cox.ci[0].toFixed(2)} – {analysisResults.cox.ci[1].toFixed(2)}</td>
-                    <td><span className={analysisResults.cox.p < 0.05 ? 'font-medium text-green-600' : ''}>{analysisResults.cox.p.toFixed(4)}</span></td>
-                    <td className="text-muted-foreground whitespace-nowrap">{analysisResults.cox.hr > 1 ? 'Higher expression → worse survival' : 'Higher expression → better survival'}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="sm:hidden rounded-lg border border-border/60 bg-muted/20 p-3">
+                <div className="flex items-start justify-between gap-3 border-b border-border/50 pb-2">
+                  <div>
+                    <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Variable</p>
+                    <p className="text-sm font-semibold">{targetGene}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Interpretation</p>
+                    <p className="max-w-[8rem] text-[11px] leading-tight text-muted-foreground">
+                      {analysisResults.cox.hr > 1 ? 'Higher expression → worse survival' : 'Higher expression → better survival'}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 text-[11px]">
+                  <div className="rounded-md bg-background px-2 py-2">
+                    <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-muted-foreground">HR</p>
+                    <p className="mt-1 text-sm font-semibold" style={{ color: analysisResults.cox.hr > 1 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))' }}>
+                      {analysisResults.cox.hr.toFixed(3)}
+                    </p>
+                  </div>
+                  <div className="rounded-md bg-background px-2 py-2">
+                    <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-muted-foreground">95% CI</p>
+                    <p className="mt-1 text-[11px] font-medium leading-tight text-foreground">
+                      {analysisResults.cox.ci[0].toFixed(2)} – {analysisResults.cox.ci[1].toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="rounded-md bg-background px-2 py-2">
+                    <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-muted-foreground">p-value</p>
+                    <p className="mt-1 text-sm font-semibold" style={{ color: analysisResults.cox.p < 0.05 ? 'hsl(var(--primary))' : undefined }}>
+                      {analysisResults.cox.p.toFixed(4)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="hidden sm:block overflow-x-auto">
+                <table>
+                  <thead><tr><th>Variable</th><th>HR (per SD) <InfoTooltip term="Hazard Ratio" definition="HR per standard deviation increase. HR=2.0 means each SD increase in expression doubles the risk of death." /></th><th>95% CI</th><th>p-value</th><th className="min-w-[120px]">Interpretation</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td className="font-medium">{targetGene}</td>
+                      <td><span style={{ color: analysisResults.cox.hr > 1 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))' }}>{analysisResults.cox.hr.toFixed(3)}</span></td>
+                      <td className="whitespace-nowrap">{analysisResults.cox.ci[0].toFixed(2)} – {analysisResults.cox.ci[1].toFixed(2)}</td>
+                      <td><span className={analysisResults.cox.p < 0.05 ? 'font-medium' : ''} style={{ color: analysisResults.cox.p < 0.05 ? 'hsl(var(--primary))' : undefined }}>{analysisResults.cox.p.toFixed(4)}</span></td>
+                      <td className="text-muted-foreground whitespace-nowrap">{analysisResults.cox.hr > 1 ? 'Higher expression → worse survival' : 'Higher expression → better survival'}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
               {/* Forest Plot */}
@@ -300,48 +335,50 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                   const refLinePos = scaleX(1);
 
                   return (
-                    <div className="space-y-0">
+                    <div className="space-y-0 overflow-hidden">
                       {/* Header with reference line label */}
-                      <div className="grid grid-cols-[70px_1fr_64px] sm:grid-cols-[100px_1fr_90px] items-center text-[9px] sm:text-[10px] text-muted-foreground font-medium px-1 pb-0.5">
-                        <span>Variable</span>
-                        <div className="relative mx-0.5 sm:mx-2">
-                          <span className="text-center block text-[9px] sm:text-[10px]">Hazard Ratio (95% CI)</span>
-                          <div className="absolute text-[7px] sm:text-[8px] text-muted-foreground/70 font-normal" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)', bottom: '-10px' }}>1.0</div>
+                      <div className="grid min-w-0 grid-cols-[60px_minmax(0,1fr)_56px] sm:grid-cols-[100px_minmax(0,1fr)_90px] items-center text-[8px] sm:text-[10px] text-muted-foreground font-medium px-0.5 sm:px-1 pb-0">
+                        <span className="truncate">Variable</span>
+                        <div className="relative mx-0 sm:mx-2 min-w-0 pt-0.5">
+                          <span className="text-center block text-[8px] leading-none sm:text-[10px]">Hazard Ratio (95% CI)</span>
+                          <div className="absolute text-[7px] sm:text-[8px] text-muted-foreground/70 font-normal leading-none" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)', bottom: '-8px' }}>1.0</div>
                         </div>
-                        <span className="text-right">HR (p)</span>
+                        <span className="text-right truncate">HR (p)</span>
                       </div>
                       {forestData.map((d, idx) => {
                         const hrPos = scaleX(d.hr);
                         const ciLowPos = scaleX(d.ciLow);
                         const ciHighPos = scaleX(d.ciHigh);
                         const isSignificant = d.p < 0.05;
-                        const color = isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))';
+                        const color = isSignificant
+                          ? (d.hr > 1 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))')
+                          : 'hsl(var(--muted-foreground))';
                         return (
-                          <div key={d.name} className="grid grid-cols-[70px_1fr_64px] sm:grid-cols-[100px_1fr_90px] items-center py-1 sm:py-2 px-1 rounded hover:bg-muted/50 transition-colors">
-                            <span className="text-[10px] sm:text-[11px] font-medium truncate">{d.name}</span>
-                            <div className="relative h-6 sm:h-8 mx-0.5 sm:mx-2">
+                          <div key={d.name} className="grid min-w-0 grid-cols-[60px_minmax(0,1fr)_56px] sm:grid-cols-[100px_minmax(0,1fr)_90px] items-center py-0.5 sm:py-2 px-0.5 sm:px-1 rounded hover:bg-muted/50 transition-colors">
+                            <span className="text-[9px] sm:text-[11px] font-medium truncate">{d.name}</span>
+                            <div className="relative h-5 sm:h-8 mx-0 sm:mx-2 min-w-0">
                               {/* Reference line at HR=1 */}
                               <div className="absolute top-0 bottom-0 w-px bg-muted-foreground/40" style={{ left: `${refLinePos}%` }} />
                               {/* CI line */}
                               <div className="absolute top-1/2 -translate-y-1/2 h-[2px]" style={{ left: `${ciLowPos}%`, width: `${Math.max(ciHighPos - ciLowPos, 1)}%`, backgroundColor: color }} />
                               {/* CI caps */}
-                              <div className="absolute w-[2px] h-2.5 sm:h-3" style={{ left: `${ciLowPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
-                              <div className="absolute w-[2px] h-2.5 sm:h-3" style={{ left: `${ciHighPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
+                              <div className="absolute w-[2px] h-2 sm:h-3" style={{ left: `${ciLowPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
+                              <div className="absolute w-[2px] h-2 sm:h-3" style={{ left: `${ciHighPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
                               {/* HR diamond */}
-                              <div className="absolute w-2 h-2 sm:w-2.5 sm:h-2.5 rotate-45" style={{ left: `${hrPos}%`, top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)', backgroundColor: color }} />
+                              <div className="absolute w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 rotate-45" style={{ left: `${hrPos}%`, top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)', backgroundColor: color }} />
                             </div>
-                            <span className="text-[9px] sm:text-[11px] text-right tabular-nums leading-tight">
-                              <span className={`font-semibold ${d.hr > 1 ? 'text-red-600' : 'text-green-600'}`}>{d.hr.toFixed(2)}</span>
+                            <span className="text-[8px] sm:text-[11px] text-right tabular-nums leading-tight">
+                              <span className="font-semibold" style={{ color: d.hr > 1 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))' }}>{d.hr.toFixed(2)}</span>
                               <br className="sm:hidden" />
-                              <span className="text-muted-foreground ml-0.5">({d.p < 0.001 ? '<.001' : d.p.toFixed(3)})</span>
+                              <span className="text-muted-foreground ml-0 sm:ml-0.5">({d.p < 0.001 ? '<.001' : d.p.toFixed(3)})</span>
                             </span>
                           </div>
                         );
                       })}
                       {/* Legend */}
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 sm:mt-2 pt-1 sm:pt-2 border-t border-border/50 text-[8px] sm:text-[10px] text-muted-foreground px-1">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rotate-45 bg-red-500 inline-block" /> HR {'>'} 1 (risk ↑)</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rotate-45 bg-green-500 inline-block" /> HR {'<'} 1 (protective)</span>
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-3 mt-0.5 sm:mt-2 pt-0.5 sm:pt-2 border-t border-border/50 text-[7px] sm:text-[10px] text-muted-foreground px-0.5 sm:px-1">
+                        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 inline-block" style={{ backgroundColor: 'hsl(var(--destructive))' }} /> HR {'>'} 1</span>
+                        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 inline-block" style={{ backgroundColor: 'hsl(var(--primary))' }} /> HR {'<'} 1</span>
                         <span className="flex items-center gap-1"><span className="w-px h-3 bg-muted-foreground/40 inline-block" /> No effect</span>
                       </div>
                     </div>
