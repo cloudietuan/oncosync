@@ -123,8 +123,8 @@ export const coxPH = (
       const step = num / den;
       beta += Math.max(-2, Math.min(2, step)); // damped step
     }
-    // Clamp beta to prevent explosion
-    beta = Math.max(-10, Math.min(10, beta));
+    // Clamp beta to reasonable range for per-SD HR (~0.05 to ~20)
+    beta = Math.max(-3, Math.min(3, beta));
   }
   // Report HR per standard deviation increase (standard in genomics)
   // beta is already on standardized scale — no need to convert back
