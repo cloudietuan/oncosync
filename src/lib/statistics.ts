@@ -126,20 +126,17 @@ export const coxPH = (
     // Clamp beta to prevent explosion
     beta = Math.max(-10, Math.min(10, beta));
   }
-  // Convert back: beta on standardized scale → original scale
-  const betaOrig = useStd ? beta / sx : beta;
-  // Clamp final beta to clinically reasonable HR range (~0.05 to ~20)
-  const betaClamped = Math.max(-3, Math.min(3, betaOrig));
-  const se = Math.abs(den) > 1e-8 ? 1 / Math.sqrt(Math.abs(den)) * (useStd ? 1 / sx : 1) : 0.5;
-  const seClamped = Math.min(se, 3); // prevent absurdly wide CIs
-  const hr = Math.exp(betaClamped);
-  const z = Math.abs(betaClamped) / seClamped;
+  // Report HR per standard deviation increase (standard in genomics)
+  // beta is already on standardized scale — no need to convert back
+  const se = Math.abs(den) > 1e-8 ? 1 / Math.sqrt(Math.abs(den)) : 0.5;
+  const hr = Math.exp(beta);
+  const z = Math.abs(beta) / se;
   const p = Math.min(Math.max(Math.exp((-z * z) / 2) * 2, 0), 1);
   return {
     hr,
-    ci: [hr * Math.exp(-1.96 * seClamped), hr * Math.exp(1.96 * seClamped)],
+    ci: [hr * Math.exp(-1.96 * se), hr * Math.exp(1.96 * se)],
     p,
-    beta: betaClamped,
+    beta,
   };
 };
 
