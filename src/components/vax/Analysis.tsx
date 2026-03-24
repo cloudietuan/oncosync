@@ -85,6 +85,21 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
       })
       .sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
 
+    // Volcano plot data: fold-change (high vs low mean) and p-value per gene
+    const volcanoData = expr.genes.map((g, gi) => {
+      const vals = expr.values[gi];
+      const highVals = highIdx.map(i => vals[i]);
+      const lowVals = lowIdx.map(i => vals[i]);
+      const meanHigh = jStat.mean(highVals);
+      const meanLow = jStat.mean(lowVals);
+      const fc = meanLow > 0 ? meanHigh / meanLow : 1;
+      const log2FC = Math.log2(Math.max(fc, 0.001));
+      const { p } = jStat.pearson(geneExpr, vals);
+      const negLog10P = -Math.log10(Math.max(p, 1e-10));
+      const sig = Math.abs(log2FC) > 0.5 && p < 0.05 ? (log2FC > 0 ? 'up' : 'down') : 'ns';
+      return { gene: g, log2FC, negLog10P, p, sig };
+    });
+
     const validHighTimes = highTimes.filter(t => t != null).sort((a, b) => (a as number) - (b as number));
     const validLowTimes = lowTimes.filter(t => t != null).sort((a, b) => (a as number) - (b as number));
     const medianHigh = validHighTimes.length > 0 ? validHighTimes[Math.floor(validHighTimes.length / 2)] : 'NR';
@@ -119,7 +134,7 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
       return { t, high: hPoint?.S, low: lPoint?.S };
     });
 
-    return { kmData, logRank, cox, correlations, highN: highIdx.length, lowN: lowIdx.length, threshold, medianHigh, medianLow, multiResults };
+    return { kmData, logRank, cox, correlations, volcanoData, highN: highIdx.length, lowN: lowIdx.length, threshold, medianHigh, medianLow, multiResults };
   }, [expr, clin, targetGene, splitMethod, covariates]);
 
   const hasAnyCovariates = Object.values(covariates).some(v => v);
