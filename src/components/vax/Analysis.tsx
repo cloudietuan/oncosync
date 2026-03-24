@@ -300,14 +300,16 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                   const refLinePos = scaleX(1);
 
                   return (
-                    <div className="space-y-1">
-                      {/* Header */}
-                      <div className="grid grid-cols-[80px_1fr_70px] sm:grid-cols-[100px_1fr_90px] items-center text-[10px] text-muted-foreground font-medium px-1">
+                    <div className="space-y-0">
+                      {/* Header with reference line label */}
+                      <div className="grid grid-cols-[80px_1fr_70px] sm:grid-cols-[100px_1fr_90px] items-center text-[10px] text-muted-foreground font-medium px-1 pb-1">
                         <span>Variable</span>
-                        <span className="text-center">Hazard Ratio (95% CI)</span>
+                        <div className="relative mx-1 sm:mx-2">
+                          <span className="text-center block">Hazard Ratio (95% CI)</span>
+                        </div>
                         <span className="text-right">HR (p)</span>
                       </div>
-                      {forestData.map((d) => {
+                      {forestData.map((d, idx) => {
                         const hrPos = scaleX(d.hr);
                         const ciLowPos = scaleX(d.ciLow);
                         const ciHighPos = scaleX(d.ciHigh);
@@ -319,7 +321,10 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                             <div className="relative h-8 mx-1 sm:mx-2">
                               {/* Reference line at HR=1 */}
                               <div className="absolute top-0 bottom-0 w-px bg-muted-foreground/40" style={{ left: `${refLinePos}%` }} />
-                              <div className="absolute -top-0.5 text-[7px] text-muted-foreground/60" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)' }}>1.0</div>
+                              {/* Show 1.0 label only on first row */}
+                              {idx === 0 && (
+                                <div className="absolute -top-1 text-[7px] text-muted-foreground/60" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)' }}>1.0</div>
+                              )}
                               {/* CI line */}
                               <div className="absolute top-1/2 -translate-y-1/2 h-[2px]" style={{ left: `${ciLowPos}%`, width: `${Math.max(ciHighPos - ciLowPos, 1)}%`, backgroundColor: color }} />
                               {/* CI caps */}
