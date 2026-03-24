@@ -289,14 +289,15 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
             <FadeSection>
             <div className="vax-card">
               <h3 className="font-semibold text-sm mb-4">Multivariate Cox Regression</h3>
+              <div className="overflow-x-auto">
               <table>
-                <thead><tr><th>Variable</th><th>Hazard Ratio</th><th>95% CI</th><th>p-value</th><th>Sig</th><th>N</th></tr></thead>
+                <thead><tr><th>Variable</th><th>Hazard Ratio</th><th className="whitespace-nowrap">95% CI</th><th>p-value</th><th>Sig</th><th>N</th></tr></thead>
                 <tbody>
                   {Object.entries(analysisResults.multiResults as Record<string, MultiCoxResult>).map(([name, res]) => (
                     <tr key={name}>
                       <td className="font-medium">{name}</td>
                       <td><span className={res.hr ? (res.hr > 1 ? 'text-red-600' : 'text-green-600') : 'text-muted-foreground'}>{res.hr ? res.hr.toFixed(3) : '—'}</span></td>
-                      <td>{res.ci[0] != null ? `${res.ci[0].toFixed(2)} – ${res.ci[1]!.toFixed(2)}` : '—'}</td>
+                      <td className="whitespace-nowrap">{res.ci[0] != null ? `${res.ci[0].toFixed(2)} – ${res.ci[1]!.toFixed(2)}` : '—'}</td>
                       <td>{res.p ? res.p.toFixed(4) : '—'}</td>
                       <td>{res.p ? (res.p < 0.001 ? '***' : res.p < 0.01 ? '**' : res.p < 0.05 ? '*' : 'ns') : '—'}</td>
                       <td>{res.n}</td>
@@ -304,6 +305,7 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
             </FadeSection>
           )}
