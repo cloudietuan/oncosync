@@ -128,8 +128,8 @@ export const coxPH = (
   }
   // Convert back: beta on standardized scale → original scale
   const betaOrig = useStd ? beta / sx : beta;
-  // Clamp final beta to prevent absurd HR values (keep HR in ~0.001 to ~1000 range)
-  const betaClamped = Math.max(-7, Math.min(7, betaOrig));
+  // Clamp final beta to clinically reasonable HR range (~0.05 to ~20)
+  const betaClamped = Math.max(-3, Math.min(3, betaOrig));
   const se = Math.abs(den) > 1e-8 ? 1 / Math.sqrt(Math.abs(den)) * (useStd ? 1 / sx : 1) : 0.5;
   const seClamped = Math.min(se, 3); // prevent absurdly wide CIs
   const hr = Math.exp(betaClamped);
