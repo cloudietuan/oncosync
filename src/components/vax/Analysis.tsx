@@ -206,9 +206,9 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
               <ResponsiveContainer width="100%" height={420}>
                 <LineChart data={analysisResults.kmData} margin={{ top: 5, right: 20, bottom: 35, left: 15 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                  <XAxis dataKey="t" label={{ value: 'Time (days)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
+                  <XAxis dataKey="t" type="number" domain={[0, 'dataMax']} ticks={[0, 200, 400, 600, 800, 1000, 1200, 1400, 1600]} label={{ value: 'Time (days)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
                   <YAxis domain={[0, 1.05]} label={{ value: 'Survival Probability', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
-                  <Tooltip />
+                  <Tooltip formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, undefined]} labelFormatter={(label: number) => `Day ${label}`} />
                   <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                   <Line type="stepAfter" dataKey="high" name={`High ${targetGene} (n=${analysisResults.highN})`} stroke="#ef4444" strokeWidth={2} dot={false} />
                   <Line type="stepAfter" dataKey="low" name={`Low ${targetGene} (n=${analysisResults.lowN})`} stroke="#3b82f6" strokeWidth={2} dot={false} />
