@@ -438,7 +438,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
                     <XAxis dataKey="week" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} />
                     <YAxis yAxisId="left" stroke={profile.color} tick={{ fontSize: 11 }} label={{ value: 'IgG (AU/mL)', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: profile.color } }} />
                     <YAxis yAxisId="right" orientation="right" stroke="#f59e0b" tick={{ fontSize: 11 }} domain={[0, 3]} label={{ value: 'Severity Score', angle: 90, position: 'insideRight', offset: 10, style: { fontSize: 10, fill: '#f59e0b' } }} />
-                    <Tooltip />
+                    <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(2) : value, undefined]} />
                     <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                     <Bar yAxisId="right" dataKey="avgSeverity" name="Avg Symptom Severity" fill="#f59e0b" fillOpacity={0.6} barSize={24} />
                     <Line yAxisId="left" type="monotone" dataKey="avgIgg" name="Avg IgG (AU/mL)" stroke={profile.color} strokeWidth={2} dot={{ r: 3 }} connectNulls />

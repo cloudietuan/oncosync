@@ -174,7 +174,7 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                 <XAxis dataKey="symptom" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={80} />
                 <YAxis stroke="hsl(270,9%,46%)" label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
-                <Tooltip />
+                <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(0) : value, undefined]} />
                 <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                 <Bar dataKey="count" fill="#3b82f6" name="Event Count" />
               </BarChart>
