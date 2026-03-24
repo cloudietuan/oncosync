@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import logoImg from '@/assets/logo-icon.png';
 
 interface LoadingScreenProps {
   isLoading: boolean;
@@ -13,72 +12,109 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => (
         initial={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.6, ease: 'easeInOut' }}
-        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
+        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background overflow-hidden"
       >
+        {/* Subtle background grid */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: 'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+
         <motion.div
-          initial={{ scale: 0.85, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="flex flex-col items-center gap-8"
+          className="relative flex flex-col items-center gap-10"
         >
-          {/* Logo with dual orbit rings */}
-          <div className="relative w-24 h-24 flex items-center justify-center">
-            {/* Outer ring */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              className="absolute inset-0 rounded-full"
-              style={{
-                border: '2px solid transparent',
-                borderTopColor: 'hsl(var(--primary))',
-                borderRightColor: 'hsl(var(--primary) / 0.2)',
-              }}
-            />
-            {/* Inner ring (counter-rotate) */}
-            <motion.div
-              animate={{ rotate: -360 }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
-              className="absolute rounded-full"
-              style={{
-                inset: '6px',
-                border: '1.5px solid transparent',
-                borderBottomColor: 'hsl(var(--primary) / 0.5)',
-                borderLeftColor: 'hsl(var(--primary) / 0.15)',
-              }}
-            />
-            {/* Glow backdrop */}
-            <div
-              className="absolute w-16 h-16 rounded-full blur-xl opacity-20"
-              style={{ background: 'hsl(var(--primary))' }}
-            />
-            {/* Logo */}
-            <motion.img
-              src={logoImg}
-              alt="OncoSync logo"
-              animate={{ scale: [0.9, 1, 0.9] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-12 h-12 object-contain relative z-10"
-            />
+          {/* DNA helix animation */}
+          <div className="relative w-16 h-28 flex items-center justify-center">
+            {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+              <motion.div
+                key={i}
+                className="absolute w-full flex items-center justify-between"
+                style={{ top: `${i * 14.28}%` }}
+              >
+                <motion.div
+                  animate={{
+                    x: [0, 20, 0, -20, 0],
+                    scale: [0.6, 1, 0.6, 1, 0.6],
+                    opacity: [0.3, 1, 0.3, 1, 0.3],
+                  }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: i * 0.15,
+                  }}
+                  className="w-2.5 h-2.5 rounded-full bg-primary"
+                />
+                <motion.div
+                  animate={{
+                    x: [0, -20, 0, 20, 0],
+                    scale: [1, 0.6, 1, 0.6, 1],
+                    opacity: [1, 0.3, 1, 0.3, 1],
+                  }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: i * 0.15,
+                  }}
+                  className="w-2.5 h-2.5 rounded-full bg-primary/60"
+                />
+                {/* Connecting bar */}
+                <motion.div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-px bg-primary/20"
+                  animate={{ width: ['60%', '30%', '60%', '30%', '60%'] }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: i * 0.15,
+                  }}
+                />
+              </motion.div>
+            ))}
           </div>
 
           {/* Text */}
-          <div className="flex flex-col items-center gap-1.5">
-            <h1 className="text-xl font-bold text-foreground tracking-tight font-sans">
+          <div className="flex flex-col items-center gap-2">
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-2xl font-bold text-foreground tracking-tight"
+            >
               OncoSync
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Initializing research environment…
-            </p>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              transition={{ delay: 0.4 }}
+              className="text-xs text-muted-foreground tracking-wide uppercase"
+            >
+              Preparing research environment
+            </motion.p>
           </div>
 
-          {/* Progress bar */}
-          <div className="w-52 h-1 bg-muted rounded-full overflow-hidden">
-            <motion.div
-              className="h-full rounded-full bg-primary"
-              initial={{ width: '0%' }}
-              animate={{ width: '100%' }}
-              transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }}
-            />
+          {/* Minimal progress dots */}
+          <div className="flex items-center gap-2">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="w-1.5 h-1.5 rounded-full bg-primary"
+                animate={{ opacity: [0.2, 1, 0.2] }}
+                transition={{
+                  duration: 1.2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: i * 0.3,
+                }}
+              />
+            ))}
           </div>
         </motion.div>
       </motion.div>
