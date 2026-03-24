@@ -115,7 +115,7 @@ export const coxPH = (
   const hr = Math.exp(beta);
   const se = 0.5;
   const z = Math.abs(beta) / se;
-  const p = Math.exp((-z * z) / 2) * 2;
+  const p = Math.min(Math.exp((-z * z) / 2) * 2, 1);
   return { hr, ci: [hr * Math.exp(-1.96 * se), hr * Math.exp(1.96 * se)], p, beta };
 };
 
