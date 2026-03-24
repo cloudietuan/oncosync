@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, ResponsiveContainer, Cell, ReferenceLine, Label } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, ResponsiveContainer, Cell, ReferenceLine, Label, ScatterChart, Scatter, ZAxis } from 'recharts';
 import StatCard from './StatCard';
 import FileUpload from './FileUpload';
 import AlertBox from './AlertBox';
