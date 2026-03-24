@@ -22,13 +22,13 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => (
           className="flex flex-col items-center gap-6"
         >
           {/* Logo */}
-          <motion.div
+          <motion.img
+            src={logoImg}
+            alt="OncoSync logo"
             animate={{ rotate: [0, 360] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
-            className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-400 via-purple-500 to-fuchsia-600 flex items-center justify-center shadow-lg"
-          >
-            <span className="text-white font-bold text-xl leading-none" style={{ fontFamily: "'JetBrains Mono', monospace" }}>◎</span>
-          </motion.div>
+            className="w-14 h-14 object-contain"
+          />
 
           <div className="flex flex-col items-center gap-2">
             <h1 className="text-lg font-bold text-foreground tracking-tight">OncoSync</h1>
