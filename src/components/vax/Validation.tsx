@@ -453,7 +453,7 @@ const ROCPanel = ({ data, roc, confusion, threshold, setThreshold }: {
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
           <XAxis dataKey="bin" tick={{ fontSize: 10 }} label={{ value: 'Proxy Score', position: 'insideBottom', offset: -10, fontSize: 11 }} />
           <YAxis tick={{ fontSize: 10 }} />
-          <Tooltip />
+          <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(0) : value, undefined]} />
           <Bar dataKey="responders" fill="hsl(160,84%,39%)" name="Responders" stackId="a" />
           <Bar dataKey="nonResponders" fill="hsl(0,84%,60%)" name="Non-responders" stackId="a" />
           <ReferenceLine x={`${threshold}`} stroke="hsl(221,83%,53%)" strokeDasharray="6 3" label={{ value: `T=${threshold}`, position: 'top', fontSize: 10 }} />
