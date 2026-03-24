@@ -397,7 +397,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
                 <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} label={{ value: 'Date', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
                 <YAxis yAxisId="left" stroke="#10b981" tick={{ fontSize: 11 }} label={{ value: 'IgG (AU/mL)', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: '#10b981' } }} />
                 <YAxis yAxisId="right" orientation="right" stroke="#3b82f6" tick={{ fontSize: 11 }} label={{ value: 'CD8+ (cells/µL)', angle: 90, position: 'insideRight', offset: 10, style: { fontSize: 10, fill: '#3b82f6' } }} />
-                <Tooltip />
+                <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(1) : value, undefined]} />
                 <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                 <Area yAxisId="left" type="monotone" dataKey="ifn_gamma" name="IFN-γ (pg/mL)" fill="#8b5cf6" fillOpacity={0.15} stroke="#8b5cf6" strokeWidth={1} strokeDasharray="4 2" />
                 <Line yAxisId="left" type="monotone" dataKey="igg" name="IgG (AU/mL)" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
