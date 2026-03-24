@@ -225,18 +225,20 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 Cox Proportional Hazards — Univariate
                 <InfoTooltip term="Cox Regression" definition="A statistical model that estimates the hazard ratio (HR) — the relative risk of death associated with each unit increase in gene expression. HR > 1 means higher risk; HR < 1 means lower risk." />
               </h3>
+              <div className="overflow-x-auto">
               <table>
-                <thead><tr><th>Variable</th><th>Hazard Ratio <InfoTooltip term="Hazard Ratio" definition="The ratio of hazard rates between groups. HR=2.0 means twice the risk of death compared to the reference." /></th><th>95% CI</th><th>p-value</th><th>Interpretation</th></tr></thead>
+                <thead><tr><th>Variable</th><th>Hazard Ratio <InfoTooltip term="Hazard Ratio" definition="The ratio of hazard rates between groups. HR=2.0 means twice the risk of death compared to the reference." /></th><th>95% CI</th><th>p-value</th><th className="min-w-[140px]">Interpretation</th></tr></thead>
                 <tbody>
                   <tr>
                     <td className="font-medium">{targetGene}</td>
                     <td><span className={analysisResults.cox.hr > 1 ? 'text-red-600' : 'text-green-600'}>{analysisResults.cox.hr.toFixed(3)}</span></td>
-                    <td>{analysisResults.cox.ci[0].toFixed(2)} – {analysisResults.cox.ci[1].toFixed(2)}</td>
+                    <td className="whitespace-nowrap">{analysisResults.cox.ci[0].toFixed(2)} – {analysisResults.cox.ci[1].toFixed(2)}</td>
                     <td><span className={analysisResults.cox.p < 0.05 ? 'font-medium text-green-600' : ''}>{analysisResults.cox.p.toFixed(4)}</span></td>
-                    <td className="text-muted-foreground">{analysisResults.cox.hr > 1 ? 'Higher expression → worse survival' : 'Higher expression → better survival'}</td>
+                    <td className="text-muted-foreground whitespace-nowrap">{analysisResults.cox.hr > 1 ? 'Higher expression → worse survival' : 'Higher expression → better survival'}</td>
                   </tr>
                 </tbody>
               </table>
+              </div>
             </div>
             </FadeSection>
           )}
