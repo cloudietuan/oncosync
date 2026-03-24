@@ -253,6 +253,113 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 </tbody>
               </table>
               </div>
+
+              {/* Forest Plot */}
+              <div className="mt-6">
+                <h4 className="font-semibold text-xs mb-3 flex items-center gap-2">
+                  Forest Plot
+                  <InfoTooltip term="Forest Plot" definition="A graphical display of the hazard ratio and its confidence interval. The square marks the HR point estimate; horizontal lines show the 95% CI. A vertical line at HR=1 indicates no effect." />
+                </h4>
+                {(() => {
+                  const forestData = [
+                    { name: targetGene, hr: analysisResults.cox.hr, ciLow: analysisResults.cox.ci[0], ciHigh: analysisResults.cox.ci[1], p: analysisResults.cox.p },
+                    ...(analysisResults.multiResults
+                      ? Object.entries(analysisResults.multiResults as Record<string, MultiCoxResult>)
+                          .filter(([n]) => n !== targetGene)
+                          .filter(([, r]) => r.hr != null)
+                          .map(([name, res]) => ({
+                            name,
+                            hr: res.hr!,
+                            ciLow: res.ci[0]!,
+                            ciHigh: res.ci[1]!,
+                            p: res.p!,
+                          }))
+                      : []),
+                  ];
+                  const maxCI = Math.max(...forestData.map(d => d.ciHigh), 2);
+                  const xMax = Math.min(Math.ceil(maxCI + 0.5), 10);
+                  return (
+                    <div className="space-y-1">
+                      {/* Header */}
+                      <div className="grid grid-cols-[120px_1fr_80px] items-center text-[10px] text-muted-foreground font-medium px-1">
+                        <span>Variable</span>
+                        <span className="text-center">Hazard Ratio (95% CI)</span>
+                        <span className="text-right">HR (p)</span>
+                      </div>
+                      {forestData.map((d) => {
+                        const scaleX = (v: number) => Math.max(0, Math.min(100, (v / xMax) * 100));
+                        const refLinePos = scaleX(1);
+                        const hrPos = scaleX(d.hr);
+                        const ciLowPos = scaleX(d.ciLow);
+                        const ciHighPos = scaleX(d.ciHigh);
+                        const isSignificant = d.p < 0.05;
+                        return (
+                          <div key={d.name} className="grid grid-cols-[120px_1fr_80px] items-center py-2 px-1 rounded hover:bg-muted/50 transition-colors">
+                            <span className="text-xs font-medium truncate">{d.name}</span>
+                            <div className="relative h-6 mx-2">
+                              {/* Reference line at HR=1 */}
+                              <div
+                                className="absolute top-0 bottom-0 w-px bg-muted-foreground/40"
+                                style={{ left: `${refLinePos}%` }}
+                              />
+                              <div className="absolute top-0 text-[8px] text-muted-foreground/60" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)' }}>
+                                1.0
+                              </div>
+                              {/* CI line */}
+                              <div
+                                className="absolute top-1/2 -translate-y-1/2 h-[2px]"
+                                style={{
+                                  left: `${ciLowPos}%`,
+                                  width: `${ciHighPos - ciLowPos}%`,
+                                  backgroundColor: isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))',
+                                }}
+                              />
+                              {/* CI caps */}
+                              <div
+                                className="absolute top-1/2 -translate-y-1/2 w-[2px] h-2.5"
+                                style={{
+                                  left: `${ciLowPos}%`,
+                                  transform: 'translateX(-50%) translateY(-50%)',
+                                  top: '50%',
+                                  backgroundColor: isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))',
+                                }}
+                              />
+                              <div
+                                className="absolute top-1/2 -translate-y-1/2 w-[2px] h-2.5"
+                                style={{
+                                  left: `${ciHighPos}%`,
+                                  transform: 'translateX(-50%) translateY(-50%)',
+                                  top: '50%',
+                                  backgroundColor: isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))',
+                                }}
+                              />
+                              {/* HR diamond */}
+                              <div
+                                className="absolute top-1/2 w-2.5 h-2.5 rotate-45"
+                                style={{
+                                  left: `${hrPos}%`,
+                                  transform: 'translate(-50%, -50%) rotate(45deg)',
+                                  backgroundColor: isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))',
+                                }}
+                              />
+                            </div>
+                            <span className="text-[11px] text-right tabular-nums">
+                              <span className={`font-semibold ${d.hr > 1 ? 'text-red-600' : 'text-green-600'}`}>{d.hr.toFixed(2)}</span>
+                              <span className="text-muted-foreground ml-1">({d.p < 0.001 ? '<.001' : d.p.toFixed(3)})</span>
+                            </span>
+                          </div>
+                        );
+                      })}
+                      {/* Legend */}
+                      <div className="flex items-center gap-4 mt-2 pt-2 border-t border-border/50 text-[10px] text-muted-foreground px-1">
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rotate-45 bg-red-500 inline-block" /> HR {'>'} 1 (risk ↑)</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rotate-45 bg-green-500 inline-block" /> HR {'<'} 1 (protective)</span>
+                        <span className="flex items-center gap-1"><span className="w-px h-3 bg-muted-foreground/40 inline-block" /> No effect (HR=1)</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
             </FadeSection>
           )}
