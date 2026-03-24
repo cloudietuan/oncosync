@@ -237,11 +237,12 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
              <div className="vax-card">
               <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
                 Cox Proportional Hazards — Univariate
-                <InfoTooltip term="Cox Regression" definition="A statistical model that estimates the hazard ratio (HR) — the relative risk of death associated with each unit increase in gene expression. HR > 1 means higher risk; HR < 1 means lower risk." />
+                <InfoTooltip term="Cox Regression" definition="Estimates the hazard ratio (HR) per standard deviation increase in expression. HR > 1 means higher risk; HR < 1 means protective." />
               </h3>
+              <p className="text-[11px] text-muted-foreground mb-3">HR reported per SD increase in expression</p>
               <div className="overflow-x-auto">
               <table>
-                <thead><tr><th>Variable</th><th>Hazard Ratio <InfoTooltip term="Hazard Ratio" definition="The ratio of hazard rates between groups. HR=2.0 means twice the risk of death compared to the reference." /></th><th>95% CI</th><th>p-value</th><th className="min-w-[140px]">Interpretation</th></tr></thead>
+                <thead><tr><th>Variable</th><th>HR (per SD) <InfoTooltip term="Hazard Ratio" definition="HR per standard deviation increase. HR=2.0 means each SD increase in expression doubles the risk of death." /></th><th>95% CI</th><th>p-value</th><th className="min-w-[120px]">Interpretation</th></tr></thead>
                 <tbody>
                   <tr>
                     <td className="font-medium">{targetGene}</td>
