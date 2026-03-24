@@ -276,85 +276,55 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                           }))
                       : []),
                   ];
-                  const maxCI = Math.max(...forestData.map(d => d.ciHigh), 2);
-                  const xMax = Math.min(Math.ceil(maxCI + 0.5), 10);
+                  // Use log scale for forest plot — map log(HR) to position
+                  const logMin = Math.min(...forestData.map(d => Math.log(Math.max(d.ciLow, 0.01))), Math.log(0.1));
+                  const logMax = Math.max(...forestData.map(d => Math.log(Math.max(d.ciHigh, 0.01))), Math.log(10));
+                  const logRange = logMax - logMin || 1;
+                  const scaleX = (v: number) => Math.max(2, Math.min(98, ((Math.log(Math.max(v, 0.01)) - logMin) / logRange) * 100));
+                  const refLinePos = scaleX(1);
+
                   return (
                     <div className="space-y-1">
                       {/* Header */}
-                      <div className="grid grid-cols-[120px_1fr_80px] items-center text-[10px] text-muted-foreground font-medium px-1">
+                      <div className="grid grid-cols-[80px_1fr_70px] sm:grid-cols-[100px_1fr_90px] items-center text-[10px] text-muted-foreground font-medium px-1">
                         <span>Variable</span>
                         <span className="text-center">Hazard Ratio (95% CI)</span>
                         <span className="text-right">HR (p)</span>
                       </div>
                       {forestData.map((d) => {
-                        const scaleX = (v: number) => Math.max(0, Math.min(100, (v / xMax) * 100));
-                        const refLinePos = scaleX(1);
                         const hrPos = scaleX(d.hr);
                         const ciLowPos = scaleX(d.ciLow);
                         const ciHighPos = scaleX(d.ciHigh);
                         const isSignificant = d.p < 0.05;
+                        const color = isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))';
                         return (
-                          <div key={d.name} className="grid grid-cols-[120px_1fr_80px] items-center py-2 px-1 rounded hover:bg-muted/50 transition-colors">
-                            <span className="text-xs font-medium truncate">{d.name}</span>
-                            <div className="relative h-6 mx-2">
+                          <div key={d.name} className="grid grid-cols-[80px_1fr_70px] sm:grid-cols-[100px_1fr_90px] items-center py-2 px-1 rounded hover:bg-muted/50 transition-colors">
+                            <span className="text-[11px] font-medium truncate">{d.name}</span>
+                            <div className="relative h-8 mx-1 sm:mx-2">
                               {/* Reference line at HR=1 */}
-                              <div
-                                className="absolute top-0 bottom-0 w-px bg-muted-foreground/40"
-                                style={{ left: `${refLinePos}%` }}
-                              />
-                              <div className="absolute top-0 text-[8px] text-muted-foreground/60" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)' }}>
-                                1.0
-                              </div>
+                              <div className="absolute top-0 bottom-0 w-px bg-muted-foreground/40" style={{ left: `${refLinePos}%` }} />
+                              <div className="absolute -top-0.5 text-[7px] text-muted-foreground/60" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)' }}>1.0</div>
                               {/* CI line */}
-                              <div
-                                className="absolute top-1/2 -translate-y-1/2 h-[2px]"
-                                style={{
-                                  left: `${ciLowPos}%`,
-                                  width: `${ciHighPos - ciLowPos}%`,
-                                  backgroundColor: isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))',
-                                }}
-                              />
+                              <div className="absolute top-1/2 -translate-y-1/2 h-[2px]" style={{ left: `${ciLowPos}%`, width: `${Math.max(ciHighPos - ciLowPos, 1)}%`, backgroundColor: color }} />
                               {/* CI caps */}
-                              <div
-                                className="absolute top-1/2 -translate-y-1/2 w-[2px] h-2.5"
-                                style={{
-                                  left: `${ciLowPos}%`,
-                                  transform: 'translateX(-50%) translateY(-50%)',
-                                  top: '50%',
-                                  backgroundColor: isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))',
-                                }}
-                              />
-                              <div
-                                className="absolute top-1/2 -translate-y-1/2 w-[2px] h-2.5"
-                                style={{
-                                  left: `${ciHighPos}%`,
-                                  transform: 'translateX(-50%) translateY(-50%)',
-                                  top: '50%',
-                                  backgroundColor: isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))',
-                                }}
-                              />
+                              <div className="absolute w-[2px] h-3" style={{ left: `${ciLowPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
+                              <div className="absolute w-[2px] h-3" style={{ left: `${ciHighPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
                               {/* HR diamond */}
-                              <div
-                                className="absolute top-1/2 w-2.5 h-2.5 rotate-45"
-                                style={{
-                                  left: `${hrPos}%`,
-                                  transform: 'translate(-50%, -50%) rotate(45deg)',
-                                  backgroundColor: isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))',
-                                }}
-                              />
+                              <div className="absolute w-2.5 h-2.5 rotate-45" style={{ left: `${hrPos}%`, top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)', backgroundColor: color }} />
                             </div>
-                            <span className="text-[11px] text-right tabular-nums">
+                            <span className="text-[10px] sm:text-[11px] text-right tabular-nums leading-tight">
                               <span className={`font-semibold ${d.hr > 1 ? 'text-red-600' : 'text-green-600'}`}>{d.hr.toFixed(2)}</span>
-                              <span className="text-muted-foreground ml-1">({d.p < 0.001 ? '<.001' : d.p.toFixed(3)})</span>
+                              <br className="sm:hidden" />
+                              <span className="text-muted-foreground ml-0.5">({d.p < 0.001 ? '<.001' : d.p.toFixed(3)})</span>
                             </span>
                           </div>
                         );
                       })}
                       {/* Legend */}
-                      <div className="flex items-center gap-4 mt-2 pt-2 border-t border-border/50 text-[10px] text-muted-foreground px-1">
+                      <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-border/50 text-[9px] sm:text-[10px] text-muted-foreground px-1">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rotate-45 bg-red-500 inline-block" /> HR {'>'} 1 (risk ↑)</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rotate-45 bg-green-500 inline-block" /> HR {'<'} 1 (protective)</span>
-                        <span className="flex items-center gap-1"><span className="w-px h-3 bg-muted-foreground/40 inline-block" /> No effect (HR=1)</span>
+                        <span className="flex items-center gap-1"><span className="w-px h-3 bg-muted-foreground/40 inline-block" /> No effect</span>
                       </div>
                     </div>
                   );
