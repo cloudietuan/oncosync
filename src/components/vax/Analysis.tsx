@@ -302,12 +302,11 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                   return (
                     <div className="space-y-0">
                       {/* Header with reference line label */}
-                      <div className="grid grid-cols-[80px_1fr_70px] sm:grid-cols-[100px_1fr_90px] items-center text-[10px] text-muted-foreground font-medium px-1 pb-1">
+                      <div className="grid grid-cols-[70px_1fr_64px] sm:grid-cols-[100px_1fr_90px] items-center text-[9px] sm:text-[10px] text-muted-foreground font-medium px-1 pb-0.5">
                         <span>Variable</span>
-                        <div className="relative mx-1 sm:mx-2">
-                          <span className="text-center block">Hazard Ratio (95% CI)</span>
-                          {/* 1.0 reference label in header */}
-                          <div className="absolute text-[8px] text-muted-foreground/70 font-normal" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)', bottom: '-12px' }}>1.0</div>
+                        <div className="relative mx-0.5 sm:mx-2">
+                          <span className="text-center block text-[9px] sm:text-[10px]">Hazard Ratio (95% CI)</span>
+                          <div className="absolute text-[7px] sm:text-[8px] text-muted-foreground/70 font-normal" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)', bottom: '-10px' }}>1.0</div>
                         </div>
                         <span className="text-right">HR (p)</span>
                       </div>
@@ -318,20 +317,20 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                         const isSignificant = d.p < 0.05;
                         const color = isSignificant ? (d.hr > 1 ? 'hsl(0,72%,51%)' : 'hsl(142,71%,45%)') : 'hsl(var(--muted-foreground))';
                         return (
-                          <div key={d.name} className="grid grid-cols-[80px_1fr_70px] sm:grid-cols-[100px_1fr_90px] items-center py-2 px-1 rounded hover:bg-muted/50 transition-colors">
-                            <span className="text-[11px] font-medium truncate">{d.name}</span>
-                            <div className="relative h-8 mx-1 sm:mx-2">
+                          <div key={d.name} className="grid grid-cols-[70px_1fr_64px] sm:grid-cols-[100px_1fr_90px] items-center py-1 sm:py-2 px-1 rounded hover:bg-muted/50 transition-colors">
+                            <span className="text-[10px] sm:text-[11px] font-medium truncate">{d.name}</span>
+                            <div className="relative h-6 sm:h-8 mx-0.5 sm:mx-2">
                               {/* Reference line at HR=1 */}
                               <div className="absolute top-0 bottom-0 w-px bg-muted-foreground/40" style={{ left: `${refLinePos}%` }} />
                               {/* CI line */}
                               <div className="absolute top-1/2 -translate-y-1/2 h-[2px]" style={{ left: `${ciLowPos}%`, width: `${Math.max(ciHighPos - ciLowPos, 1)}%`, backgroundColor: color }} />
                               {/* CI caps */}
-                              <div className="absolute w-[2px] h-3" style={{ left: `${ciLowPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
-                              <div className="absolute w-[2px] h-3" style={{ left: `${ciHighPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
+                              <div className="absolute w-[2px] h-2.5 sm:h-3" style={{ left: `${ciLowPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
+                              <div className="absolute w-[2px] h-2.5 sm:h-3" style={{ left: `${ciHighPos}%`, top: '50%', transform: 'translate(-50%, -50%)', backgroundColor: color }} />
                               {/* HR diamond */}
-                              <div className="absolute w-2.5 h-2.5 rotate-45" style={{ left: `${hrPos}%`, top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)', backgroundColor: color }} />
+                              <div className="absolute w-2 h-2 sm:w-2.5 sm:h-2.5 rotate-45" style={{ left: `${hrPos}%`, top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)', backgroundColor: color }} />
                             </div>
-                            <span className="text-[10px] sm:text-[11px] text-right tabular-nums leading-tight">
+                            <span className="text-[9px] sm:text-[11px] text-right tabular-nums leading-tight">
                               <span className={`font-semibold ${d.hr > 1 ? 'text-red-600' : 'text-green-600'}`}>{d.hr.toFixed(2)}</span>
                               <br className="sm:hidden" />
                               <span className="text-muted-foreground ml-0.5">({d.p < 0.001 ? '<.001' : d.p.toFixed(3)})</span>
@@ -340,7 +339,7 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                         );
                       })}
                       {/* Legend */}
-                      <div className="flex flex-wrap items-center gap-3 mt-2 pt-2 border-t border-border/50 text-[9px] sm:text-[10px] text-muted-foreground px-1">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 sm:mt-2 pt-1 sm:pt-2 border-t border-border/50 text-[8px] sm:text-[10px] text-muted-foreground px-1">
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rotate-45 bg-red-500 inline-block" /> HR {'>'} 1 (risk ↑)</span>
                         <span className="flex items-center gap-1"><span className="w-2 h-2 rotate-45 bg-green-500 inline-block" /> HR {'<'} 1 (protective)</span>
                         <span className="flex items-center gap-1"><span className="w-px h-3 bg-muted-foreground/40 inline-block" /> No effect</span>
