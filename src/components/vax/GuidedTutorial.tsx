@@ -41,127 +41,135 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     detail:
       'At the bottom of the Lab Records tab you will find the Protocol Overview. It walks through: (1) Expression — growing bacteria with your gene of interest, (2) Purification — extracting the target protein, (3) Assembly — forming VLP particles, and (4) QC — running quality control tests. Hover over the info icons on table headers to learn what each lab parameter means.',
   },
-  // Tab 2 — Expression Analysis
+  // Tab 2 — Tissue Analysis
   {
     tab: 2,
+    title: 'Tissue Analysis — IHC Deconvolution',
+    description: 'Upload H-DAB stained tissue images for ApoC-1 spatial quantification.',
+    detail:
+      'This module performs Ruifrok-Johnston color deconvolution to separate the brown DAB antibody stain from the blue hematoxylin counterstain. Upload a tissue image, then view the original, heatmap overlay, DAB channel, or side-by-side comparison. Adjust the detection threshold and heatmap opacity sliders to tune sensitivity. Quantification metrics show positive area percentage, mean intensity, and pixel counts.',
+  },
+  // Tab 3 — Expression Analysis
+  {
+    tab: 3,
     title: 'Expression Analysis — Gene Selection',
     description: 'Pick a gene and see how its expression affects patient survival.',
     detail:
       'Select a target gene from the dropdown (default: APOC1). Choose a split method (median or mean) to divide patients into "high" and "low" expression groups. This stratification is the foundation for survival analysis — it asks: "Do patients with higher expression of this gene live longer or shorter?"',
   },
   {
-    tab: 2,
+    tab: 3,
     title: 'Kaplan-Meier Survival Curves',
     description: 'Visualize survival differences between patient groups.',
     detail:
       'The Kaplan-Meier tab draws a step-curve showing the probability of survival over time for each group. The red line is "High" expression, the blue line is "Low" expression. The log-rank p-value tells you if the difference is statistically significant (p < 0.05 = significant). Each step down in the curve represents a patient event (death or censoring).',
   },
   {
-    tab: 2,
+    tab: 3,
     title: 'Cox Regression — Hazard Ratio',
     description: 'Quantify the survival risk associated with gene expression.',
     detail:
       'Click the "Cox Regression" sub-tab to see the Hazard Ratio (HR) table. HR > 1 means higher gene expression is linked to worse survival (higher risk of death). HR < 1 means higher expression is protective. The 95% CI (Confidence Interval) tells you the range of uncertainty, and the p-value confirms statistical significance. This is the core statistical test for evaluating whether a gene is a valid vaccine target.',
   },
   {
-    tab: 2,
+    tab: 3,
     title: 'Multivariate Analysis & Covariates',
     description: 'Control for confounding factors like age, sex, and tumor stage.',
     detail:
       'Enable the checkboxes for Age, Sex, and Stage under "Covariates" to unlock the Multivariate tab. This runs a multivariate Cox regression — it tests whether the gene effect is independent of other clinical factors. If the gene HR remains significant after adjusting for covariates, it strengthens the case that the gene itself drives survival differences.',
   },
   {
-    tab: 2,
+    tab: 3,
     title: 'Gene Correlations',
     description: 'See which other genes are co-expressed with your target.',
     detail:
       'The Correlations tab shows a bar chart and table of Pearson r values between your target gene and every other gene in the panel. High positive correlation means genes are co-expressed; negative means they are inversely related. This helps identify gene networks and potential combination targets for multi-antigen vaccines.',
   },
-  // Tab 3 — Simulation
+  // Tab 4 — Simulation
   {
-    tab: 3,
+    tab: 4,
     title: 'VLP Simulation',
     description: 'Run bootstrap models to estimate vaccine response scenarios.',
     detail:
       'This module uses your expression data to simulate how a VLP-based vaccine might perform. Adjust three parameters: Assumed Efficacy (how effective the vaccine is), Bootstrap Iterations (number of random resamples), and High-APOC1 Response Bias (likelihood that high-expression patients respond). Click "Run Simulation" to generate a histogram of predicted survival benefit with 95% confidence intervals.',
   },
-  // Tab 4 — Immune Tracking
+  // Tab 5 — Immune Tracking
   {
-    tab: 4,
+    tab: 5,
     title: 'Immune Tracking — Antibody Curves',
     description: 'Monitor IgG antibody production over time for each patient profile.',
     detail:
       'The Overview sub-tab plots IgG (Immunoglobulin G) antibody levels for 3 simulated patient profiles across multiple timepoints. The dashed horizontal line marks the minimum protective threshold (20 AU/mL). The Antibody Decay Rate table below shows each profile\'s estimated half-life — longer half-life means more durable immunity.',
   },
   {
-    tab: 4,
+    tab: 5,
     title: 'All Markers & Correlation',
     description: 'View CD8+ T-cells, IFN-γ, CA 19-9, and IgG together.',
     detail:
       'The "All Markers" sub-tab lets you select a patient profile and see all immune markers side-by-side: IgG (antibody response), CD8+ T-cells (killer cells), IFN-γ (inflammatory cytokine), and CA 19-9 (tumor marker). The Correlation sub-tab calculates Pearson r between IgG levels and symptom severity to check if immune response is linked to side effects.',
   },
   {
-    tab: 4,
+    tab: 5,
     title: 'Patient Comparison',
     description: 'Compare immune response trends across all patients.',
     detail:
       'The Patient Comparison sub-tab shows cards for each patient with their current IgG level, trend direction (rising, falling, or stable), CA 19-9 level, and total symptom count. IgG sparklines give you a quick visual of each patient\'s immune trajectory.',
   },
-  // Tab 5 — Safety
+  // Tab 6 — Safety
   {
-    tab: 5,
+    tab: 6,
     title: 'Safety Monitoring — Dashboard',
     description: 'Track adverse events and their severity after vaccine doses.',
     detail:
       'The Dashboard shows the most common adverse events (injection site pain, fatigue, fever, etc.) in a bar chart and a severity distribution pie chart using CTCAE grading (Grade 1 = mild, Grade 2 = moderate, Grade 3 = severe). The stat cards at the top show total events, patient count, and severity breakdown.',
   },
   {
-    tab: 5,
+    tab: 6,
     title: 'Safety Timeline & By-Patient View',
     description: 'See when adverse events occurred and drill into individual patients.',
     detail:
       'The Timeline view plots adverse events on a scatter chart by date and dose number, with different shapes for severity levels. The "By Patient" view shows per-patient cards with IgG sparklines and severity breakdowns, so you can correlate immune response intensity with side effect frequency.',
   },
   {
-    tab: 5,
+    tab: 6,
     title: 'Safety Table & CSV Export',
     description: 'CTCAE-graded summary table with concurrent IgG levels.',
     detail:
       'The Safety Table follows CTCAE grading and shows how many events of each grade occurred for each symptom, along with the average IgG level at the time of each event. This helps determine if side effects are immune-mediated. Click "Export CSV" to download the table for regulatory reporting.',
   },
-  // Tab 6 — Export / Reports
+  // Tab 7 — Export / Reports
   {
-    tab: 6,
+    tab: 7,
     title: 'Export & Reports',
     description: 'Generate comprehensive PDF reports of your research data.',
     detail:
       'This module compiles expression analysis results, immune tracking summaries, safety data, and T-cell proxy scores into a downloadable PDF. Use it to share findings with collaborators, include in grant applications, or archive for regulatory documentation. All charts and tables from other modules are included.',
   },
-  // Tab 7 — T-Cell Proxy
+  // Tab 8 — T-Cell Proxy
   {
-    tab: 7,
+    tab: 8,
     title: 'T-Cell Proxy Calculator',
     description: 'Estimate T-cell activation from available markers when direct assays are not available.',
     detail:
       'This calculator combines multiple indirect markers into a single weighted proxy score (0-100). The weights are: Direct Immune Assays like IFN-γ ELISPOT (70%), General Labs like lymphocyte count (20%), and Symptoms like injection site reaction (10%). Click "+ Timepoint" to add data or "Demo Data" to load a sample dataset. The circular gauge shows the current score, tier (Low / Moderate / High), and confidence level.',
   },
   {
-    tab: 7,
+    tab: 8,
     title: 'Scoring Breakdown & Limitations',
     description: 'Understand exactly what is driving the proxy score.',
     detail:
       'The "Scoring Breakdown" panel shows a line-by-line explanation of each input marker, its weight, and its contribution to the final score. This transparency helps you identify which markers are most influential and where data gaps might be reducing confidence. Important: this is a proxy estimation, not a direct T-cell measurement — see the disclaimer at the bottom for limitations.',
   },
-  // Tab 8 — Validation
+  // Tab 9 — Validation
   {
-    tab: 8,
+    tab: 9,
     title: 'Validation — ROC Curves',
     description: 'Evaluate model discrimination with ROC analysis.',
     detail:
       'Upload a CSV with patient data or use the GSE62452 Benchmark tab. The ROC (Receiver Operating Characteristic) curve plots sensitivity vs. specificity at every threshold. AUC (Area Under the Curve) tells you overall discriminative ability — 1.0 is perfect, 0.5 is random. The confusion matrix shows true/false positives and negatives at your chosen threshold.',
   },
   {
-    tab: 8,
+    tab: 9,
     title: 'Calibration & Benchmarking',
     description: 'Check if predicted probabilities match observed outcomes.',
     detail:
