@@ -102,7 +102,7 @@ const WELCOME_STEPS: { title: string; description: string; Icon: typeof Microsco
   },
   {
     title: 'Navigation',
-    description: 'Use the tab bar at the top to switch between modules: Overview, Lab Records, Analysis, Simulation, Immune Tracking, Safety, Export, T-Cell Proxy, and Validation.',
+    description: 'Use the tab bar at the top to switch between modules: Overview, Lab Records, Tissue Analysis, Analysis, Simulation, Immune Tracking, Safety, Export, T-Cell Proxy, and Validation.',
     Icon: Compass,
   },
   {
