@@ -21,14 +21,23 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => (
           transition={{ duration: 0.4, ease: 'easeOut' }}
           className="flex flex-col items-center gap-6"
         >
-          {/* Logo */}
-          <motion.img
-            src={logoImg}
-            alt="OncoSync logo"
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
-            className="w-14 h-14 object-contain"
-          />
+          {/* Logo with circular orbit animation */}
+          <div className="relative w-20 h-20 flex items-center justify-center">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              className="absolute inset-0 rounded-full border-2 border-transparent"
+              style={{ borderTopColor: 'hsl(var(--primary))', borderRightColor: 'hsl(var(--primary) / 0.3)' }}
+            />
+            <motion.img
+              src={logoImg}
+              alt="OncoSync logo"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: [0.8, 1, 0.8] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-14 h-14 object-contain"
+            />
+          </div>
 
           <div className="flex flex-col items-center gap-2">
             <h1 className="text-lg font-bold text-foreground tracking-tight">OncoSync</h1>
