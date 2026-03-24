@@ -203,9 +203,9 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
            </StaggerGrid>
 
           <div className="vax-tab-bar overflow-x-auto">
-            {['km', 'cox', 'correlation', ...(hasAnyCovariates ? ['multivariate'] : [])].map(tab => (
+            {['km', 'cox', 'volcano', 'correlation', ...(hasAnyCovariates ? ['multivariate'] : [])].map(tab => (
               <button key={tab} onClick={() => setAnalysisTab(tab)} className={`vax-tab-btn ${analysisTab === tab ? 'active' : ''}`}>
-                {tab === 'km' ? 'Kaplan-Meier' : tab === 'cox' ? 'Cox Regression' : tab === 'multivariate' ? 'Multivariate' : 'Correlations'}
+                {tab === 'km' ? 'Kaplan-Meier' : tab === 'cox' ? 'Cox Regression' : tab === 'volcano' ? 'Volcano' : tab === 'multivariate' ? 'Multivariate' : 'Correlations'}
               </button>
             ))}
           </div>
