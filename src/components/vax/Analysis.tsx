@@ -355,7 +355,105 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
             </FadeSection>
           )}
 
-          {analysisTab === 'correlation' && (
+          {analysisTab === 'volcano' && (
+            <FadeSection>
+              <div className="vax-card">
+                <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                  Volcano Plot — Differential Expression by {targetGene}
+                  <InfoTooltip term="Volcano Plot" definition="Visualizes statistical significance (-log10 p-value) vs. magnitude of change (log2 fold-change) for each gene. Points in the upper corners are both significant and biologically meaningful." />
+                </h3>
+                <p className="text-[11px] text-muted-foreground mb-4">
+                  Comparing High vs Low {targetGene} groups • Dashed lines: |log2FC| {'>'} 0.5 and p {'<'} 0.05
+                </p>
+                <ResponsiveContainer width="100%" height={400}>
+                  <ScatterChart margin={{ top: 10, right: 15, bottom: 40, left: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
+                    <XAxis
+                      dataKey="log2FC"
+                      type="number"
+                      name="log2 FC"
+                      domain={['auto', 'auto']}
+                      label={{ value: 'log₂ Fold Change (High / Low)', position: 'insideBottom', offset: -10, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }}
+                      stroke="hsl(270,9%,46%)"
+                      tick={{ fontSize: 10 }}
+                    />
+                    <YAxis
+                      dataKey="negLog10P"
+                      type="number"
+                      name="-log10(p)"
+                      label={{ value: '-log₁₀(p-value)', angle: -90, position: 'insideLeft', offset: 0, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }}
+                      stroke="hsl(270,9%,46%)"
+                      tick={{ fontSize: 10 }}
+                      width={45}
+                    />
+                    <ZAxis range={[40, 40]} />
+                    <ReferenceLine x={-0.5} stroke="hsl(270,9%,46%)" strokeDasharray="4 4" strokeWidth={1} />
+                    <ReferenceLine x={0.5} stroke="hsl(270,9%,46%)" strokeDasharray="4 4" strokeWidth={1} />
+                    <ReferenceLine y={-Math.log10(0.05)} stroke="hsl(270,9%,46%)" strokeDasharray="4 4" strokeWidth={1}>
+                      <Label value="p=0.05" position="insideTopRight" style={{ fontSize: 9, fill: 'hsl(270,9%,46%)' }} />
+                    </ReferenceLine>
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (!active || !payload?.length) return null;
+                        const d = payload[0].payload;
+                        return (
+                          <div className="rounded-lg border border-border/50 bg-background px-3 py-2 text-xs shadow-xl">
+                            <p className="font-semibold">{d.gene}</p>
+                            <p className="text-muted-foreground">log₂FC: {d.log2FC.toFixed(3)}</p>
+                            <p className="text-muted-foreground">p-value: {d.p < 0.001 ? '<0.001' : d.p.toFixed(4)}</p>
+                          </div>
+                        );
+                      }}
+                    />
+                    {/* Non-significant */}
+                    <Scatter
+                      name="Not significant"
+                      data={analysisResults.volcanoData.filter(d => d.sig === 'ns')}
+                      fill="hsl(var(--muted-foreground))"
+                      opacity={0.4}
+                    />
+                    {/* Up-regulated */}
+                    <Scatter
+                      name="Up-regulated"
+                      data={analysisResults.volcanoData.filter(d => d.sig === 'up')}
+                      fill="hsl(0,72%,51%)"
+                      opacity={0.9}
+                    />
+                    {/* Down-regulated */}
+                    <Scatter
+                      name="Down-regulated"
+                      data={analysisResults.volcanoData.filter(d => d.sig === 'down')}
+                      fill="hsl(220,70%,50%)"
+                      opacity={0.9}
+                    />
+                    <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
+                  </ScatterChart>
+                </ResponsiveContainer>
+                {/* Gene labels for significant hits */}
+                <div className="mt-3 flex flex-wrap gap-2 justify-center">
+                  {analysisResults.volcanoData
+                    .filter(d => d.sig !== 'ns')
+                    .sort((a, b) => b.negLog10P - a.negLog10P)
+                    .map(d => (
+                      <span
+                        key={d.gene}
+                        className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                          d.sig === 'up'
+                            ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        }`}
+                      >
+                        {d.gene} ({d.log2FC > 0 ? '↑' : '↓'} FC={d.log2FC.toFixed(2)}, p={d.p < 0.001 ? '<.001' : d.p.toFixed(3)})
+                      </span>
+                    ))}
+                  {analysisResults.volcanoData.filter(d => d.sig !== 'ns').length === 0 && (
+                    <span className="text-xs text-muted-foreground">No genes meet significance thresholds (|log₂FC| {'>'} 0.5 and p {'<'} 0.05)</span>
+                  )}
+                </div>
+              </div>
+            </FadeSection>
+          )}
+
             <FadeSection>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="vax-card">
