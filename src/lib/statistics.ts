@@ -73,7 +73,7 @@ export const logRankTest = (
           t2.filter((t) => t != null).length)) *
     0.5;
   const chi2 = V > 0 ? (O1 - E1) ** 2 / V : 0;
-  return { chi2, p: Math.exp(-chi2 / 2) };
+  return { chi2, p: Math.min(Math.exp(-chi2 / 2), 1) };
 };
 
 export interface CoxResult {
