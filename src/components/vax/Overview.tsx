@@ -73,7 +73,7 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
 
     <StaggerGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <StaggerItem>
-        <button onClick={() => setTab(2)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
+        <button onClick={() => setTab(3)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-sm mb-1">Expression Analysis</h4>
@@ -84,7 +84,7 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
         </button>
       </StaggerItem>
       <StaggerItem>
-        <button onClick={() => setTab(3)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
+        <button onClick={() => setTab(4)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-sm mb-1">VLP Simulation</h4>
@@ -95,7 +95,7 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
         </button>
       </StaggerItem>
       <StaggerItem>
-        <button onClick={() => setTab(4)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
+        <button onClick={() => setTab(5)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-sm mb-1">Immune Tracking</h4>
@@ -106,7 +106,7 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
         </button>
       </StaggerItem>
       <StaggerItem>
-        <button onClick={() => setTab(5)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
+        <button onClick={() => setTab(6)} className="vax-card-compact text-left hover:border-primary/30 transition-colors group w-full">
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-sm mb-1">Safety Monitoring</h4>

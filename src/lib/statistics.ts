@@ -13,7 +13,7 @@ export const jStat = {
     const d2 = Math.sqrt(y.reduce((s, yi) => s + (yi - my) ** 2, 0));
     const r = num / (d1 * d2);
     const t = r * Math.sqrt((n - 2) / (1 - r * r));
-    const p = Math.exp(-0.5 * t * t) * 2;
+    const p = Math.min(Math.exp(-0.5 * t * t) * 2, 1);
     return { r, p };
   },
 };
@@ -73,7 +73,7 @@ export const logRankTest = (
           t2.filter((t) => t != null).length)) *
     0.5;
   const chi2 = V > 0 ? (O1 - E1) ** 2 / V : 0;
-  return { chi2, p: Math.exp(-chi2 / 2) };
+  return { chi2, p: Math.min(Math.exp(-chi2 / 2), 1) };
 };
 
 export interface CoxResult {
@@ -115,7 +115,7 @@ export const coxPH = (
   const hr = Math.exp(beta);
   const se = 0.5;
   const z = Math.abs(beta) / se;
-  const p = Math.exp((-z * z) / 2) * 2;
+  const p = Math.min(Math.exp((-z * z) / 2) * 2, 1);
   return { hr, ci: [hr * Math.exp(-1.96 * se), hr * Math.exp(1.96 * se)], p, beta };
 };
 

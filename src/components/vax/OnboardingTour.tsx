@@ -21,6 +21,15 @@ const TAB_TIPS: Record<number, { title: string; tips: string[] }> = {
     ],
   },
   2: {
+    title: 'Tissue Analysis',
+    tips: [
+      'Upload an H-DAB immunohistochemistry tissue image to analyze ApoC-1 protein distribution.',
+      'Switch between Original, Heatmap, DAB Channel, and Side-by-Side views to inspect staining patterns.',
+      'Adjust the Detection Threshold slider to control sensitivity — lower values detect fainter staining.',
+      'The intensity histogram shows how positive pixels are distributed across staining intensity bins.',
+    ],
+  },
+  3: {
     title: 'Expression Analysis',
     tips: [
       'Select a target gene (default: APOC1) and a split method (median or mean) to stratify patients.',
@@ -30,14 +39,14 @@ const TAB_TIPS: Record<number, { title: string; tips: string[] }> = {
       'The Correlations tab shows which other genes correlate most strongly with your target gene.',
     ],
   },
-  3: {
+  4: {
     title: 'VLP Simulation',
     tips: [
       'This module runs bootstrap models to estimate hypothetical vaccine response scenarios.',
       'Adjust simulation parameters and run multiple iterations to assess variability in predicted outcomes.',
     ],
   },
-  4: {
+  5: {
     title: 'Immune Tracking',
     tips: [
       'The Overview sub-tab shows IgG antibody production curves for all 3 patient profiles over time.',
@@ -47,7 +56,7 @@ const TAB_TIPS: Record<number, { title: string; tips: string[] }> = {
       'Click "+ Log Immune Marker" to add new data points for any patient profile.',
     ],
   },
-  5: {
+  6: {
     title: 'Safety Monitoring',
     tips: [
       'The Dashboard shows the most common adverse events and a severity distribution pie chart.',
@@ -57,14 +66,14 @@ const TAB_TIPS: Record<number, { title: string; tips: string[] }> = {
       'Click "Export CSV" to download a summary table for regulatory reporting.',
     ],
   },
-  6: {
+  7: {
     title: 'Export / Reports',
     tips: [
       'Generate comprehensive PDF reports of your research data for sharing with collaborators.',
       'Reports include expression analysis results, immune tracking summaries, and safety data.',
     ],
   },
-  7: {
+  8: {
     title: 'T-Cell Proxy',
     tips: [
       'This calculator estimates T-cell activation using a weighted proxy score (0-100) from available markers.',
@@ -75,7 +84,7 @@ const TAB_TIPS: Record<number, { title: string; tips: string[] }> = {
       '⚠️ This is a proxy, not a direct measurement — see the disclaimer for limitations.',
     ],
   },
-  8: {
+  9: {
     title: 'Validation',
     tips: [
       'This tab provides ROC curves and calibration metrics to validate model performance.',
@@ -93,7 +102,7 @@ const WELCOME_STEPS: { title: string; description: string; Icon: typeof Microsco
   },
   {
     title: 'Navigation',
-    description: 'Use the tab bar at the top to switch between modules: Overview, Lab Records, Analysis, Simulation, Immune Tracking, Safety, Export, T-Cell Proxy, and Validation.',
+    description: 'Use the tab bar at the top to switch between modules: Overview, Lab Records, Tissue Analysis, Analysis, Simulation, Immune Tracking, Safety, Export, T-Cell Proxy, and Validation.',
     Icon: Compass,
   },
   {

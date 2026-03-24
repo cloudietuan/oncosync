@@ -397,7 +397,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
                 <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} label={{ value: 'Date', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
                 <YAxis yAxisId="left" stroke="#10b981" tick={{ fontSize: 11 }} label={{ value: 'IgG (AU/mL)', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: '#10b981' } }} />
                 <YAxis yAxisId="right" orientation="right" stroke="#3b82f6" tick={{ fontSize: 11 }} label={{ value: 'CD8+ (cells/µL)', angle: 90, position: 'insideRight', offset: 10, style: { fontSize: 10, fill: '#3b82f6' } }} />
-                <Tooltip />
+                <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(1) : value, undefined]} />
                 <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                 <Area yAxisId="left" type="monotone" dataKey="ifn_gamma" name="IFN-γ (pg/mL)" fill="#8b5cf6" fillOpacity={0.15} stroke="#8b5cf6" strokeWidth={1} strokeDasharray="4 2" />
                 <Line yAxisId="left" type="monotone" dataKey="igg" name="IgG (AU/mL)" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
@@ -413,7 +413,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                 <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} label={{ value: 'Date', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
                 <YAxis stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} domain={[0, 'auto']} label={{ value: 'CA 19-9 (U/mL)', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
-                <Tooltip />
+                <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(1) : value, undefined]} />
                 <ReferenceArea y1={CA19_9_CUTOFF} y2={200} fill="#ef4444" fillOpacity={0.06} />
                 <ReferenceArea y1={0} y2={CA19_9_CUTOFF} fill="#10b981" fillOpacity={0.04} />
                 <ReferenceLine y={CA19_9_CUTOFF} stroke="#ef4444" strokeDasharray="6 4" label={{ value: 'Clinical Cutoff (37 U/mL)', position: 'insideTopRight', style: { fontSize: 10, fill: '#ef4444' } }} />
@@ -438,7 +438,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
                     <XAxis dataKey="week" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} />
                     <YAxis yAxisId="left" stroke={profile.color} tick={{ fontSize: 11 }} label={{ value: 'IgG (AU/mL)', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: profile.color } }} />
                     <YAxis yAxisId="right" orientation="right" stroke="#f59e0b" tick={{ fontSize: 11 }} domain={[0, 3]} label={{ value: 'Severity Score', angle: 90, position: 'insideRight', offset: 10, style: { fontSize: 10, fill: '#f59e0b' } }} />
-                    <Tooltip />
+                    <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(2) : value, undefined]} />
                     <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                     <Bar yAxisId="right" dataKey="avgSeverity" name="Avg Symptom Severity" fill="#f59e0b" fillOpacity={0.6} barSize={24} />
                     <Line yAxisId="left" type="monotone" dataKey="avgIgg" name="Avg IgG (AU/mL)" stroke={profile.color} strokeWidth={2} dot={{ r: 3 }} connectNulls />
