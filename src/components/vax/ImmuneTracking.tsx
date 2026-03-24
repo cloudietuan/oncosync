@@ -413,7 +413,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                 <XAxis dataKey="date" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} label={{ value: 'Date', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
                 <YAxis stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} domain={[0, 'auto']} label={{ value: 'CA 19-9 (U/mL)', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
-                <Tooltip />
+                <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(1) : value, undefined]} />
                 <ReferenceArea y1={CA19_9_CUTOFF} y2={200} fill="#ef4444" fillOpacity={0.06} />
                 <ReferenceArea y1={0} y2={CA19_9_CUTOFF} fill="#10b981" fillOpacity={0.04} />
                 <ReferenceLine y={CA19_9_CUTOFF} stroke="#ef4444" strokeDasharray="6 4" label={{ value: 'Clinical Cutoff (37 U/mL)', position: 'insideTopRight', style: { fontSize: 10, fill: '#ef4444' } }} />
