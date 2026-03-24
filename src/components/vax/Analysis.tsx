@@ -454,6 +454,7 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
             </FadeSection>
           )}
 
+          {analysisTab === 'correlation' && (
             <FadeSection>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="vax-card">
