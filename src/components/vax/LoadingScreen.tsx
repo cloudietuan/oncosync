@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import logoImg from '@/assets/logo.png';
 
 interface LoadingScreenProps {
   isLoading: boolean;

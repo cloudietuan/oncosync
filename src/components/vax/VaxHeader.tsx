@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 const VaxHeader = () => {
   const [dark, setDark] = useState(() => {
