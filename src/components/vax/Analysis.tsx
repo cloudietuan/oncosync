@@ -210,10 +210,24 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                   <YAxis domain={[0, 1.05]} width={45} label={{ value: 'Survival Probability', angle: -90, position: 'insideLeft', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
                   <Tooltip formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, undefined]} labelFormatter={(label: number) => `Day ${label}`} />
                   <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
+                  <ReferenceLine y={0.5} stroke="hsl(270,9%,46%)" strokeDasharray="4 4" strokeWidth={1}>
+                    <Label value="50% survival" position="insideTopRight" style={{ fontSize: 9, fill: 'hsl(270,9%,46%)' }} />
+                  </ReferenceLine>
                   <Line type="stepAfter" dataKey="high" name={`High ${targetGene} (n=${analysisResults.highN})`} stroke="#ef4444" strokeWidth={2} dot={false} />
                   <Line type="stepAfter" dataKey="low" name={`Low ${targetGene} (n=${analysisResults.lowN})`} stroke="#3b82f6" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
+              <div className="mt-2 flex flex-wrap gap-3 justify-center text-xs">
+                <span className="px-2 py-1 rounded bg-muted font-medium">
+                  HR = {analysisResults.cox.hr.toFixed(2)} <span className="text-muted-foreground">({analysisResults.cox.ci[0].toFixed(2)}–{analysisResults.cox.ci[1].toFixed(2)})</span>
+                </span>
+                <span className={`px-2 py-1 rounded font-medium ${analysisResults.logRank.p < 0.05 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-muted'}`}>
+                  Log-rank p = {analysisResults.logRank.p.toFixed(4)}
+                </span>
+                <span className="px-2 py-1 rounded bg-muted text-muted-foreground">
+                  {analysisResults.cox.hr > 1 ? '↑ Higher expression → worse prognosis' : '↓ Higher expression → better prognosis'}
+                </span>
+              </div>
             </div>
             </FadeSection>
           )}
