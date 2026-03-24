@@ -306,6 +306,8 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                         <span>Variable</span>
                         <div className="relative mx-1 sm:mx-2">
                           <span className="text-center block">Hazard Ratio (95% CI)</span>
+                          {/* 1.0 reference label in header */}
+                          <div className="absolute text-[8px] text-muted-foreground/70 font-normal" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)', bottom: '-2px' }}>1.0</div>
                         </div>
                         <span className="text-right">HR (p)</span>
                       </div>
