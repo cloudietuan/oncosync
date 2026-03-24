@@ -414,10 +414,10 @@ const TissueAnalysis = () => {
                   <InfoTooltip term="Intensity Distribution" definition="Shows how positive pixels are distributed across intensity bins from low (faint staining) to high (dense staining)." />
                 </h3>
                 <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={result.histogram} margin={{ top: 5, right: 20, bottom: 35, left: 15 }}>
+                  <BarChart data={result.histogram} margin={{ top: 5, right: 10, bottom: 35, left: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                    <XAxis dataKey="bin" stroke="hsl(270,9%,46%)" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" height={60} />
-                    <YAxis stroke="hsl(270,9%,46%)" label={{ value: 'Pixel Count', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
+                    <XAxis dataKey="bin" stroke="hsl(270,9%,46%)" tick={{ fontSize: 9 }} angle={-30} textAnchor="end" height={60} />
+                    <YAxis stroke="hsl(270,9%,46%)" width={50} label={{ value: 'Pixel Count', angle: -90, position: 'insideLeft', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
                     <Tooltip formatter={(value: number) => [value.toLocaleString(), 'Pixels']} />
                     <Bar dataKey="count" name="Positive Pixels">
                       {result.histogram.map((_, i) => (
