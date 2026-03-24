@@ -13,7 +13,7 @@ export const jStat = {
     const d2 = Math.sqrt(y.reduce((s, yi) => s + (yi - my) ** 2, 0));
     const r = num / (d1 * d2);
     const t = r * Math.sqrt((n - 2) / (1 - r * r));
-    const p = Math.exp(-0.5 * t * t) * 2;
+    const p = Math.min(Math.exp(-0.5 * t * t) * 2, 1);
     return { r, p };
   },
 };
