@@ -91,32 +91,53 @@ export const coxPH = (
   const data = times
     .map((t, i) => ({ t: t as number, e: events[i], x: x[i] }))
     .filter((d) => d.t != null);
+  if (data.length < 3) {
+    return { hr: 1, ci: [1, 1], p: 1, beta: 0 };
+  }
   const mx = jStat.mean(data.map((d) => d.x));
+  const sx = jStat.stdev(data.map((d) => d.x));
+  // Standardize x to prevent numerical overflow
+  const useStd = sx > 0;
+  const stdData = data.map(d => ({ ...d, xc: useStd ? (d.x - mx) / sx : d.x - mx }));
+
   let beta = 0;
-  for (let iter = 0; iter < 20; iter++) {
+  let den = 1;
+  for (let iter = 0; iter < 30; iter++) {
     let num = 0;
-    let den = 0;
-    data.sort((a, b) => b.t - a.t);
+    den = 0;
+    stdData.sort((a, b) => b.t - a.t);
     let riskSum = 0;
     let riskSumX = 0;
     let riskSumX2 = 0;
-    data.forEach((d) => {
-      const w = Math.exp(beta * (d.x - mx));
+    stdData.forEach((d) => {
+      const w = Math.exp(Math.max(-20, Math.min(20, beta * d.xc)));
       riskSum += w;
-      riskSumX += w * (d.x - mx);
-      riskSumX2 += w * (d.x - mx) ** 2;
+      riskSumX += w * d.xc;
+      riskSumX2 += w * d.xc ** 2;
       if (d.e === 1) {
-        num += d.x - mx - riskSumX / riskSum;
+        num += d.xc - riskSumX / riskSum;
         den += riskSumX2 / riskSum - (riskSumX / riskSum) ** 2;
       }
     });
-    if (Math.abs(den) > 0.0001) beta += num / den;
+    if (Math.abs(den) > 1e-8) {
+      const step = num / den;
+      beta += Math.max(-2, Math.min(2, step)); // damped step
+    }
+    // Clamp beta to prevent explosion
+    beta = Math.max(-10, Math.min(10, beta));
   }
-  const hr = Math.exp(beta);
-  const se = 0.5;
-  const z = Math.abs(beta) / se;
-  const p = Math.min(Math.exp((-z * z) / 2) * 2, 1);
-  return { hr, ci: [hr * Math.exp(-1.96 * se), hr * Math.exp(1.96 * se)], p, beta };
+  // Convert back: beta on standardized scale → original scale
+  const betaOrig = useStd ? beta / sx : beta;
+  const se = Math.abs(den) > 1e-8 ? 1 / Math.sqrt(Math.abs(den)) * (useStd ? 1 / sx : 1) : 0.5;
+  const hr = Math.exp(betaOrig);
+  const z = Math.abs(betaOrig) / se;
+  const p = Math.min(Math.max(Math.exp((-z * z) / 2) * 2, 0), 1);
+  return {
+    hr,
+    ci: [hr * Math.exp(-1.96 * se), hr * Math.exp(1.96 * se)],
+    p,
+    beta: betaOrig,
+  };
 };
 
 export interface MultiCoxResult {
