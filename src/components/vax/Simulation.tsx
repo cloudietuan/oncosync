@@ -124,7 +124,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                   <XAxis dataKey="bin" label={{ value: 'Mean Survival Benefit (days)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" tick={{ fontSize: 10 }} interval={4} />
                   <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
-                  <Tooltip />
+                  <Tooltip formatter={(value: number) => [value.toFixed(0), undefined]} />
                   <Bar dataKey="count" fill="#8b5cf6" />
                 </BarChart>
               </ResponsiveContainer>

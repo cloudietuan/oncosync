@@ -6,6 +6,7 @@ import VaxNav from '@/components/vax/VaxNav';
 import OnboardingTour from '@/components/vax/OnboardingTour';
 import Overview from '@/components/vax/Overview';
 import WetLab from '@/components/vax/WetLab';
+import TissueAnalysis from '@/components/vax/TissueAnalysis';
 import Analysis from '@/components/vax/Analysis';
 import Simulation from '@/components/vax/Simulation';
 import ImmuneTracking from '@/components/vax/ImmuneTracking';
@@ -36,7 +37,6 @@ const Index = () => {
   const { sessions, saveSession, deleteSession, autoSave } = useSessionPersistence();
 
   useEffect(() => {
-    // Restore autosave if available
     if (sessions.current) {
       setTab(sessions.current.tab);
       setBatches(sessions.current.batches);
@@ -44,17 +44,15 @@ const Index = () => {
       if (sessions.current.immuneData) setImmuneData(sessions.current.immuneData);
       if (sessions.current.tcellProxy) setTcellProxy(sessions.current.tcellProxy);
     }
-  }, []); // only on mount
+  }, []);
 
   useEffect(() => {
     setExpr({ genes: GSE62452_GENES, samples: GSE62452_SAMPLES, values: GSE62452_EXPR, fileName: 'GSE62452_expression.csv' });
     setClin(GSE62452_CLIN);
-    // Brief delay for loading screen
     const t = setTimeout(() => setAppReady(true), 1600);
     return () => clearTimeout(t);
   }, []);
 
-  // Autosave on state changes (debounced)
   useEffect(() => {
     const timer = setTimeout(() => {
       autoSave({ tab, batches, logs, immuneData, tcellProxy });
@@ -105,13 +103,14 @@ const Index = () => {
           >
             {tab === 0 && <Overview expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} setTab={setTab} />}
             {tab === 1 && <WetLab batches={batches} setBatches={setBatches} />}
-            {tab === 2 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
-            {tab === 3 && <Simulation expr={expr} clin={clin} />}
-            {tab === 4 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} logs={logs} />}
-            {tab === 5 && <SafetyTracking logs={logs} setLogs={setLogs} immuneData={immuneData} />}
-            {tab === 6 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} tcellProxy={tcellProxy} />}
-            {tab === 7 && <TcellProxy initialState={tcellProxy} onStateChange={handleTcellChange} />}
-            {tab === 8 && <Validation expr={expr} clin={clin} />}
+            {tab === 2 && <TissueAnalysis />}
+            {tab === 3 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
+            {tab === 4 && <Simulation expr={expr} clin={clin} />}
+            {tab === 5 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} logs={logs} />}
+            {tab === 6 && <SafetyTracking logs={logs} setLogs={setLogs} immuneData={immuneData} />}
+            {tab === 7 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} tcellProxy={tcellProxy} />}
+            {tab === 8 && <TcellProxy initialState={tcellProxy} onStateChange={handleTcellChange} />}
+            {tab === 9 && <Validation expr={expr} clin={clin} />}
           </motion.div>
         </AnimatePresence>
         <GuidedTutorial onNavigateTab={setTab} />
