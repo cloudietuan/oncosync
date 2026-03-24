@@ -323,10 +323,6 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                             <div className="relative h-8 mx-1 sm:mx-2">
                               {/* Reference line at HR=1 */}
                               <div className="absolute top-0 bottom-0 w-px bg-muted-foreground/40" style={{ left: `${refLinePos}%` }} />
-                              {/* Show 1.0 label only on first row */}
-                              {idx === 0 && (
-                                <div className="absolute -top-1 text-[7px] text-muted-foreground/60" style={{ left: `${refLinePos}%`, transform: 'translateX(-50%)' }}>1.0</div>
-                              )}
                               {/* CI line */}
                               <div className="absolute top-1/2 -translate-y-1/2 h-[2px]" style={{ left: `${ciLowPos}%`, width: `${Math.max(ciHighPos - ciLowPos, 1)}%`, backgroundColor: color }} />
                               {/* CI caps */}
