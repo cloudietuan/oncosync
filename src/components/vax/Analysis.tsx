@@ -247,10 +247,10 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
               <div className="vax-card">
                 <h3 className="font-semibold text-sm mb-4">Gene Correlations with {targetGene}</h3>
                 <ResponsiveContainer width="100%" height={360}>
-                  <BarChart data={analysisResults.correlations.slice(0, 8)} margin={{ top: 5, right: 10, bottom: 50, left: 5 }}>
+                  <BarChart data={analysisResults.correlations.slice(0, 8)} margin={{ top: 5, right: 10, bottom: 50, left: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                     <XAxis dataKey="gene" stroke="hsl(270,9%,46%)" tick={{ fontSize: 10 }} angle={-40} textAnchor="end" height={70} />
-                    <YAxis domain={[-1, 1]} width={45} label={{ value: 'Pearson r', angle: -90, position: 'insideLeft', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
+                    <YAxis domain={[-1, 1]} width={50} label={{ value: 'Pearson r', angle: -90, position: 'insideLeft', offset: 0, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
                     <Tooltip formatter={(value: number) => [value.toFixed(3), 'Pearson r']} />
                     <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                     <Bar dataKey="r" name="Pearson r">
