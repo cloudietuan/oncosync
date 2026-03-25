@@ -13,6 +13,13 @@ const WHITE_BG_THRESHOLD = 240;
 const HEMA_SUPPRESSION_RATIO = 0.6;
 const MIN_DAB_HEMA_GAP = 0.01;
 
+// Inverse of [H_VEC; DAB_VEC; Residual] matrix for proper deconvolution
+const INV_MATRIX = [
+  [1.195046, -0.683542, 0.638039],
+  [0.689411, 0.018376, -0.710083],
+  [-0.916520, 1.508271, 0.297808],
+];
+
 // FIX #2: Updated gradient stops — low-intensity DAB is now clearly visible
 const GRADIENT_STOPS = [
   { t: 0.00, r: 0,   g: 0,   b: 0,   a: 0 },
