@@ -220,13 +220,13 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
               <p className="text-xs text-muted-foreground mb-4">Log-rank p = {analysisResults.logRank.p.toFixed(4)} <InfoTooltip term="Log-rank p-value" definition="Tests whether there is a statistically significant difference in survival between the two groups. p < 0.05 is typically considered significant." /></p>
               <ResponsiveContainer width="100%" height={420}>
                 <LineChart data={analysisResults.kmData} margin={{ top: 5, right: 10, bottom: 35, left: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                  <XAxis dataKey="t" type="number" domain={[0, 'dataMax']} ticks={[0, 200, 400, 600, 800, 1000, 1200, 1400, 1600]} tick={{ fontSize: 10 }} label={{ value: 'Time (days)', position: 'insideBottom', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
-                  <YAxis domain={[0, 1.05]} width={45} label={{ value: 'Survival Probability', angle: -90, position: 'insideLeft', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,12%,86%)" />
+                  <XAxis dataKey="t" type="number" domain={[0, 'dataMax']} ticks={[0, 200, 400, 600, 800, 1000, 1200, 1400, 1600]} tick={{ fontSize: 10 }} label={{ value: 'Time (days)', position: 'insideBottom', offset: -5, style: { fontSize: 10, fill: 'hsl(220,8%,52%)' } }} stroke="hsl(220,8%,52%)" />
+                  <YAxis domain={[0, 1.05]} width={45} label={{ value: 'Survival Probability', angle: -90, position: 'insideLeft', offset: -5, style: { fontSize: 10, fill: 'hsl(220,8%,52%)' } }} stroke="hsl(220,8%,52%)" />
                   <Tooltip formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, undefined]} labelFormatter={(label: number) => `Day ${label}`} />
                   <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
-                  <ReferenceLine y={0.5} stroke="hsl(270,9%,46%)" strokeDasharray="4 4" strokeWidth={1}>
-                    <Label value="50% survival" position="insideTopRight" style={{ fontSize: 9, fill: 'hsl(270,9%,46%)' }} />
+                  <ReferenceLine y={0.5} stroke="hsl(220,8%,52%)" strokeDasharray="4 4" strokeWidth={1}>
+                    <Label value="50% survival" position="insideTopRight" style={{ fontSize: 9, fill: 'hsl(220,8%,52%)' }} />
                   </ReferenceLine>
                   <Line type="stepAfter" dataKey="high" name={`High ${targetGene} (n=${analysisResults.highN})`} stroke="#ef4444" strokeWidth={2} dot={false} />
                   <Line type="stepAfter" dataKey="low" name={`Low ${targetGene} (n=${analysisResults.lowN})`} stroke="#3b82f6" strokeWidth={2} dot={false} />
@@ -401,30 +401,30 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 </p>
                 <ResponsiveContainer width="100%" height={400}>
                   <ScatterChart margin={{ top: 10, right: 15, bottom: 40, left: 10 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,12%,86%)" />
                     <XAxis
                       dataKey="log2FC"
                       type="number"
                       name="log2 FC"
                       domain={['auto', 'auto']}
-                      label={{ value: 'log₂ Fold Change (High / Low)', position: 'insideBottom', offset: -10, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }}
-                      stroke="hsl(270,9%,46%)"
+                      label={{ value: 'log₂ Fold Change (High / Low)', position: 'insideBottom', offset: -10, style: { fontSize: 10, fill: 'hsl(220,8%,52%)' } }}
+                      stroke="hsl(220,8%,52%)"
                       tick={{ fontSize: 10 }}
                     />
                     <YAxis
                       dataKey="negLog10P"
                       type="number"
                       name="-log10(p)"
-                      label={{ value: '-log₁₀(p-value)', angle: -90, position: 'insideLeft', offset: 0, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }}
-                      stroke="hsl(270,9%,46%)"
+                      label={{ value: '-log₁₀(p-value)', angle: -90, position: 'insideLeft', offset: 0, style: { fontSize: 10, fill: 'hsl(220,8%,52%)' } }}
+                      stroke="hsl(220,8%,52%)"
                       tick={{ fontSize: 10 }}
                       width={45}
                     />
                     <ZAxis range={[40, 40]} />
-                    <ReferenceLine x={-0.5} stroke="hsl(270,9%,46%)" strokeDasharray="4 4" strokeWidth={1} />
-                    <ReferenceLine x={0.5} stroke="hsl(270,9%,46%)" strokeDasharray="4 4" strokeWidth={1} />
-                    <ReferenceLine y={-Math.log10(0.05)} stroke="hsl(270,9%,46%)" strokeDasharray="4 4" strokeWidth={1}>
-                      <Label value="p=0.05" position="insideTopRight" style={{ fontSize: 9, fill: 'hsl(270,9%,46%)' }} />
+                    <ReferenceLine x={-0.5} stroke="hsl(220,8%,52%)" strokeDasharray="4 4" strokeWidth={1} />
+                    <ReferenceLine x={0.5} stroke="hsl(220,8%,52%)" strokeDasharray="4 4" strokeWidth={1} />
+                    <ReferenceLine y={-Math.log10(0.05)} stroke="hsl(220,8%,52%)" strokeDasharray="4 4" strokeWidth={1}>
+                      <Label value="p=0.05" position="insideTopRight" style={{ fontSize: 9, fill: 'hsl(220,8%,52%)' }} />
                     </ReferenceLine>
                     <Tooltip
                       content={({ active, payload }) => {
@@ -495,9 +495,9 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
                 <h3 className="font-semibold text-sm mb-4">Gene Correlations with {targetGene}</h3>
                 <ResponsiveContainer width="100%" height={360}>
                   <BarChart data={analysisResults.correlations.slice(0, 8)} margin={{ top: 5, right: 10, bottom: 50, left: 15 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                    <XAxis dataKey="gene" stroke="hsl(270,9%,46%)" tick={{ fontSize: 10 }} angle={-40} textAnchor="end" height={70} />
-                    <YAxis domain={[-1, 1]} width={55} label={{ value: 'Pearson r', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,12%,86%)" />
+                    <XAxis dataKey="gene" stroke="hsl(220,8%,52%)" tick={{ fontSize: 10 }} angle={-40} textAnchor="end" height={70} />
+                    <YAxis domain={[-1, 1]} width={55} label={{ value: 'Pearson r', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 10, fill: 'hsl(220,8%,52%)' } }} stroke="hsl(220,8%,52%)" />
                     <Tooltip formatter={(value: number) => [value.toFixed(3), 'Pearson r']} />
                     <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                     <Bar dataKey="r" name="Pearson r">

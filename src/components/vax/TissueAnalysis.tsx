@@ -453,7 +453,7 @@ const TissueAnalysis = () => {
       canvasSideRef.current.height = h;
        sideCtx.clearRect(0, 0, totalW, h);
       sideCtx.drawImage(img, 0, 0, w, h);
-      sideCtx.fillStyle = 'hsl(270,9%,46%)';
+      sideCtx.fillStyle = 'hsl(220,8%,52%)';
       sideCtx.fillRect(w, 0, 2, h);
       if (canvasHeatRef.current) {
         sideCtx.drawImage(canvasHeatRef.current, w + 2, 0);
@@ -732,9 +732,9 @@ const TissueAnalysis = () => {
                           <stop offset="100%" stopColor="rgb(210,20,20)" />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                      <XAxis dataKey="bin" stroke="hsl(270,9%,46%)" tick={{ fontSize: 8 }} angle={-30} textAnchor="end" height={50} />
-                      <YAxis stroke="hsl(270,9%,46%)" width={42} domain={[0, 'auto']} label={{ value: '% tissue', angle: -90, position: 'insideLeft', offset: -2, style: { fontSize: 9, fill: 'hsl(270,9%,46%)' } }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,12%,86%)" />
+                      <XAxis dataKey="bin" stroke="hsl(220,8%,52%)" tick={{ fontSize: 8 }} angle={-30} textAnchor="end" height={50} />
+                      <YAxis stroke="hsl(220,8%,52%)" width={42} domain={[0, 'auto']} label={{ value: '% tissue', angle: -90, position: 'insideLeft', offset: -2, style: { fontSize: 9, fill: 'hsl(220,8%,52%)' } }} />
                       <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`, '% of tissue']} />
                       <Area
                         type="monotone"

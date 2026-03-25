@@ -121,16 +121,16 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
               <h3 className="font-semibold text-sm mb-2">Bootstrap Distribution of Survival Benefit</h3>
               <ResponsiveContainer width="100%" height={340}>
                 <BarChart data={results.histogram} margin={{ top: 5, right: 20, bottom: 35, left: 15 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                  <XAxis dataKey="bin" label={{ value: 'Mean Survival Benefit (days)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" tick={{ fontSize: 10 }} interval={4} />
-                  <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} stroke="hsl(270,9%,46%)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,12%,86%)" />
+                  <XAxis dataKey="bin" label={{ value: 'Mean Survival Benefit (days)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(220,8%,52%)' } }} stroke="hsl(220,8%,52%)" tick={{ fontSize: 10 }} interval={4} />
+                  <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(220,8%,52%)' } }} stroke="hsl(220,8%,52%)" />
                   <Tooltip formatter={(value: number) => [value.toFixed(0), undefined]} />
-                  <Bar dataKey="count" fill="#8b5cf6" />
+                  <Bar dataKey="count" fill="hsl(200,80%,44%)" />
                 </BarChart>
               </ResponsiveContainer>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-violet-600">{results.meanBenefit.toFixed(0)}</div>
+                  <div className="text-3xl font-bold text-primary">{results.meanBenefit.toFixed(0)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Mean Benefit (days)</div>
                 </div>
                 <div className="text-center">
