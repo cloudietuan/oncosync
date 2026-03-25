@@ -289,14 +289,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-        <div>
-          <h2 className="vax-section-title flex items-center gap-2">
-            Immune Tracking
-            <InfoTooltip term="Immune Tracking" definition="Longitudinal monitoring of humoral and cellular immune markers to assess vaccine-induced immune responses over time." />
-          </h2>
-          <p className="vax-section-desc">Antibody production curves, decay analysis, and immune marker monitoring</p>
-        </div>
+      <div className="flex justify-end">
         <button onClick={() => setShowModal(true)} className="vax-btn-primary shrink-0">+ Log Immune Marker</button>
       </div>
 

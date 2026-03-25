@@ -22,14 +22,7 @@ const WetLab = ({ batches, setBatches }: WetLabProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-        <div>
-          <h2 className="vax-section-title flex items-center gap-2">
-            Lab Records
-            <InfoTooltip term="Lab Records" definition="Wet lab documentation of VLP (Virus-Like Particle) production batches, including expression conditions, purification steps, and conjugation parameters." />
-          </h2>
-          <p className="vax-section-desc">Qβ VLP production and conjugation tracking</p>
-        </div>
+      <div className="flex justify-end">
         <button onClick={() => setShowForm(!showForm)} className="vax-btn-primary shrink-0">
           {showForm ? 'Cancel' : '+ New Batch'}
         </button>

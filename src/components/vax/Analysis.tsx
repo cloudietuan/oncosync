@@ -141,13 +141,6 @@ const Analysis = ({ expr, setExpr, clin, setClin }: AnalysisProps) => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="vax-section-title flex items-center gap-2">
-          Expression Analysis
-          <InfoTooltip term="Expression Analysis" definition="Statistical analysis of gene expression levels from microarray or RNA-seq data, used to identify biomarkers associated with patient outcomes." />
-        </h2>
-        <p className="vax-section-desc">Survival analysis and gene correlations from GSE62452</p>
-      </div>
 
       <AlertBox variant="success" icon="✓" title="GSE62452 Data Loaded" description={`${expr?.genes?.length || 0} genes × ${expr?.samples?.length || 0} samples with survival outcomes from GEO.`} />
 

@@ -129,18 +129,9 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-        <div>
-          <h2 className="vax-section-title flex items-center gap-2">
-            Safety Monitoring
-            <InfoTooltip term="Safety Monitoring" definition="Systematic tracking and grading of adverse events (side effects) experienced by patients during vaccine trials, using CTCAE standardized criteria." />
-          </h2>
-          <p className="vax-section-desc">Adverse event tracking and CTCAE grading</p>
-        </div>
-        <div className="flex gap-2 shrink-0">
-          <button onClick={exportSafetyTable} className="vax-btn-secondary">Export CSV</button>
-          <button onClick={() => setShowModal(true)} className="vax-btn-primary">+ Log Event</button>
-        </div>
+      <div className="flex justify-end gap-2">
+        <button onClick={exportSafetyTable} className="vax-btn-secondary">Export CSV</button>
+        <button onClick={() => setShowModal(true)} className="vax-btn-primary">+ Log Event</button>
       </div>
 
       <AlertBox variant="info" icon="ℹ" title="Simulated Data" description="This module demonstrates safety tracking with simulated patient profiles." />

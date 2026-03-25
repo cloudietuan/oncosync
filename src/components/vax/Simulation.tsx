@@ -84,10 +84,6 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="vax-section-title">VLP Response Simulation</h2>
-        <p className="vax-section-desc">Bootstrap modeling of hypothetical vaccine response</p>
-      </div>
 
       <AlertBox variant="warning" icon="⚠" title="Simulation Disclaimer" description="This is a hypothetical model assuming treatment effects not clinically established. For educational exploration only." />
 

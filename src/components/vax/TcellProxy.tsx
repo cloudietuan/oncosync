@@ -154,20 +154,7 @@ const TcellProxy = ({ initialState, onStateChange }: TcellProxyProps) => {
 
   return (
     <div>
-      {/* ─── Calculator Header ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">Tc</div>
-            <div>
-              <h2 className="vax-section-title text-lg flex items-center gap-2">
-                T-Cell Activation Proxy
-                <InfoTooltip term="T-Cell Activation Proxy" definition="A weighted composite score (0-100) estimating cellular immune activation using direct assays (70%), general labs (20%), and symptoms (10%). Not a direct T-cell measurement — it's a proxy inferred from available markers." />
-              </h2>
-              <p className="text-[11px] text-muted-foreground">Proxy trend calculator · Not diagnostic</p>
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-3 mb-4">
         <div className="flex flex-wrap gap-1.5">
           <button onClick={addTP} className="vax-btn-primary text-[12px] py-1.5 px-3">+ Timepoint</button>
           <button onClick={loadDemo} className="vax-btn-secondary text-[12px] py-1.5 px-3">Demo Data</button>

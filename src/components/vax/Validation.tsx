@@ -162,10 +162,6 @@ const Validation = ({ expr, clin }: ValidationProps) => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="vax-section-title">Validation & Benchmarking</h2>
-        <p className="vax-section-desc">Evaluate proxy scoring accuracy against known outcomes</p>
-      </div>
 
       <AlertBox variant="warning" icon="⚠" title="Research Validation Only"
         description="These metrics evaluate model calibration and discrimination, not clinical utility. Results require external prospective validation before any clinical application." />
