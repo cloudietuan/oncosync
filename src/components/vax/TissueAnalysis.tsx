@@ -477,13 +477,45 @@ const TissueAnalysis = () => {
             </div>
             <input ref={inputRef} type="file" accept=".png,.jpg,.jpeg" className="hidden" onChange={e => handleFiles(e.target.files)} />
           </div>
+
+          {/* Demo images from Human Protein Atlas */}
+          <div className="space-y-2">
+            {DEMO_IMAGES.map(group => (
+              <div key={group.group}>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{group.group}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {group.items.map(item => (
+                    <button
+                      key={item.fileName}
+                      onClick={() => loadRemoteImage(item.url, item.fileName)}
+                      disabled={!!loadingDemo}
+                      className="vax-btn-secondary flex items-center justify-center gap-1.5 py-2 text-xs disabled:opacity-50"
+                    >
+                      {loadingDemo === item.fileName ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Download className="w-3.5 h-3.5" />
+                      )}
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Synthetic fallback */}
           <button
             onClick={loadDemoImage}
-            className="vax-btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
+            className="vax-btn-secondary w-full flex items-center justify-center gap-2 py-2 text-xs"
           >
-            <FlaskConical className="w-4 h-4" />
-            Load Demo H-DAB Image
+            <FlaskConical className="w-3.5 h-3.5" />
+            Generate Synthetic H-DAB Image
           </button>
+
+          <p className="text-[9px] text-muted-foreground text-center">
+            IHC images: Human Protein Atlas, antibody HPA051518 · CC BY-SA 3.0
+          </p>
         </div>
       ) : (
         <>
