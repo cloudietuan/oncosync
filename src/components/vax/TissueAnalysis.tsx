@@ -775,7 +775,7 @@ const TissueAnalysis = () => {
                 <span className="font-semibold text-foreground/70">Deconvolution:</span> Inverse Matrix (Ruifrok–Johnston) — RES_VEC=[{RES_VEC.join(', ')}]
               </div>
               <div>
-                <span className="font-semibold text-foreground/70">DAB_SCALE_MAX:</span> 0.85 &nbsp;|&nbsp;
+                <span className="font-semibold text-foreground/70">DAB_SCALE_MAX:</span> 0.35 &nbsp;|&nbsp;
                 <span className="font-semibold text-foreground/70">HEMA_RATIO:</span> {HEMA_SUPPRESSION_RATIO} &nbsp;|&nbsp;
                 <span className="font-semibold text-foreground/70">GAP:</span> {MIN_DAB_HEMA_GAP} &nbsp;|&nbsp;
                 <span className="font-semibold text-foreground/70">BG px:</span> 25
