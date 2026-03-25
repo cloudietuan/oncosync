@@ -392,7 +392,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
                 <YAxis yAxisId="right" orientation="right" stroke="#3b82f6" tick={{ fontSize: 11 }} label={{ value: 'CD8+ (cells/µL)', angle: 90, position: 'insideRight', offset: 10, style: { fontSize: 10, fill: '#3b82f6' } }} />
                 <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(1) : value, undefined]} />
                 <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
-                <Area yAxisId="left" type="monotone" dataKey="ifn_gamma" name="IFN-γ (pg/mL)" fill="hsl(260,50%,65%)" fillOpacity={0.15} stroke="hsl(260,50%,65%)" strokeWidth={1} strokeDasharray="4 2" />
+                <Area yAxisId="left" type="monotone" dataKey="ifn_gamma" name="IFN-γ (pg/mL)" fill="hsl(258,65%,60%)" fillOpacity={0.15} stroke="hsl(258,65%,60%)" strokeWidth={1} strokeDasharray="4 2" />
                 <Line yAxisId="left" type="monotone" dataKey="igg" name="IgG (AU/mL)" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
                 <Line yAxisId="right" type="monotone" dataKey="cd8" name="CD8+ (cells/µL)" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
               </ComposedChart>
