@@ -3,14 +3,13 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import StatCard from './StatCard';
 import InfoTooltip from './InfoTooltip';
 import { FadeSection } from './MotionWrappers';
-import { Microscope, Upload, RotateCcw } from 'lucide-react';
+import { Microscope, Upload, RotateCcw, FlaskConical } from 'lucide-react';
 
 // H-DAB stain vectors (Ruifrok & Johnston 2001)
 const H_VEC = [0.65, 0.704, 0.286];
 const DAB_VEC = [0.269, 0.568, 0.778];
 const RES_VEC = [0.7076, -0.4231, 0.5643];
 
-// Precompute inverse of stain matrix
 function invertMatrix3(m: number[][]): number[][] {
   const [[a,b,c],[d,e,f],[g,h,i]] = m;
   const det = a*(e*i-f*h) - b*(d*i-f*g) + c*(d*h-e*g);
@@ -25,20 +24,17 @@ function invertMatrix3(m: number[][]): number[][] {
 
 const STAIN_MATRIX = [H_VEC, DAB_VEC, RES_VEC];
 const INV_MATRIX = invertMatrix3(STAIN_MATRIX);
-const DAB_ROW = INV_MATRIX[1]; // second row for DAB extraction
+const DAB_ROW = INV_MATRIX[1];
 
-// Heatmap gradient stops
+// FIX #2: Updated gradient stops — low-intensity DAB is now clearly visible
 const GRADIENT_STOPS = [
-  { t: 0.00, r: 0, g: 0, b: 0, a: 0 },
-  { t: 0.15, r: 8, g: 40, b: 82, a: 0.4 },
-  { t: 0.30, r: 17, g: 95, b: 154, a: 0.6 },
-  { t: 0.45, r: 0, g: 168, b: 150, a: 0.7 },
-  { t: 0.55, r: 46, g: 204, b: 90, a: 0.75 },
-  { t: 0.65, r: 180, g: 220, b: 30, a: 0.8 },
-  { t: 0.75, r: 255, g: 200, b: 0, a: 0.85 },
-  { t: 0.85, r: 255, g: 120, b: 0, a: 0.9 },
-  { t: 0.95, r: 230, g: 30, b: 15, a: 0.95 },
-  { t: 1.00, r: 180, g: 0, b: 30, a: 1.0 },
+  { t: 0.00, r: 0,   g: 0,   b: 0,   a: 0 },
+  { t: 0.05, r: 8,   g: 40,  b: 120, a: 0.55 },
+  { t: 0.15, r: 10,  g: 100, b: 160, a: 0.72 },
+  { t: 0.30, r: 0,   g: 168, b: 140, a: 0.82 },
+  { t: 0.50, r: 80,  g: 210, b: 50,  a: 0.88 },
+  { t: 0.75, r: 255, g: 150, b: 0,   a: 0.92 },
+  { t: 1.00, r: 210, g: 20,  b: 20,  a: 0.97 },
 ];
 
 function lerpGradient(val: number): [number, number, number, number] {
@@ -60,7 +56,6 @@ function lerpGradient(val: number): [number, number, number, number] {
   return [last.r, last.g, last.b, last.a];
 }
 
-// Histogram bar colors from gradient
 const HIST_COLORS = Array.from({ length: 10 }, (_, i) => {
   const val = (i + 0.5) / 10;
   const [r, g, b] = lerpGradient(val);
@@ -80,6 +75,116 @@ interface AnalysisResult {
 
 const MAX_DIM = 1200;
 
+// FIX #1: Generate a synthetic pancreatic IHC tissue image on canvas
+function generateDemoImage(): HTMLCanvasElement {
+  const w = 800, h = 600;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d')!;
+
+  // Light pink/white tissue background (hematoxylin counterstain)
+  ctx.fillStyle = '#f0e4e0';
+  ctx.fillRect(0, 0, w, h);
+
+  // Add subtle tissue texture noise
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const px = imgData.data;
+  for (let i = 0; i < px.length; i += 4) {
+    const noise = (Math.random() - 0.5) * 20;
+    px[i] = Math.min(255, Math.max(0, px[i] + noise));
+    px[i+1] = Math.min(255, Math.max(0, px[i+1] + noise - 5));
+    px[i+2] = Math.min(255, Math.max(0, px[i+2] + noise - 8));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Draw hematoxylin-stained nuclei (blue-purple dots scattered across tissue)
+  const nucleiCount = 1200;
+  for (let i = 0; i < nucleiCount; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const r = 1.5 + Math.random() * 2;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    const blueShift = Math.random() * 40;
+    ctx.fillStyle = `rgba(${80 + blueShift}, ${50 + blueShift * 0.5}, ${120 + blueShift}, ${0.3 + Math.random() * 0.4})`;
+    ctx.fill();
+  }
+
+  // Draw DAB-positive clustered regions (brown, mimicking tumor gland patterns)
+  // Use ~12 cluster centers with irregular shapes
+  const clusters: { cx: number; cy: number; rx: number; ry: number; angle: number }[] = [];
+  const clusterCount = 14;
+  for (let i = 0; i < clusterCount; i++) {
+    clusters.push({
+      cx: 80 + Math.random() * (w - 160),
+      cy: 60 + Math.random() * (h - 120),
+      rx: 40 + Math.random() * 80,
+      ry: 30 + Math.random() * 60,
+      angle: Math.random() * Math.PI,
+    });
+  }
+
+  // Paint brown DAB stain in cluster regions with glandular sub-structure
+  for (const cl of clusters) {
+    ctx.save();
+    ctx.translate(cl.cx, cl.cy);
+    ctx.rotate(cl.angle);
+
+    // Main gland shape — irregular ellipse filled with brown
+    ctx.beginPath();
+    for (let a = 0; a < Math.PI * 2; a += 0.1) {
+      const wobble = 1 + Math.sin(a * 3) * 0.15 + Math.cos(a * 7) * 0.08;
+      const x = Math.cos(a) * cl.rx * wobble;
+      const y = Math.sin(a) * cl.ry * wobble;
+      if (a === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+
+    // Brown DAB fill (RGB ~160,120,60)
+    const brownR = 140 + Math.random() * 40;
+    const brownG = 100 + Math.random() * 40;
+    const brownB = 40 + Math.random() * 30;
+    ctx.fillStyle = `rgba(${brownR}, ${brownG}, ${brownB}, ${0.6 + Math.random() * 0.35})`;
+    ctx.fill();
+
+    // Add darker brown spots within glands (high-intensity DAB)
+    const spotCount = 8 + Math.floor(Math.random() * 15);
+    for (let s = 0; s < spotCount; s++) {
+      const sx = (Math.random() - 0.5) * cl.rx * 1.4;
+      const sy = (Math.random() - 0.5) * cl.ry * 1.4;
+      const sr = 3 + Math.random() * 10;
+      ctx.beginPath();
+      ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${120 + Math.random() * 30}, ${80 + Math.random() * 30}, ${30 + Math.random() * 20}, ${0.5 + Math.random() * 0.4})`;
+      ctx.fill();
+    }
+
+    // Gland lumen (lighter center holes)
+    if (Math.random() > 0.3) {
+      ctx.beginPath();
+      ctx.arc(0, 0, cl.rx * 0.25, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(240, 230, 220, ${0.3 + Math.random() * 0.3})`;
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  // Add scattered individual DAB-positive cells between clusters
+  for (let i = 0; i < 300; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const r = 2 + Math.random() * 4;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${150 + Math.random() * 30}, ${110 + Math.random() * 20}, ${50 + Math.random() * 20}, ${0.3 + Math.random() * 0.5})`;
+    ctx.fill();
+  }
+
+  return c;
+}
+
 const TissueAnalysis = () => {
   const [imageData, setImageData] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -96,6 +201,7 @@ const TissueAnalysis = () => {
   const canvasDabRef = useRef<HTMLCanvasElement>(null);
   const canvasSideRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const demoCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const loadImage = useCallback((file: File) => {
     setFileName(file.name);
@@ -107,7 +213,15 @@ const TissueAnalysis = () => {
     reader.readAsDataURL(file);
   }, []);
 
-  // When imageData changes, draw original and compute DAB
+  // FIX #1: Load demo synthetic image
+  const loadDemoImage = useCallback(() => {
+    const demoCanvas = generateDemoImage();
+    demoCanvasRef.current = demoCanvas;
+    setFileName('demo_pancreatic_ihc.png');
+    setImageData(demoCanvas.toDataURL('image/png'));
+  }, []);
+
+  // Process image and compute DAB values
   useEffect(() => {
     if (!imageData) return;
     const img = new Image();
@@ -123,7 +237,6 @@ const TissueAnalysis = () => {
       setImgDims({ w, h });
       imgRef.current = img;
 
-      // Draw to offscreen canvas to get pixel data
       const offscreen = document.createElement('canvas');
       offscreen.width = w;
       offscreen.height = h;
@@ -132,7 +245,6 @@ const TissueAnalysis = () => {
       const pixels = offCtx.getImageData(0, 0, w, h);
       const data = pixels.data;
 
-      // Compute DAB channel
       const dabValues = new Float32Array(w * h);
       let maxDab = 0;
       for (let i = 0; i < w * h; i++) {
@@ -146,12 +258,10 @@ const TissueAnalysis = () => {
         dabValues[i] = Math.max(dab, 0);
         if (dabValues[i] > maxDab) maxDab = dabValues[i];
       }
-      // Normalize
       if (maxDab > 0) {
         for (let i = 0; i < dabValues.length; i++) dabValues[i] /= maxDab;
       }
 
-      // Build histogram
       const bins = Array.from({ length: 10 }, () => 0);
       const threshNorm = threshold / 100;
       let posCount = 0;
@@ -171,9 +281,7 @@ const TissueAnalysis = () => {
       }));
 
       setResult({
-        dabValues,
-        width: w,
-        height: h,
+        dabValues, width: w, height: h,
         positiveArea: posCount / dabValues.length * 100,
         meanIntensity: posCount > 0 ? sumIntensity / posCount : 0,
         positivePixels: posCount,
@@ -192,7 +300,7 @@ const TissueAnalysis = () => {
     img.src = imageData;
   }, [imageData]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Re-render views when threshold/opacity/result changes
+  // FIX #3: Re-render views with proper compositing — heatmap drawn ON TOP of original
   useEffect(() => {
     if (!result || !imgRef.current) return;
     const { dabValues, width: w, height: h } = result;
@@ -225,24 +333,34 @@ const TissueAnalysis = () => {
       histogram,
     } : prev);
 
-    // Heatmap canvas
+    // FIX #3: Heatmap canvas — draw original image FIRST, then overlay colored pixels on top
     const heatCtx = canvasHeatRef.current?.getContext('2d');
     if (heatCtx && canvasHeatRef.current) {
       canvasHeatRef.current.width = w;
       canvasHeatRef.current.height = h;
+      // Step 1: Draw original tissue image as base
       heatCtx.drawImage(img, 0, 0, w, h);
-      const imgData = heatCtx.getImageData(0, 0, w, h);
-      const px = imgData.data;
+      // Step 2: Create a separate overlay with ONLY the heatmap colors where DAB > threshold
+      const overlayCanvas = document.createElement('canvas');
+      overlayCanvas.width = w;
+      overlayCanvas.height = h;
+      const overlayCtx = overlayCanvas.getContext('2d')!;
+      const overlayData = overlayCtx.createImageData(w, h);
+      const oPx = overlayData.data;
       for (let i = 0; i < dabValues.length; i++) {
         if (dabValues[i] >= threshNorm) {
           const [cr, cg, cb, ca] = lerpGradient(dabValues[i]);
           const alpha = ca * opacityMul;
-          px[i * 4] = Math.round(px[i * 4] * (1 - alpha) + cr * alpha);
-          px[i * 4 + 1] = Math.round(px[i * 4 + 1] * (1 - alpha) + cg * alpha);
-          px[i * 4 + 2] = Math.round(px[i * 4 + 2] * (1 - alpha) + cb * alpha);
+          oPx[i * 4] = cr;
+          oPx[i * 4 + 1] = cg;
+          oPx[i * 4 + 2] = cb;
+          oPx[i * 4 + 3] = Math.round(alpha * 255);
         }
+        // else: stays transparent (0,0,0,0) — no overlay on negative pixels
       }
-      heatCtx.putImageData(imgData, 0, 0);
+      overlayCtx.putImageData(overlayData, 0, 0);
+      // Step 3: Composite overlay on top of original using default 'source-over'
+      heatCtx.drawImage(overlayCanvas, 0, 0);
     }
 
     // DAB grayscale canvas
@@ -268,12 +386,9 @@ const TissueAnalysis = () => {
       const totalW = w * 2 + 2;
       canvasSideRef.current.width = totalW;
       canvasSideRef.current.height = h;
-      // Left: original
       sideCtx.drawImage(img, 0, 0, w, h);
-      // Divider
       sideCtx.fillStyle = 'hsl(270,9%,46%)';
       sideCtx.fillRect(w, 0, 2, h);
-      // Right: heatmap
       if (canvasHeatRef.current) {
         sideCtx.drawImage(canvasHeatRef.current, w + 2, 0);
       }
@@ -293,6 +408,7 @@ const TissueAnalysis = () => {
     setImgDims(null);
     setResult(null);
     setActiveView('original');
+    demoCanvasRef.current = null;
     if (inputRef.current) inputRef.current.value = '';
   };
 
@@ -316,19 +432,28 @@ const TissueAnalysis = () => {
 
       {/* Upload zone */}
       {!imageData ? (
-        <div
-          className={`vax-card border-2 border-dashed cursor-pointer transition-colors ${dragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/40'}`}
-          onClick={() => inputRef.current?.click()}
-          onDragOver={e => { e.preventDefault(); setDragging(true); }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={e => { e.preventDefault(); setDragging(false); handleFiles(e.dataTransfer.files); }}
-        >
-          <div className="flex flex-col items-center justify-center py-12">
-            <Upload className="w-10 h-10 text-muted-foreground mb-3" />
-            <p className="text-sm font-medium text-foreground">Upload IHC-stained tissue image (H-DAB)</p>
-            <p className="text-xs text-muted-foreground mt-1">PNG, JPG supported · Ruifrok-Johnston color deconvolution</p>
+        <div className="space-y-3">
+          <div
+            className={`vax-card border-2 border-dashed cursor-pointer transition-colors ${dragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/40'}`}
+            onClick={() => inputRef.current?.click()}
+            onDragOver={e => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={e => { e.preventDefault(); setDragging(false); handleFiles(e.dataTransfer.files); }}
+          >
+            <div className="flex flex-col items-center justify-center py-12">
+              <Upload className="w-10 h-10 text-muted-foreground mb-3" />
+              <p className="text-sm font-medium text-foreground">Upload IHC-stained tissue image (H-DAB)</p>
+              <p className="text-xs text-muted-foreground mt-1">PNG, JPG supported · Ruifrok-Johnston color deconvolution</p>
+            </div>
+            <input ref={inputRef} type="file" accept=".png,.jpg,.jpeg" className="hidden" onChange={e => handleFiles(e.target.files)} />
           </div>
-          <input ref={inputRef} type="file" accept=".png,.jpg,.jpeg" className="hidden" onChange={e => handleFiles(e.target.files)} />
+          <button
+            onClick={loadDemoImage}
+            className="vax-btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
+          >
+            <FlaskConical className="w-4 h-4" />
+            Load Demo H-DAB Image
+          </button>
         </div>
       ) : (
         <>
@@ -426,10 +551,9 @@ const TissueAnalysis = () => {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-                {/* Gradient legend bar */}
                 <div className="mt-4">
                   <div className="h-4 rounded-full overflow-hidden" style={{
-                    background: `linear-gradient(to right, rgb(8,40,82), rgb(17,95,154), rgb(0,168,150), rgb(46,204,90), rgb(180,220,30), rgb(255,200,0), rgb(255,120,0), rgb(230,30,15), rgb(180,0,30))`,
+                    background: `linear-gradient(to right, rgb(8,40,120), rgb(10,100,160), rgb(0,168,140), rgb(80,210,50), rgb(255,150,0), rgb(210,20,20))`,
                   }} />
                   <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
                     <span>Absent</span>
