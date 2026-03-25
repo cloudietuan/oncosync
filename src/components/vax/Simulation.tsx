@@ -136,7 +136,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
                   <div className="text-xs text-muted-foreground mt-1">Mean Benefit (days)</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-semibold text-blue-600">{results.ci[0].toFixed(0)} – {results.ci[1].toFixed(0)}</div>
+                  <div className="text-xl font-semibold text-foreground">{results.ci[0].toFixed(0)} – {results.ci[1].toFixed(0)}</div>
                   <div className="text-xs text-muted-foreground mt-1">95% Confidence Interval</div>
                 </div>
                 <div className="text-center">
