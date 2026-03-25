@@ -12,16 +12,16 @@ const VaxNav = ({ tab, setTab }: VaxNavProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="bg-card border-b border-border sticky top-0 z-40">
+    <nav className="bg-card/80 backdrop-blur-sm border-b border-border/60 sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Desktop tabs */}
-        <div className="hidden sm:flex relative">
+        <div className="hidden sm:flex relative -mb-px">
           {tabs.map((t, i) => (
             <button
               key={t}
               onClick={() => setTab(i)}
-              className={`relative py-3 px-5 text-[13px] font-medium cursor-pointer transition-colors duration-150 bg-transparent border-none ${
-                tab === i ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+              className={`relative py-2.5 px-4 text-[12.5px] font-medium cursor-pointer transition-colors duration-150 bg-transparent border-none ${
+                tab === i ? 'text-primary' : 'text-muted-foreground/70 hover:text-foreground'
               }`}
               aria-current={tab === i ? 'page' : undefined}
             >
@@ -29,7 +29,7 @@ const VaxNav = ({ tab, setTab }: VaxNavProps) => {
               {tab === i && (
                 <motion.div
                   layoutId="nav-underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
+                  className="absolute bottom-0 left-2 right-2 h-[1.5px] bg-primary rounded-full"
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}

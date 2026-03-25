@@ -116,29 +116,29 @@
 
 @layer components {
   .vax-card {
-    @apply bg-card border border-border rounded-xl p-5;
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04), 0 1px 2px -1px rgba(0,0,0,0.04);
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    @apply bg-card border border-border/70 rounded-xl p-5;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
   }
 
   .vax-card:hover {
-    box-shadow: 0 4px 12px 0 rgba(0,0,0,0.06), 0 2px 4px -1px rgba(0,0,0,0.04);
-    border-color: hsl(262, 83%, 58%, 0.3);
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.05);
+    border-color: hsl(262, 83%, 58%, 0.2);
   }
 
   .dark .vax-card:hover {
-    box-shadow: 0 4px 12px 0 rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2);
-    border-color: hsl(262, 83%, 58%, 0.4);
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.2);
+    border-color: hsl(262, 83%, 58%, 0.3);
   }
 
   .dark .vax-card-compact:hover {
-    border-color: hsl(262, 83%, 58%, 0.4) !important;
+    border-color: hsl(262, 83%, 58%, 0.3) !important;
   }
 
   .vax-card-compact {
-    @apply bg-card border border-border rounded-xl p-4;
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04), 0 1px 2px -1px rgba(0,0,0,0.04);
-    transition: box-shadow 0.2s ease;
+    @apply bg-card border border-border/70 rounded-xl p-4;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
   }
 
   .vax-btn {
@@ -267,11 +267,11 @@
   }
 
   .vax-section-title {
-    @apply text-xl font-bold text-foreground tracking-tight;
+    @apply text-lg font-semibold text-foreground tracking-tight;
   }
 
   .vax-section-desc {
-    @apply text-[13px] text-muted-foreground mt-0.5;
+    @apply text-[12.5px] text-muted-foreground/70 mt-0.5;
   }
 
   .vax-alert {
@@ -364,7 +364,7 @@ table {
 }
 
 th {
-  @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border bg-muted;
+  @apply px-4 py-2.5 text-left text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground/80 border-b border-border/60 bg-muted/50;
 }
 
 th:first-child {
@@ -376,7 +376,7 @@ th:last-child {
 }
 
 td {
-  @apply px-4 py-3 border-b border-border text-[13px];
+  @apply px-4 py-2.5 border-b border-border/40 text-[13px];
 }
 
 tr:last-child td {
@@ -384,14 +384,14 @@ tr:last-child td {
 }
 
   tr:hover td {
-    @apply bg-primary/5;
+    @apply bg-muted/30;
   }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(220, 9%, 80%); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(220, 9%, 64%); }
+::-webkit-scrollbar-thumb { background: hsl(220, 9%, 84%); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(220, 9%, 68%); }
 
 /* Recharts tooltip styling */
 .recharts-default-tooltip {
