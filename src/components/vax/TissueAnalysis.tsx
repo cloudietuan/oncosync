@@ -70,16 +70,18 @@ function thresholdToNormalized(thresholdPercent: number) {
 
 function buildHistogram(dabValues: Float32Array, tissueMask: Uint8Array) {
   const bins = Array.from({ length: 10 }, () => 0);
+  let totalTissue = 0;
 
   for (let i = 0; i < dabValues.length; i++) {
     if (!tissueMask[i]) continue;
+    totalTissue++;
     const bin = Math.min(Math.floor(dabValues[i] * 10), 9);
     bins[bin]++;
   }
 
   return bins.map((count, i) => ({
     bin: `${(i * 10).toFixed(0)}–${((i + 1) * 10).toFixed(0)}%`,
-    count,
+    count: totalTissue > 0 ? (count / totalTissue) * 100 : 0,
   }));
 }
 
