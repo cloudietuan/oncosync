@@ -101,6 +101,36 @@ const Overview = ({ expr, clin, batches, logs, immuneData, setTab }: OverviewPro
       ))}
     </StaggerGrid>
 
+    <StaggerGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      {[
+        { tab: 1, icon: TestTubes, title: 'Lab Records', desc: 'VLP batch production logs and QC tracking' },
+        { tab: 2, icon: Microscope, title: 'Tissue Analysis', desc: 'IHC image deconvolution and DAB quantification' },
+        { tab: 7, icon: FileDown, title: 'Export', desc: 'Generate PDF reports, CSV and JSON downloads' },
+        { tab: 8, icon: Dna, title: 'T-Cell Proxy', desc: 'Activation scoring from expression signatures' },
+        { tab: 9, icon: CheckCircle2, title: 'Validation', desc: 'Statistical checks and data quality metrics' },
+      ].map(({ tab: t, icon: Icon, title, desc }) => (
+        <StaggerItem key={t}>
+          <button
+            onClick={() => setTab(t)}
+            className="vax-card-compact text-left group w-full hover:border-primary/30 hover:-translate-y-0.5 transition-all duration-200"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary/8 group-hover:bg-primary/15 flex items-center justify-center shrink-0 transition-colors duration-200">
+                <Icon size={15} className="text-primary/70 group-hover:text-primary transition-colors duration-200" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="font-semibold text-sm">{title}</h4>
+                  <ArrowRight size={13} className="text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
+                </div>
+                <p className="text-xs text-muted-foreground/70 mt-0.5 leading-relaxed">{desc}</p>
+              </div>
+            </div>
+          </button>
+        </StaggerItem>
+      ))}
+    </StaggerGrid>
+
     <FadeSection delay={0.3}>
       <div className="vax-card overflow-x-auto">
         <h3 className="font-semibold text-sm mb-4">Data Sources</h3>
