@@ -483,6 +483,68 @@ const TissueAnalysis = () => {
     if (inputRef.current) inputRef.current.value = '';
   };
 
+  const stopCamera = useCallback(() => {
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+  }, []);
+
+  const openCamera = useCallback(async () => {
+    setCameraError(null);
+    setCameraOpen(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch {
+      setCameraError('Camera not available — check permissions or use file upload.');
+      stopCamera();
+    }
+  }, [facingMode, stopCamera]);
+
+  const closeCamera = useCallback(() => {
+    stopCamera();
+    setCameraOpen(false);
+    setCameraError(null);
+  }, [stopCamera]);
+
+  const switchCamera = useCallback(async () => {
+    stopCamera();
+    const next = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(next);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: next },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch {
+      setCameraError('Could not switch camera.');
+    }
+  }, [facingMode, stopCamera]);
+
+  const captureFrame = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || !video.videoWidth) return;
+    const c = document.createElement('canvas');
+    c.width = video.videoWidth;
+    c.height = video.videoHeight;
+    const ctx = c.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    setFileName(`camera_capture_${ts}.jpg`);
+    setImageData(c.toDataURL('image/jpeg', 0.92));
+    closeCamera();
+  }, [closeCamera]);
+
   const views = [
     { key: 'original' as const, label: 'Original' },
     { key: 'heatmap' as const, label: 'ApoC-1 Heatmap' },
