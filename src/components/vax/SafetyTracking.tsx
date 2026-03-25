@@ -171,9 +171,9 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
             <h3 className="font-semibold text-sm mb-4">Adverse Events by Frequency</h3>
             <ResponsiveContainer width="100%" height={340}>
               <BarChart data={analytics.topSymptoms} margin={{ top: 5, right: 20, bottom: 5, left: 15 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                <XAxis dataKey="symptom" stroke="hsl(270,9%,46%)" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={80} />
-                <YAxis stroke="hsl(270,9%,46%)" label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,12%,86%)" />
+                <XAxis dataKey="symptom" stroke="hsl(220,8%,52%)" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={80} />
+                <YAxis stroke="hsl(220,8%,52%)" label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 11, fill: 'hsl(220,8%,52%)' } }} />
                 <Tooltip formatter={(value: number) => [typeof value === 'number' ? value.toFixed(0) : value, undefined]} />
                 <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
                 <Bar dataKey="count" fill="#3b82f6" name="Event Count" />
@@ -228,9 +228,9 @@ const SafetyTracking = ({ logs, setLogs, immuneData }: SafetyTrackingProps) => {
           <h3 className="font-semibold text-sm mb-4">Adverse Events Timeline</h3>
           <ResponsiveContainer width="100%" height={360}>
             <ScatterChart margin={{ top: 10, right: 20, left: 15, bottom: 35 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-              <XAxis dataKey="date" name="Date" stroke="hsl(270,9%,46%)" label={{ value: 'Date', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
-              <YAxis dataKey="dose" name="Dose" domain={[0, 4]} stroke="hsl(270,9%,46%)" label={{ value: 'Dose Number', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 11, fill: 'hsl(270,9%,46%)' } }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,12%,86%)" />
+              <XAxis dataKey="date" name="Date" stroke="hsl(220,8%,52%)" label={{ value: 'Date', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(220,8%,52%)' } }} />
+              <YAxis dataKey="dose" name="Dose" domain={[0, 4]} stroke="hsl(220,8%,52%)" label={{ value: 'Dose Number', angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 11, fill: 'hsl(220,8%,52%)' } }} />
               <ZAxis range={[100, 100]} />
               <Tooltip content={({ payload }) => {
                 if (!payload?.length) return null;
