@@ -613,33 +613,96 @@ const TissueAnalysis = () => {
                 <StatCard label="Total Pixels" value={result.totalPixels.toLocaleString()} />
               </div>
 
-              {/* Histogram */}
-              <div className="vax-card">
-                <h3 className="font-semibold text-sm mb-4 flex items-center gap-2">
-                  Intensity Distribution
-                  <InfoTooltip term="Intensity Distribution" definition="Shows how positive pixels are distributed across intensity bins from low (faint staining) to high (dense staining)." />
-                </h3>
-                <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={result.histogram} margin={{ top: 5, right: 10, bottom: 35, left: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
-                    <XAxis dataKey="bin" stroke="hsl(270,9%,46%)" tick={{ fontSize: 9 }} angle={-30} textAnchor="end" height={60} />
-                    <YAxis stroke="hsl(270,9%,46%)" width={50} domain={[0, 100]} label={{ value: '% of tissue', angle: -90, position: 'insideLeft', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
-                    <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`, '% of tissue']} />
-                    <Bar dataKey="count" name="Positive Pixels">
-                      {result.histogram.map((_, i) => (
-                        <Cell key={i} fill={HIST_COLORS[i]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-                <div className="mt-4">
-                  <div className="h-4 rounded-full overflow-hidden" style={{
-                    background: `linear-gradient(to right, rgb(8,40,120), rgb(10,100,160), rgb(0,168,140), rgb(80,210,50), rgb(255,150,0), rgb(210,20,20))`,
-                  }} />
-                  <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
-                    <span>Absent</span>
-                    <span className="font-medium">ApoC-1 Concentration</span>
-                    <span>Dense</span>
+              {/* Donut + Area Chart */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Donut: Positive vs Negative Area */}
+                <div className="vax-card flex flex-col items-center">
+                  <h3 className="font-semibold text-sm mb-2 flex items-center gap-2 self-start">
+                    Tissue Composition
+                    <InfoTooltip term="Tissue Composition" definition="Proportion of tissue area classified as DAB-positive (stained) vs negative (unstained)." />
+                  </h3>
+                  <div className="relative w-full" style={{ height: 220 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: 'Positive', value: Math.round(result.positiveArea * 10) / 10 },
+                            { name: 'Negative', value: Math.round((100 - result.positiveArea) * 10) / 10 },
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={85}
+                          startAngle={90}
+                          endAngle={-270}
+                          dataKey="value"
+                          stroke="none"
+                        >
+                          <Cell fill="hsl(36, 85%, 55%)" />
+                          <Cell fill="hsl(var(--muted))" />
+                        </Pie>
+                        <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`]} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    {/* Center label */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-2xl font-bold text-foreground">{result.positiveArea.toFixed(1)}%</span>
+                      <span className="text-[10px] text-muted-foreground">Positive</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 text-xs text-muted-foreground mt-1">
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: 'hsl(36, 85%, 55%)' }} /> DAB+</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-muted" /> Negative</span>
+                  </div>
+                </div>
+
+                {/* Area Chart: Intensity Distribution */}
+                <div className="vax-card">
+                  <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                    Intensity Distribution
+                    <InfoTooltip term="Intensity Distribution" definition="Shows how positive pixels are distributed across intensity bins from low (faint staining) to high (dense staining)." />
+                  </h3>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <AreaChart data={result.histogram} margin={{ top: 5, right: 10, bottom: 35, left: 5 }}>
+                      <defs>
+                        <linearGradient id="ihcAreaGrad" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="rgb(8,40,120)" stopOpacity={0.9} />
+                          <stop offset="15%" stopColor="rgb(10,100,160)" stopOpacity={0.85} />
+                          <stop offset="30%" stopColor="rgb(0,168,140)" stopOpacity={0.8} />
+                          <stop offset="50%" stopColor="rgb(80,210,50)" stopOpacity={0.75} />
+                          <stop offset="75%" stopColor="rgb(255,150,0)" stopOpacity={0.8} />
+                          <stop offset="100%" stopColor="rgb(210,20,20)" stopOpacity={0.85} />
+                        </linearGradient>
+                        <linearGradient id="ihcAreaStroke" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="rgb(8,40,120)" />
+                          <stop offset="30%" stopColor="rgb(0,168,140)" />
+                          <stop offset="50%" stopColor="rgb(80,210,50)" />
+                          <stop offset="75%" stopColor="rgb(255,150,0)" />
+                          <stop offset="100%" stopColor="rgb(210,20,20)" />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
+                      <XAxis dataKey="bin" stroke="hsl(270,9%,46%)" tick={{ fontSize: 8 }} angle={-30} textAnchor="end" height={50} />
+                      <YAxis stroke="hsl(270,9%,46%)" width={42} domain={[0, 'auto']} label={{ value: '% tissue', angle: -90, position: 'insideLeft', offset: -2, style: { fontSize: 9, fill: 'hsl(270,9%,46%)' } }} />
+                      <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`, '% of tissue']} />
+                      <Area
+                        type="monotone"
+                        dataKey="count"
+                        stroke="url(#ihcAreaStroke)"
+                        strokeWidth={2}
+                        fill="url(#ihcAreaGrad)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                  <div className="mt-2">
+                    <div className="h-2.5 rounded-full overflow-hidden" style={{
+                      background: `linear-gradient(to right, rgb(8,40,120), rgb(10,100,160), rgb(0,168,140), rgb(80,210,50), rgb(255,150,0), rgb(210,20,20))`,
+                    }} />
+                    <div className="flex justify-between text-[10px] text-muted-foreground mt-0.5">
+                      <span>Absent</span>
+                      <span className="font-medium">ApoC-1 Concentration</span>
+                      <span>Dense</span>
+                    </div>
                   </div>
                 </div>
               </div>
