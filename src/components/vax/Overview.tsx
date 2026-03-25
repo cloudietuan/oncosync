@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { BarChart3, FlaskConical, Shield, Syringe, ArrowRight } from 'lucide-react';
+import { BarChart3, FlaskConical, Shield, Syringe, ArrowRight, TestTubes, Microscope, FileDown, Dna, CheckCircle2 } from 'lucide-react';
 import StatCard from './StatCard';
 import AlertBox from './AlertBox';
 import InfoTooltip from './InfoTooltip';
