@@ -388,10 +388,10 @@ tr:last-child td {
   }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(220, 9%, 80%); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(220, 9%, 64%); }
+::-webkit-scrollbar-thumb { background: hsl(220, 9%, 84%); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(220, 9%, 68%); }
 
 /* Recharts tooltip styling */
 .recharts-default-tooltip {

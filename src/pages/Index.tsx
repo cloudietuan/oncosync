@@ -115,10 +115,10 @@ const Index = () => {
         </AnimatePresence>
         <GuidedTutorial onNavigateTab={setTab} />
       </main>
-      <footer className="border-t border-border py-5 mt-12 bg-card">
+      <footer className="border-t border-border/50 py-6 mt-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[11px] text-muted-foreground font-medium">OncoSync — Pancreatic Cancer Vaccine Companion</p>
-          <p className="text-[11px] text-muted-foreground">Data: GSE62452 (GEO) • Research use only</p>
+          <p className="text-[10.5px] text-muted-foreground/60 font-medium">OncoSync — Pancreatic Cancer Vaccine Companion</p>
+          <p className="text-[10.5px] text-muted-foreground/50">Data: GSE62452 (GEO) • Research use only</p>
         </div>
       </footer>
     </div>
