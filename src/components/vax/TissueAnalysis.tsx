@@ -101,7 +101,7 @@ function computeMetrics(
 
     const dab = dabValues[i];
     const hema = hemaValues[i];
-    const isPositive = dab > thresholdNorm && dab > hema * HEMA_SUPPRESSION_RATIO && dab - hema > MIN_DAB_HEMA_GAP;
+    const isPositive = dab > thresholdNorm && dab > hema * HEMA_SUPPRESSION_RATIO;
 
     if (!isPositive) continue;
 
