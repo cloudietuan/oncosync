@@ -65,7 +65,7 @@ interface AnalysisResult {
 const MAX_DIM = 1200;
 
 function thresholdToNormalized(thresholdPercent: number) {
-  return Math.min(Math.max(thresholdPercent / 50, 0), 1);
+  return Math.min(Math.max(thresholdPercent / 100, 0), 1);
 }
 
 function buildHistogram(dabValues: Float32Array, tissueMask: Uint8Array) {
