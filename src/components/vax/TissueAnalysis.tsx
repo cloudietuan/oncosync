@@ -600,10 +600,29 @@ const TissueAnalysis = () => {
                   <span className="font-medium text-foreground">Detection Threshold</span>
                   <span className="font-bold text-primary">{threshold}%</span>
                 </div>
-                <input type="range" min={1} max={50} value={threshold} onChange={e => setThreshold(parseInt(e.target.value))} className="w-full accent-primary" />
-                <div className="flex justify-between text-[10px] text-muted-foreground mt-0.5">
-                  <span>Sensitive</span>
-                  <span>Selective</span>
+                <input type="range" min={1} max={50} step={0.5} value={threshold} onChange={e => setThreshold(parseFloat(e.target.value))} className="w-full accent-primary h-2 rounded-lg appearance-none cursor-pointer" style={{ background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((threshold - 1) / 49) * 100}%, hsl(var(--muted)) ${((threshold - 1) / 49) * 100}%, hsl(var(--muted)) 100%)` }} />
+                <div className="flex items-center justify-between mt-1.5">
+                  <div className="flex justify-between text-[10px] text-muted-foreground">
+                    <span>Sensitive</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[{ label: 'Sensitive', value: 5 }, { label: 'Balanced', value: 12 }, { label: 'Selective', value: 35 }].map(preset => (
+                      <button
+                        key={preset.label}
+                        onClick={() => setThreshold(preset.value)}
+                        className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                          Math.abs(threshold - preset.value) < 1.5
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-accent'
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex justify-between text-[10px] text-muted-foreground">
+                    <span>Selective</span>
+                  </div>
                 </div>
               </div>
               <div>
@@ -611,7 +630,7 @@ const TissueAnalysis = () => {
                   <span className="font-medium text-foreground">Heatmap Opacity</span>
                   <span className="font-bold text-primary">{opacity}%</span>
                 </div>
-                <input type="range" min={10} max={100} value={opacity} onChange={e => setOpacity(parseInt(e.target.value))} className="w-full accent-primary" />
+                <input type="range" min={10} max={100} step={1} value={opacity} onChange={e => setOpacity(parseInt(e.target.value))} className="w-full accent-primary h-2 rounded-lg appearance-none cursor-pointer" style={{ background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((opacity - 10) / 90) * 100}%, hsl(var(--muted)) ${((opacity - 10) / 90) * 100}%, hsl(var(--muted)) 100%)` }} />
                 <div className="flex justify-between text-[10px] text-muted-foreground mt-0.5">
                   <span>Subtle</span>
                   <span>Full</span>
