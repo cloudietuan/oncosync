@@ -185,6 +185,17 @@ function generateDemoImage(): HTMLCanvasElement {
   return c;
 }
 
+const DEMO_IMAGES = [
+  { group: 'Pancreatic Cancer', items: [
+    { label: 'Pancreatic – ApoC-1 High', url: 'https://images.proteinatlas.org/51518/124366_B_5_1.jpg', fileName: 'pancreatic_apoc1_positive.jpg' },
+    { label: 'Pancreatic – ApoC-1 Negative', url: 'https://images.proteinatlas.org/51518/124366_B_4_3.jpg', fileName: 'pancreatic_apoc1_negative.jpg' },
+  ]},
+  { group: 'Liver Tissue', items: [
+    { label: 'Liver – ApoC-1 High', url: 'https://images.proteinatlas.org/51518/124365_A_7_4.jpg', fileName: 'liver_apoc1_positive.jpg' },
+    { label: 'Liver – ApoC-1 Negative', url: 'https://images.proteinatlas.org/51518/124365_A_9_4.jpg', fileName: 'liver_apoc1_negative.jpg' },
+  ]},
+];
+
 const TissueAnalysis = () => {
   const [imageData, setImageData] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -194,6 +205,7 @@ const TissueAnalysis = () => {
   const [opacity, setOpacity] = useState(75);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [loadingDemo, setLoadingDemo] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const canvasOrigRef = useRef<HTMLCanvasElement>(null);
@@ -213,11 +225,29 @@ const TissueAnalysis = () => {
     reader.readAsDataURL(file);
   }, []);
 
-  // FIX #1: Load demo synthetic image
+  // Load remote IHC image via fetch → blob → objectURL
+  const loadRemoteImage = useCallback(async (url: string, name: string) => {
+    setLoadingDemo(name);
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      setFileName(name);
+      setImageData(objectUrl);
+    } catch {
+      // Fallback: try loading via img tag directly (some browsers allow cross-origin canvas)
+      setFileName(name);
+      setImageData(url);
+    } finally {
+      setLoadingDemo(null);
+    }
+  }, []);
+
+  // Load synthetic demo image
   const loadDemoImage = useCallback(() => {
     const demoCanvas = generateDemoImage();
     demoCanvasRef.current = demoCanvas;
-    setFileName('demo_pancreatic_ihc.png');
+    setFileName('demo_synthetic_ihc.png');
     setImageData(demoCanvas.toDataURL('image/png'));
   }, []);
 
