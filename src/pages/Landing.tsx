@@ -40,11 +40,13 @@ const features = [
 ];
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 32, scale: 0.95, filter: 'blur(4px)' },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' as const },
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: { delay: i * 0.1, duration: 0.6, ease: 'easeOut' as const },
   }),
 };
 
@@ -160,10 +162,10 @@ const Landing = () => {
       <section className="max-w-6xl mx-auto px-6 pb-24">
         <motion.div
           className="text-center mb-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
           <h2
             className="text-2xl sm:text-3xl font-bold tracking-tight mb-3"
@@ -184,10 +186,11 @@ const Landing = () => {
               custom={i}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-40px' }}
+              viewport={{ once: true, margin: '-60px' }}
               variants={fadeUp}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
             >
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors duration-300">
                 <f.icon size={20} className="text-primary" />
               </div>
               <h3 className="text-sm font-bold mb-1.5 tracking-tight">{f.title}</h3>
