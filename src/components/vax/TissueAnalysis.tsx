@@ -598,7 +598,7 @@ const TissueAnalysis = () => {
               <div>
                 <div className="flex items-center justify-between text-xs mb-1.5">
                   <span className="font-medium text-foreground">Detection Threshold</span>
-                  <span className="font-bold text-primary">{threshold}%</span>
+                  <span className="font-bold text-primary">{Number.isInteger(threshold) ? threshold : threshold.toFixed(1)}%</span>
                 </div>
                 <input type="range" min={1} max={50} step={0.5} value={threshold} onChange={e => setThreshold(parseFloat(e.target.value))} className="w-full accent-primary h-2 rounded-lg appearance-none cursor-pointer" style={{ background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((threshold - 1) / 49) * 100}%, hsl(var(--muted)) ${((threshold - 1) / 49) * 100}%, hsl(var(--muted)) 100%)` }} />
                 <div className="flex items-center justify-between mt-1.5">
