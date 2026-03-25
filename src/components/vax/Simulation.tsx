@@ -123,7 +123,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
                   <XAxis dataKey="bin" label={{ value: 'Mean Survival Benefit (days)', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(220,8%,52%)' } }} stroke="hsl(220,8%,52%)" tick={{ fontSize: 10 }} interval={4} />
                   <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft', offset: 5, style: { fontSize: 11, fill: 'hsl(220,8%,52%)' } }} stroke="hsl(220,8%,52%)" />
                   <Tooltip formatter={(value: number) => [value.toFixed(0), undefined]} />
-                  <Bar dataKey="count" fill="hsl(260,50%,65%)" />
+                  <Bar dataKey="count" fill="hsl(258,65%,60%)" />
                 </BarChart>
               </ResponsiveContainer>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">

@@ -8,7 +8,7 @@ export const CHART_AXIS = 'hsl(220, 8%, 52%)';
 /** Grid line color — light warm gray */
 export const CHART_GRID = 'hsl(220, 12%, 86%)';
 /** Primary data color — teal */
-export const CHART_PRIMARY = 'hsl(260, 50%, 65%)';
+export const CHART_PRIMARY = 'hsl(258, 65%, 60%)';
 /** Secondary data color — warm coral */
 export const CHART_SECONDARY = '#ef4444';
 /** Tertiary data color — emerald */
