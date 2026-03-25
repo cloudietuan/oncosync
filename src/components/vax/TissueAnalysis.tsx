@@ -10,8 +10,8 @@ const H_VEC = [0.65, 0.704, 0.286] as const;
 const DAB_VEC = [0.269, 0.568, 0.778] as const;
 const MAX_OD = 2;
 const WHITE_BG_THRESHOLD = 240;
-const HEMA_SUPPRESSION_RATIO = 1.1;
-const MIN_DAB_HEMA_GAP = 0.04;
+const HEMA_SUPPRESSION_RATIO = 0.6;
+const MIN_DAB_HEMA_GAP = 0.01;
 
 // FIX #2: Updated gradient stops — low-intensity DAB is now clearly visible
 const GRADIENT_STOPS = [
@@ -101,7 +101,7 @@ function computeMetrics(
 
     const dab = dabValues[i];
     const hema = hemaValues[i];
-    const isPositive = dab > thresholdNorm && dab > hema * HEMA_SUPPRESSION_RATIO && dab - hema > MIN_DAB_HEMA_GAP;
+    const isPositive = dab > thresholdNorm && dab > hema * HEMA_SUPPRESSION_RATIO;
 
     if (!isPositive) continue;
 
@@ -395,9 +395,10 @@ const TissueAnalysis = () => {
       const overlayData = overlayCtx.createImageData(w, h);
       const oPx = overlayData.data;
       for (let i = 0; i < dabValues.length; i++) {
-        const isPositive = tissueMask[i] && dabValues[i] > threshNorm && dabValues[i] > hemaValues[i] * HEMA_SUPPRESSION_RATIO && dabValues[i] - hemaValues[i] > MIN_DAB_HEMA_GAP;
+        const isPositive = tissueMask[i] && dabValues[i] > threshNorm && dabValues[i] > hemaValues[i] * HEMA_SUPPRESSION_RATIO;
         if (isPositive) {
-          const [cr, cg, cb, ca] = lerpGradient(dabValues[i]);
+          const stretchedDab = Math.min(dabValues[i] / 0.4, 1.0);
+          const [cr, cg, cb, ca] = lerpGradient(stretchedDab);
           const alpha = ca * opacityMul;
           oPx[i * 4] = cr;
           oPx[i * 4 + 1] = cg;
