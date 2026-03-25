@@ -162,10 +162,10 @@ const Landing = () => {
       <section className="max-w-6xl mx-auto px-6 pb-24">
         <motion.div
           className="text-center mb-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
           <h2
             className="text-2xl sm:text-3xl font-bold tracking-tight mb-3"
