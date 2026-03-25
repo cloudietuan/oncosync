@@ -10,15 +10,20 @@ const H_VEC = [0.65, 0.704, 0.286] as const;
 const DAB_VEC = [0.269, 0.568, 0.778] as const;
 const MAX_OD = 2;
 const WHITE_BG_THRESHOLD = 240;
-const HEMA_SUPPRESSION_RATIO = 0.6;
-const MIN_DAB_HEMA_GAP = 0.01;
+const HEMA_SUPPRESSION_RATIO = 1.1;
+const MIN_DAB_HEMA_GAP = 0.04;
 
-// Inverse of [H_VEC; DAB_VEC; Residual] matrix for proper deconvolution
-const INV_MATRIX = [
-  [1.195046, -0.683542, 0.638039],
-  [0.689411, 0.018376, -0.710083],
-  [-0.916520, 1.508271, 0.297808],
-];
+const RES_VEC = [0.7076, -0.4231, 0.5643] as const;
+const INV_MATRIX = (() => {
+  const h = H_VEC, d = DAB_VEC, r = RES_VEC;
+  const mat = [[h[0],d[0],r[0]],[h[1],d[1],r[1]],[h[2],d[2],r[2]]];
+  const det = mat[0][0]*(mat[1][1]*mat[2][2]-mat[1][2]*mat[2][1]) - mat[0][1]*(mat[1][0]*mat[2][2]-mat[1][2]*mat[2][0]) + mat[0][2]*(mat[1][0]*mat[2][1]-mat[1][1]*mat[2][0]);
+  return [
+    [(mat[1][1]*mat[2][2]-mat[1][2]*mat[2][1])/det,(mat[0][2]*mat[2][1]-mat[0][1]*mat[2][2])/det,(mat[0][1]*mat[1][2]-mat[0][2]*mat[1][1])/det],
+    [(mat[1][2]*mat[2][0]-mat[1][0]*mat[2][2])/det,(mat[0][0]*mat[2][2]-mat[0][2]*mat[2][0])/det,(mat[0][2]*mat[1][0]-mat[0][0]*mat[1][2])/det],
+    [(mat[1][0]*mat[2][1]-mat[1][1]*mat[2][0])/det,(mat[0][1]*mat[2][0]-mat[0][0]*mat[2][1])/det,(mat[0][0]*mat[1][1]-mat[0][1]*mat[1][0])/det],
+  ];
+})();
 
 // FIX #2: Updated gradient stops — low-intensity DAB is now clearly visible
 const GRADIENT_STOPS = [
