@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { FlaskConical } from 'lucide-react';
 import AlertBox from './AlertBox';
+import EmptyState from './EmptyState';
 import { ChartSkeleton } from './ChartSkeleton';
 import { jStat } from '@/lib/statistics';
 import type { ExpressionData, ClinicalRecord } from '@/data/gse62452';
@@ -134,11 +136,11 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
                   <div className="text-xs text-muted-foreground mt-1">Mean Benefit (days)</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-semibold text-blue-600">{results.ci[0].toFixed(0)} – {results.ci[1].toFixed(0)}</div>
+                  <div className="text-xl font-semibold text-foreground">{results.ci[0].toFixed(0)} – {results.ci[1].toFixed(0)}</div>
                   <div className="text-xs text-muted-foreground mt-1">95% Confidence Interval</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-semibold text-amber-600">{results.responders} / {results.total}</div>
+                  <div className="text-xl font-semibold text-foreground">{results.responders} / {results.total}</div>
                   <div className="text-xs text-muted-foreground mt-1">Predicted Responders</div>
                 </div>
               </div>
@@ -146,9 +148,11 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
           ) : running ? (
             <ChartSkeleton height={340} bars={12} />
           ) : (
-            <div className="flex items-center justify-center h-60 lg:h-80 text-muted-foreground">
-              Configure parameters and run simulation
-            </div>
+            <EmptyState
+              icon={FlaskConical}
+              title="No Simulation Run Yet"
+              description="Configure parameters on the left and click 'Run Simulation' to generate bootstrap survival benefit estimates."
+            />
           )}
         </div>
       </div>

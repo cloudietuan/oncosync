@@ -1,13 +1,14 @@
 import {
   LayoutDashboard, TestTubes, Microscope, BarChart3, FlaskConical,
-  Syringe, Shield, FileDown, Dna, CheckCircle2, ChevronDown
+  Syringe, Shield, FileDown, Dna, CheckCircle2, ChevronDown, Download
 } from 'lucide-react';
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
+  Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { useNavigate } from 'react-router-dom';
 
 interface AppSidebarProps {
   tab: number;
@@ -55,55 +56,72 @@ const navGroups = [
 export function AppSidebar({ tab, setTab }: AppSidebarProps) {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
+  const navigate = useNavigate();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarContent className="pt-2 gap-1">
-        {navGroups.map((group) => {
-          const isGroupActive = group.items.some((item) => item.tab === tab);
-
-          return (
-            <Collapsible key={group.label} defaultOpen={true} className="group/collapsible">
-              <SidebarGroup>
-                {!collapsed && (
-                  <CollapsibleTrigger asChild>
-                    <SidebarGroupLabel className="cursor-pointer select-none flex items-center justify-between text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors">
-                      {group.label}
-                      <ChevronDown className="h-3 w-3 transition-transform group-data-[state=closed]/collapsible:rotate-[-90deg]" />
-                    </SidebarGroupLabel>
-                  </CollapsibleTrigger>
-                )}
-                <CollapsibleContent>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {group.items.map((item) => {
-                        const isActive = tab === item.tab;
-                        return (
-                          <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton
-                              isActive={isActive}
-                              tooltip={item.title}
-                              onClick={() => setTab(item.tab)}
-                              className={`text-[13px] font-medium transition-all duration-150 rounded-lg ${
-                                isActive
-                                  ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
-                                  : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-foreground'
-                              }`}
-                            >
-                              <item.icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-primary' : ''}`} />
-                              {!collapsed && <span>{item.title}</span>}
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        );
-                      })}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </CollapsibleContent>
-              </SidebarGroup>
-            </Collapsible>
-          );
-        })}
+        {navGroups.map((group) => (
+          <Collapsible key={group.label} defaultOpen={true} className="group/collapsible">
+            <SidebarGroup>
+              {!collapsed && (
+                <CollapsibleTrigger asChild>
+                  <SidebarGroupLabel className="cursor-pointer select-none flex items-center justify-between text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+                    {group.label}
+                    <ChevronDown className="h-3 w-3 transition-transform group-data-[state=closed]/collapsible:rotate-[-90deg]" />
+                  </SidebarGroupLabel>
+                </CollapsibleTrigger>
+              )}
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {group.items.map((item) => {
+                      const isActive = tab === item.tab;
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                            isActive={isActive}
+                            tooltip={item.title}
+                            onClick={() => setTab(item.tab)}
+                            className={`text-[13px] font-medium transition-all duration-150 rounded-lg ${
+                              isActive
+                                ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
+                                : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-foreground'
+                            }`}
+                          >
+                            <item.icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-primary' : ''}`} />
+                            {!collapsed && <span>{item.title}</span>}
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </SidebarGroup>
+          </Collapsible>
+        ))}
       </SidebarContent>
+
+      <SidebarFooter className="border-t border-sidebar-border p-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Install App"
+              onClick={() => navigate('/install')}
+              className="text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 rounded-lg"
+            >
+              <Download className="h-4 w-4 shrink-0" />
+              {!collapsed && <span>Install App</span>}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        {!collapsed && (
+          <p className="text-[9px] text-muted-foreground/40 px-2 pb-1 font-medium">
+            OncoSync v1.0 · Research Only
+          </p>
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 }
