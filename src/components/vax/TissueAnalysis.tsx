@@ -63,6 +63,10 @@ interface AnalysisResult {
 
 const MAX_DIM = 1200;
 
+function thresholdToNormalized(thresholdPercent: number) {
+  return Math.min(Math.max(thresholdPercent / 50, 0), 1);
+}
+
 function buildHistogram(dabValues: Float32Array, tissueMask: Uint8Array) {
   const bins = Array.from({ length: 10 }, () => 0);
 
@@ -332,7 +336,7 @@ const TissueAnalysis = () => {
         hemaValues[i] = Math.min(Math.max(hemaConc / MAX_OD, 0), 1);
       }
 
-      const threshNorm = threshold / 100;
+      const threshNorm = thresholdToNormalized(threshold);
       const histogram = buildHistogram(dabValues, tissueMask);
       const metrics = computeMetrics(dabValues, hemaValues, tissueMask, threshNorm);
 
@@ -362,7 +366,7 @@ const TissueAnalysis = () => {
     if (!result || !imgRef.current) return;
     const { dabValues, hemaValues, tissueMask, width: w, height: h } = result;
     const img = imgRef.current;
-    const threshNorm = threshold / 100;
+    const threshNorm = thresholdToNormalized(threshold);
     const opacityMul = opacity / 100;
 
     const metrics = computeMetrics(dabValues, hemaValues, tissueMask, threshNorm);
