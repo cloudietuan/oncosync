@@ -186,10 +186,11 @@ const Landing = () => {
               custom={i}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-40px' }}
+              viewport={{ once: true, margin: '-60px' }}
               variants={fadeUp}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
             >
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors duration-300">
                 <f.icon size={20} className="text-primary" />
               </div>
               <h3 className="text-sm font-bold mb-1.5 tracking-tight">{f.title}</h3>
