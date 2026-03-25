@@ -364,7 +364,7 @@ table {
 }
 
 th {
-  @apply px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border bg-muted;
+  @apply px-4 py-2.5 text-left text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground/80 border-b border-border/60 bg-muted/50;
 }
 
 th:first-child {
@@ -376,7 +376,7 @@ th:last-child {
 }
 
 td {
-  @apply px-4 py-3 border-b border-border text-[13px];
+  @apply px-4 py-2.5 border-b border-border/40 text-[13px];
 }
 
 tr:last-child td {
@@ -384,7 +384,7 @@ tr:last-child td {
 }
 
   tr:hover td {
-    @apply bg-primary/5;
+    @apply bg-muted/30;
   }
 
 /* Scrollbar */
