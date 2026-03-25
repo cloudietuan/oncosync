@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import StatCard from './StatCard';
 import InfoTooltip from './InfoTooltip';
 import { FadeSection } from './MotionWrappers';
-import { Microscope, Upload, RotateCcw, FlaskConical } from 'lucide-react';
+import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2 } from 'lucide-react';
 
 // H-DAB stain vectors (Ruifrok & Johnston 2001)
 const H_VEC = [0.65, 0.704, 0.286];
@@ -185,6 +185,17 @@ function generateDemoImage(): HTMLCanvasElement {
   return c;
 }
 
+const DEMO_IMAGES = [
+  { group: 'Pancreatic Cancer', items: [
+    { label: 'Pancreatic – ApoC-1 High', url: 'https://images.proteinatlas.org/51518/124366_B_5_1.jpg', fileName: 'pancreatic_apoc1_positive.jpg' },
+    { label: 'Pancreatic – ApoC-1 Negative', url: 'https://images.proteinatlas.org/51518/124366_B_4_3.jpg', fileName: 'pancreatic_apoc1_negative.jpg' },
+  ]},
+  { group: 'Liver Tissue', items: [
+    { label: 'Liver – ApoC-1 High', url: 'https://images.proteinatlas.org/51518/124365_A_7_4.jpg', fileName: 'liver_apoc1_positive.jpg' },
+    { label: 'Liver – ApoC-1 Negative', url: 'https://images.proteinatlas.org/51518/124365_A_9_4.jpg', fileName: 'liver_apoc1_negative.jpg' },
+  ]},
+];
+
 const TissueAnalysis = () => {
   const [imageData, setImageData] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -194,6 +205,7 @@ const TissueAnalysis = () => {
   const [opacity, setOpacity] = useState(75);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [loadingDemo, setLoadingDemo] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const canvasOrigRef = useRef<HTMLCanvasElement>(null);
@@ -213,11 +225,29 @@ const TissueAnalysis = () => {
     reader.readAsDataURL(file);
   }, []);
 
-  // FIX #1: Load demo synthetic image
+  // Load remote IHC image via fetch → blob → objectURL
+  const loadRemoteImage = useCallback(async (url: string, name: string) => {
+    setLoadingDemo(name);
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      setFileName(name);
+      setImageData(objectUrl);
+    } catch {
+      // Fallback: try loading via img tag directly (some browsers allow cross-origin canvas)
+      setFileName(name);
+      setImageData(url);
+    } finally {
+      setLoadingDemo(null);
+    }
+  }, []);
+
+  // Load synthetic demo image
   const loadDemoImage = useCallback(() => {
     const demoCanvas = generateDemoImage();
     demoCanvasRef.current = demoCanvas;
-    setFileName('demo_pancreatic_ihc.png');
+    setFileName('demo_synthetic_ihc.png');
     setImageData(demoCanvas.toDataURL('image/png'));
   }, []);
 
@@ -447,13 +477,45 @@ const TissueAnalysis = () => {
             </div>
             <input ref={inputRef} type="file" accept=".png,.jpg,.jpeg" className="hidden" onChange={e => handleFiles(e.target.files)} />
           </div>
+
+          {/* Demo images from Human Protein Atlas */}
+          <div className="space-y-2">
+            {DEMO_IMAGES.map(group => (
+              <div key={group.group}>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{group.group}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {group.items.map(item => (
+                    <button
+                      key={item.fileName}
+                      onClick={() => loadRemoteImage(item.url, item.fileName)}
+                      disabled={!!loadingDemo}
+                      className="vax-btn-secondary flex items-center justify-center gap-1.5 py-2 text-xs disabled:opacity-50"
+                    >
+                      {loadingDemo === item.fileName ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Download className="w-3.5 h-3.5" />
+                      )}
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Synthetic fallback */}
           <button
             onClick={loadDemoImage}
-            className="vax-btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
+            className="vax-btn-secondary w-full flex items-center justify-center gap-2 py-2 text-xs"
           >
-            <FlaskConical className="w-4 h-4" />
-            Load Demo H-DAB Image
+            <FlaskConical className="w-3.5 h-3.5" />
+            Generate Synthetic H-DAB Image
           </button>
+
+          <p className="text-[9px] text-muted-foreground text-center">
+            IHC images: Human Protein Atlas, antibody HPA051518 · CC BY-SA 3.0
+          </p>
         </div>
       ) : (
         <>
