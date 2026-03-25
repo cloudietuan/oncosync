@@ -473,7 +473,7 @@ const ImmuneTracking = ({ immuneData, setImmuneData, logs }: ImmuneTrackingProps
             </h3>
             <ResponsiveContainer width="100%" height={380}>
               <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-                <PolarGrid stroke="hsl(270,13%,70%)" />
+                <PolarGrid stroke="hsl(220,12%,76%)" />
                 <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11, fill: 'hsl(220,8%,52%)' }} />
                 <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9, fill: 'hsl(220,8%,52%)' }} />
                 {profiles.map(p => (
