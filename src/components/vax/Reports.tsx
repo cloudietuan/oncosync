@@ -282,7 +282,7 @@ const Reports = ({ expr, clin, batches, logs, immuneData, tcellProxy }: ReportsP
                   <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} width={35} stroke="hsl(220,8%,52%)" label={{ value: 'Score', angle: -90, position: 'insideLeft', offset: 8, style: { fontSize: 10, fill: 'hsl(220,8%,52%)' } }} />
                   <ReferenceLine y={70} stroke="hsl(160,84%,39%)" strokeDasharray="6 3" />
                   <ReferenceLine y={40} stroke="hsl(38,92%,50%)" strokeDasharray="6 3" />
-                  <Line type="monotone" dataKey="proxyScore" stroke="hsl(200,80%,44%)" strokeWidth={2} dot={{ r: 3, fill: 'hsl(200,80%,44%)' }} />
+                  <Line type="monotone" dataKey="proxyScore" stroke="hsl(260,50%,65%)" strokeWidth={2} dot={{ r: 3, fill: 'hsl(260,50%,65%)' }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
