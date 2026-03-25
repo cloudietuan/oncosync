@@ -623,8 +623,8 @@ const TissueAnalysis = () => {
                   <BarChart data={result.histogram} margin={{ top: 5, right: 10, bottom: 35, left: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(270,13%,82%)" />
                     <XAxis dataKey="bin" stroke="hsl(270,9%,46%)" tick={{ fontSize: 9 }} angle={-30} textAnchor="end" height={60} />
-                    <YAxis stroke="hsl(270,9%,46%)" width={50} label={{ value: 'Pixel Count', angle: -90, position: 'insideLeft', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
-                    <Tooltip formatter={(value: number) => [value.toLocaleString(), 'Pixels']} />
+                    <YAxis stroke="hsl(270,9%,46%)" width={50} domain={[0, 100]} label={{ value: '% of tissue', angle: -90, position: 'insideLeft', offset: -5, style: { fontSize: 10, fill: 'hsl(270,9%,46%)' } }} />
+                    <Tooltip formatter={(value: number) => [`${value.toFixed(1)}%`, '% of tissue']} />
                     <Bar dataKey="count" name="Positive Pixels">
                       {result.histogram.map((_, i) => (
                         <Cell key={i} fill={HIST_COLORS[i]} />
