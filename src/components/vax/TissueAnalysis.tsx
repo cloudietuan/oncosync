@@ -6,25 +6,11 @@ import { FadeSection } from './MotionWrappers';
 import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2 } from 'lucide-react';
 
 // H-DAB stain vectors (Ruifrok & Johnston 2001)
-const H_VEC = [0.65, 0.704, 0.286];
-const DAB_VEC = [0.269, 0.568, 0.778];
-const RES_VEC = [0.7076, -0.4231, 0.5643];
-
-function invertMatrix3(m: number[][]): number[][] {
-  const [[a,b,c],[d,e,f],[g,h,i]] = m;
-  const det = a*(e*i-f*h) - b*(d*i-f*g) + c*(d*h-e*g);
-  if (Math.abs(det) < 1e-10) return m;
-  const inv = 1/det;
-  return [
-    [(e*i-f*h)*inv, (c*h-b*i)*inv, (b*f-c*e)*inv],
-    [(f*g-d*i)*inv, (a*i-c*g)*inv, (c*d-a*f)*inv],
-    [(d*h-e*g)*inv, (b*g-a*h)*inv, (a*e-b*d)*inv],
-  ];
-}
-
-const STAIN_MATRIX = [H_VEC, DAB_VEC, RES_VEC];
-const INV_MATRIX = invertMatrix3(STAIN_MATRIX);
-const DAB_ROW = INV_MATRIX[1];
+const H_VEC = [0.65, 0.704, 0.286] as const;
+const DAB_VEC = [0.269, 0.568, 0.778] as const;
+const MAX_OD = 2;
+const WHITE_BG_THRESHOLD = 240;
+const HEMA_SUPPRESSION_RATIO = 0.8;
 
 // FIX #2: Updated gradient stops — low-intensity DAB is now clearly visible
 const GRADIENT_STOPS = [
@@ -64,6 +50,8 @@ const HIST_COLORS = Array.from({ length: 10 }, (_, i) => {
 
 interface AnalysisResult {
   dabValues: Float32Array;
+  hemaValues: Float32Array;
+  tissueMask: Uint8Array;
   width: number;
   height: number;
   positiveArea: number;
@@ -74,6 +62,53 @@ interface AnalysisResult {
 }
 
 const MAX_DIM = 1200;
+
+function buildHistogram(dabValues: Float32Array, tissueMask: Uint8Array) {
+  const bins = Array.from({ length: 10 }, () => 0);
+
+  for (let i = 0; i < dabValues.length; i++) {
+    if (!tissueMask[i]) continue;
+    const bin = Math.min(Math.floor(dabValues[i] * 10), 9);
+    bins[bin]++;
+  }
+
+  return bins.map((count, i) => ({
+    bin: `${(i * 10).toFixed(0)}–${((i + 1) * 10).toFixed(0)}%`,
+    count,
+  }));
+}
+
+function computeMetrics(
+  dabValues: Float32Array,
+  hemaValues: Float32Array,
+  tissueMask: Uint8Array,
+  thresholdNorm: number,
+) {
+  let posCount = 0;
+  let tissueCount = 0;
+  let sumIntensity = 0;
+
+  for (let i = 0; i < dabValues.length; i++) {
+    if (!tissueMask[i]) continue;
+    tissueCount++;
+
+    const dab = dabValues[i];
+    const hema = hemaValues[i];
+    const isPositive = dab > thresholdNorm && dab > hema * HEMA_SUPPRESSION_RATIO;
+
+    if (!isPositive) continue;
+
+    posCount++;
+    sumIntensity += dab;
+  }
+
+  return {
+    positiveArea: tissueCount > 0 ? (posCount / tissueCount) * 100 : 0,
+    meanIntensity: posCount > 0 ? sumIntensity / posCount : 0,
+    positivePixels: posCount,
+    totalPixels: tissueCount,
+  };
+}
 
 // FIX #1: Generate a synthetic pancreatic IHC tissue image on canvas
 function generateDemoImage(): HTMLCanvasElement {
@@ -255,6 +290,7 @@ const TissueAnalysis = () => {
   useEffect(() => {
     if (!imageData) return;
     const img = new Image();
+    img.crossOrigin = 'anonymous';
     img.onload = () => {
       let w = img.width;
       let h = img.height;
@@ -276,46 +312,37 @@ const TissueAnalysis = () => {
       const data = pixels.data;
 
       const dabValues = new Float32Array(w * h);
-      let maxDab = 0;
+      const hemaValues = new Float32Array(w * h);
+      const tissueMask = new Uint8Array(w * h);
+
       for (let i = 0; i < w * h; i++) {
         const r = data[i * 4];
         const g = data[i * 4 + 1];
         const b = data[i * 4 + 2];
-        const odR = -Math.log(Math.max(r, 1) / 255);
-        const odG = -Math.log(Math.max(g, 1) / 255);
-        const odB = -Math.log(Math.max(b, 1) / 255);
-        const dab = DAB_ROW[0] * odR + DAB_ROW[1] * odG + DAB_ROW[2] * odB;
-        dabValues[i] = Math.max(dab, 0);
-        if (dabValues[i] > maxDab) maxDab = dabValues[i];
-      }
-      if (maxDab > 0) {
-        for (let i = 0; i < dabValues.length; i++) dabValues[i] /= maxDab;
+        tissueMask[i] = r > WHITE_BG_THRESHOLD && g > WHITE_BG_THRESHOLD && b > WHITE_BG_THRESHOLD ? 0 : 1;
+
+        const odR = -Math.log((r + 1) / 256);
+        const odG = -Math.log((g + 1) / 256);
+        const odB = -Math.log((b + 1) / 256);
+
+        const dabConc = odR * DAB_VEC[0] + odG * DAB_VEC[1] + odB * DAB_VEC[2];
+        const hemaConc = odR * H_VEC[0] + odG * H_VEC[1] + odB * H_VEC[2];
+
+        dabValues[i] = Math.min(Math.max(dabConc / MAX_OD, 0), 1);
+        hemaValues[i] = Math.min(Math.max(hemaConc / MAX_OD, 0), 1);
       }
 
-      const bins = Array.from({ length: 10 }, () => 0);
       const threshNorm = threshold / 100;
-      let posCount = 0;
-      let sumIntensity = 0;
-      for (let i = 0; i < dabValues.length; i++) {
-        if (dabValues[i] >= threshNorm) {
-          posCount++;
-          sumIntensity += dabValues[i];
-          const bin = Math.min(Math.floor(dabValues[i] * 10), 9);
-          bins[bin]++;
-        }
-      }
-
-      const histogram = bins.map((count, i) => ({
-        bin: `${(i * 10).toFixed(0)}–${((i + 1) * 10).toFixed(0)}%`,
-        count,
-      }));
+      const histogram = buildHistogram(dabValues, tissueMask);
+      const metrics = computeMetrics(dabValues, hemaValues, tissueMask, threshNorm);
 
       setResult({
-        dabValues, width: w, height: h,
-        positiveArea: posCount / dabValues.length * 100,
-        meanIntensity: posCount > 0 ? sumIntensity / posCount : 0,
-        positivePixels: posCount,
-        totalPixels: dabValues.length,
+        dabValues,
+        hemaValues,
+        tissueMask,
+        width: w,
+        height: h,
+        ...metrics,
         histogram,
       });
 
@@ -333,34 +360,16 @@ const TissueAnalysis = () => {
   // FIX #3: Re-render views with proper compositing — heatmap drawn ON TOP of original
   useEffect(() => {
     if (!result || !imgRef.current) return;
-    const { dabValues, width: w, height: h } = result;
+    const { dabValues, hemaValues, tissueMask, width: w, height: h } = result;
     const img = imgRef.current;
     const threshNorm = threshold / 100;
     const opacityMul = opacity / 100;
 
-    // Recompute histogram/stats
-    const bins = Array.from({ length: 10 }, () => 0);
-    let posCount = 0;
-    let sumIntensity = 0;
-    for (let i = 0; i < dabValues.length; i++) {
-      if (dabValues[i] >= threshNorm) {
-        posCount++;
-        sumIntensity += dabValues[i];
-        const bin = Math.min(Math.floor(dabValues[i] * 10), 9);
-        bins[bin]++;
-      }
-    }
-    const histogram = bins.map((count, i) => ({
-      bin: `${(i * 10).toFixed(0)}–${((i + 1) * 10).toFixed(0)}%`,
-      count,
-    }));
+    const metrics = computeMetrics(dabValues, hemaValues, tissueMask, threshNorm);
 
     setResult(prev => prev ? {
       ...prev,
-      positiveArea: posCount / dabValues.length * 100,
-      meanIntensity: posCount > 0 ? sumIntensity / posCount : 0,
-      positivePixels: posCount,
-      histogram,
+      ...metrics,
     } : prev);
 
     // FIX #3: Heatmap canvas — draw original image FIRST, then overlay colored pixels on top
@@ -368,6 +377,7 @@ const TissueAnalysis = () => {
     if (heatCtx && canvasHeatRef.current) {
       canvasHeatRef.current.width = w;
       canvasHeatRef.current.height = h;
+      heatCtx.clearRect(0, 0, w, h);
       // Step 1: Draw original tissue image as base
       heatCtx.drawImage(img, 0, 0, w, h);
       // Step 2: Create a separate overlay with ONLY the heatmap colors where DAB > threshold
@@ -378,7 +388,8 @@ const TissueAnalysis = () => {
       const overlayData = overlayCtx.createImageData(w, h);
       const oPx = overlayData.data;
       for (let i = 0; i < dabValues.length; i++) {
-        if (dabValues[i] >= threshNorm) {
+        const isPositive = tissueMask[i] && dabValues[i] > threshNorm && dabValues[i] > hemaValues[i] * HEMA_SUPPRESSION_RATIO;
+        if (isPositive) {
           const [cr, cg, cb, ca] = lerpGradient(dabValues[i]);
           const alpha = ca * opacityMul;
           oPx[i * 4] = cr;
@@ -401,7 +412,7 @@ const TissueAnalysis = () => {
       const imgData = dabCtx.createImageData(w, h);
       const px = imgData.data;
       for (let i = 0; i < dabValues.length; i++) {
-        const v = Math.round(dabValues[i] * 255);
+        const v = tissueMask[i] ? Math.round(dabValues[i] * 255) : 0;
         px[i * 4] = v;
         px[i * 4 + 1] = v;
         px[i * 4 + 2] = v;
@@ -416,6 +427,7 @@ const TissueAnalysis = () => {
       const totalW = w * 2 + 2;
       canvasSideRef.current.width = totalW;
       canvasSideRef.current.height = h;
+       sideCtx.clearRect(0, 0, totalW, h);
       sideCtx.drawImage(img, 0, 0, w, h);
       sideCtx.fillStyle = 'hsl(270,9%,46%)';
       sideCtx.fillRect(w, 0, 2, h);
