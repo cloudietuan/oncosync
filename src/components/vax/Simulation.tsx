@@ -140,7 +140,7 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
                   <div className="text-xs text-muted-foreground mt-1">95% Confidence Interval</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-semibold text-amber-600">{results.responders} / {results.total}</div>
+                  <div className="text-xl font-semibold text-foreground">{results.responders} / {results.total}</div>
                   <div className="text-xs text-muted-foreground mt-1">Predicted Responders</div>
                 </div>
               </div>
