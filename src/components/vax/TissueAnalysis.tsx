@@ -16,12 +16,12 @@ const MIN_DAB_HEMA_GAP = 0.01;
 // FIX #2: Updated gradient stops — low-intensity DAB is now clearly visible
 const GRADIENT_STOPS = [
   { t: 0.00, r: 0,   g: 0,   b: 0,   a: 0 },
-  { t: 0.05, r: 8,   g: 40,  b: 120, a: 0.55 },
-  { t: 0.15, r: 10,  g: 100, b: 160, a: 0.72 },
-  { t: 0.30, r: 0,   g: 168, b: 140, a: 0.82 },
-  { t: 0.50, r: 80,  g: 210, b: 50,  a: 0.88 },
-  { t: 0.75, r: 255, g: 150, b: 0,   a: 0.92 },
-  { t: 1.00, r: 210, g: 20,  b: 20,  a: 0.97 },
+  { t: 0.05, r: 8,   g: 40,  b: 120, a: 0.20 },
+  { t: 0.15, r: 10,  g: 100, b: 160, a: 0.40 },
+  { t: 0.30, r: 0,   g: 168, b: 140, a: 0.55 },
+  { t: 0.50, r: 80,  g: 210, b: 50,  a: 0.65 },
+  { t: 0.75, r: 255, g: 150, b: 0,   a: 0.78 },
+  { t: 1.00, r: 210, g: 20,  b: 20,  a: 0.90 },
 ];
 
 function lerpGradient(val: number): [number, number, number, number] {
