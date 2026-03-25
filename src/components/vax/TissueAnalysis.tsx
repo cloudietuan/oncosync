@@ -411,33 +411,18 @@ const TissueAnalysis = () => {
       heatCtx.drawImage(overlayCanvas, 0, 0);
     }
 
-    // DAB grayscale canvas — with percentile contrast stretching (like ImageJ/QuPath)
+    // DAB grayscale canvas — fixed absolute scale: 0.0 OD = black, 0.5 OD = white
     const dabCtx = canvasDabRef.current?.getContext('2d');
     if (dabCtx && canvasDabRef.current) {
       canvasDabRef.current.width = w;
       canvasDabRef.current.height = h;
 
-      // Collect tissue DAB values for percentile computation
-      const tissueVals: number[] = [];
-      for (let i = 0; i < dabValues.length; i++) {
-        if (tissueMask[i]) tissueVals.push(dabValues[i]);
-      }
-      let pLow = 0, pHigh = 1;
-      if (tissueVals.length > 0) {
-        tissueVals.sort((a, b) => a - b);
-        const idx2 = Math.floor(tissueVals.length * 0.02);
-        const idx98 = Math.min(Math.floor(tissueVals.length * 0.98), tissueVals.length - 1);
-        pLow = tissueVals[idx2];
-        pHigh = tissueVals[idx98];
-        if (pHigh - pLow < 0.01) pHigh = pLow + 0.01; // avoid division by zero
-      }
-
       const imgData = dabCtx.createImageData(w, h);
       const px = imgData.data;
-      const range = pHigh - pLow;
+      const DAB_SCALE_MAX = 0.5; // fixed upper OD bound
       for (let i = 0; i < dabValues.length; i++) {
         const v = tissueMask[i]
-          ? Math.round(Math.min(Math.max((dabValues[i] - pLow) / range, 0), 1) * 255)
+          ? Math.round(Math.min(Math.max(dabValues[i] / DAB_SCALE_MAX, 0), 1) * 255)
           : 0;
         px[i * 4] = v;
         px[i * 4 + 1] = v;
