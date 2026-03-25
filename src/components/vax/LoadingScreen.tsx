@@ -14,12 +14,12 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => (
         transition={{ duration: 0.6, ease: 'easeInOut' }}
         className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background overflow-hidden"
       >
-        {/* Subtle background grid */}
+        {/* Subtle dot pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage: 'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
+            backgroundImage: 'radial-gradient(hsl(var(--foreground)) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
           }}
         />
 
@@ -63,11 +63,10 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => (
                     ease: 'easeInOut',
                     delay: i * 0.15,
                   }}
-                  className="w-2.5 h-2.5 rounded-full bg-primary/60"
+                  className="w-2.5 h-2.5 rounded-full bg-primary/50"
                 />
-                {/* Connecting bar */}
                 <motion.div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-px bg-primary/20"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-px bg-primary/15"
                   animate={{ width: ['60%', '30%', '60%', '30%', '60%'] }}
                   transition={{
                     duration: 2.4,
@@ -87,34 +86,28 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => (
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
               className="text-2xl font-bold text-foreground tracking-tight"
+              style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif" }}
             >
               OncoSync
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
+              animate={{ opacity: 0.5 }}
               transition={{ delay: 0.4 }}
-              className="text-xs text-muted-foreground tracking-wide uppercase"
+              className="text-xs text-muted-foreground tracking-wide uppercase font-medium"
             >
               Preparing research environment
             </motion.p>
           </div>
 
-          {/* Minimal progress dots */}
-          <div className="flex items-center gap-2">
-            {[0, 1, 2].map((i) => (
-              <motion.div
-                key={i}
-                className="w-1.5 h-1.5 rounded-full bg-primary"
-                animate={{ opacity: [0.2, 1, 0.2] }}
-                transition={{
-                  duration: 1.2,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: i * 0.3,
-                }}
-              />
-            ))}
+          {/* Progress bar */}
+          <div className="w-32 h-1 rounded-full bg-muted overflow-hidden">
+            <motion.div
+              className="h-full bg-primary rounded-full"
+              initial={{ width: '0%' }}
+              animate={{ width: '100%' }}
+              transition={{ duration: 1.4, ease: 'easeInOut' }}
+            />
           </div>
         </motion.div>
       </motion.div>
