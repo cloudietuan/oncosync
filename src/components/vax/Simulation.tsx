@@ -148,9 +148,12 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
           ) : running ? (
             <ChartSkeleton height={340} bars={12} />
           ) : (
-            <div className="flex items-center justify-center h-60 lg:h-80 text-muted-foreground">
-              Configure parameters and run simulation
-            </div>
+            <EmptyState
+              icon={FlaskConical}
+              title="No Simulation Run Yet"
+              description="Configure parameters on the left and click 'Run Simulation' to generate bootstrap survival benefit estimates."
+            />
+          )}
           )}
         </div>
       </div>
