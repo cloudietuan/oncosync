@@ -10,8 +10,8 @@ const H_VEC = [0.65, 0.704, 0.286] as const;
 const DAB_VEC = [0.269, 0.568, 0.778] as const;
 const MAX_OD = 2;
 const WHITE_BG_THRESHOLD = 240;
-const HEMA_SUPPRESSION_RATIO = 1.15;
-const MIN_DAB_HEMA_GAP = 0.035;
+const HEMA_SUPPRESSION_RATIO = 0.7;
+const MIN_DAB_HEMA_GAP = 0.01;
 
 // FIX #2: Updated gradient stops — low-intensity DAB is now clearly visible
 const GRADIENT_STOPS = [
