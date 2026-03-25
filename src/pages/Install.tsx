@@ -50,7 +50,7 @@ const Install = () => {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
       <div className="max-w-md w-full space-y-8 text-center">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/app')}
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
         >
           <ArrowLeft size={14} /> Back to app
