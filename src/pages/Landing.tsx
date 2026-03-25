@@ -40,11 +40,13 @@ const features = [
 ];
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 32, scale: 0.95, filter: 'blur(4px)' },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' as const },
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: { delay: i * 0.1, duration: 0.6, ease: 'easeOut' as const },
   }),
 };
 
