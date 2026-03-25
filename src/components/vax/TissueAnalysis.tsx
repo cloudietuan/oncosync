@@ -13,15 +13,22 @@ const WHITE_BG_THRESHOLD = 240;
 const HEMA_SUPPRESSION_RATIO = 0.6;
 const MIN_DAB_HEMA_GAP = 0.01;
 
+// Inverse of [H_VEC; DAB_VEC; Residual] matrix for proper deconvolution
+const INV_MATRIX = [
+  [1.195046, -0.683542, 0.638039],
+  [0.689411, 0.018376, -0.710083],
+  [-0.916520, 1.508271, 0.297808],
+];
+
 // FIX #2: Updated gradient stops — low-intensity DAB is now clearly visible
 const GRADIENT_STOPS = [
   { t: 0.00, r: 0,   g: 0,   b: 0,   a: 0 },
-  { t: 0.05, r: 8,   g: 40,  b: 120, a: 0.55 },
-  { t: 0.15, r: 10,  g: 100, b: 160, a: 0.72 },
-  { t: 0.30, r: 0,   g: 168, b: 140, a: 0.82 },
-  { t: 0.50, r: 80,  g: 210, b: 50,  a: 0.88 },
-  { t: 0.75, r: 255, g: 150, b: 0,   a: 0.92 },
-  { t: 1.00, r: 210, g: 20,  b: 20,  a: 0.97 },
+  { t: 0.05, r: 8,   g: 40,  b: 120, a: 0.20 },
+  { t: 0.15, r: 10,  g: 100, b: 160, a: 0.40 },
+  { t: 0.30, r: 0,   g: 168, b: 140, a: 0.55 },
+  { t: 0.50, r: 80,  g: 210, b: 50,  a: 0.65 },
+  { t: 0.75, r: 255, g: 150, b: 0,   a: 0.78 },
+  { t: 1.00, r: 210, g: 20,  b: 20,  a: 0.90 },
 ];
 
 function lerpGradient(val: number): [number, number, number, number] {
@@ -332,8 +339,8 @@ const TissueAnalysis = () => {
         const odG = -Math.log((g + 1) / 256);
         const odB = -Math.log((b + 1) / 256);
 
-        const dabConc = odR * DAB_VEC[0] + odG * DAB_VEC[1] + odB * DAB_VEC[2];
-        const hemaConc = odR * H_VEC[0] + odG * H_VEC[1] + odB * H_VEC[2];
+        const hemaConc = INV_MATRIX[0][0] * odR + INV_MATRIX[0][1] * odG + INV_MATRIX[0][2] * odB;
+        const dabConc = INV_MATRIX[1][0] * odR + INV_MATRIX[1][1] * odG + INV_MATRIX[1][2] * odB;
 
         dabValues[i] = Math.min(Math.max(dabConc / MAX_OD, 0), 1);
         hemaValues[i] = Math.min(Math.max(hemaConc / MAX_OD, 0), 1);
@@ -397,7 +404,7 @@ const TissueAnalysis = () => {
       for (let i = 0; i < dabValues.length; i++) {
         const isPositive = tissueMask[i] && dabValues[i] > threshNorm && dabValues[i] > hemaValues[i] * HEMA_SUPPRESSION_RATIO;
         if (isPositive) {
-          const stretchedDab = Math.min(dabValues[i] / 0.4, 1.0);
+          const stretchedDab = Math.min(dabValues[i] / 0.75, 1.0);
           const [cr, cg, cb, ca] = lerpGradient(stretchedDab);
           const alpha = ca * opacityMul;
           oPx[i * 4] = cr;
@@ -420,11 +427,11 @@ const TissueAnalysis = () => {
 
       const imgData = dabCtx.createImageData(w, h);
       const px = imgData.data;
-      const DAB_SCALE_MAX = 0.5; // fixed upper OD bound
+      const DAB_SCALE_MAX = 0.85; // fixed upper OD bound
       for (let i = 0; i < dabValues.length; i++) {
         const v = tissueMask[i]
           ? Math.round(Math.min(Math.max(dabValues[i] / DAB_SCALE_MAX, 0), 1) * 255)
-          : 0;
+          : 25;
         px[i * 4] = v;
         px[i * 4 + 1] = v;
         px[i * 4 + 2] = v;
