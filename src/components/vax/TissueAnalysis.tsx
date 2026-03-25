@@ -487,14 +487,6 @@ const TissueAnalysis = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="vax-section-title flex items-center gap-2">
-          <Microscope className="w-5 h-5 text-primary" />
-          Tissue Analysis
-          <InfoTooltip term="Tissue Analysis" definition="IHC color deconvolution isolates the DAB (brown) antibody stain from H&E counterstain to quantify protein expression distribution in tissue sections." />
-        </h2>
-        <p className="vax-section-desc">IHC color deconvolution and ApoC-1 spatial quantification</p>
-      </div>
 
       {/* Upload zone */}
       {!imageData ? (

@@ -174,10 +174,6 @@ const Reports = ({ expr, clin, batches, logs, immuneData, tcellProxy }: ReportsP
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="vax-section-title">Export & Reports</h2>
-        <p className="vax-section-desc">Generate documentation and export data</p>
-      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="vax-card">
