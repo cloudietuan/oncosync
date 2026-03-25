@@ -432,7 +432,7 @@ const TissueAnalysis = () => {
 
       const imgData = dabCtx.createImageData(w, h);
       const px = imgData.data;
-      const DAB_SCALE_MAX = 0.85; // fixed upper OD bound
+      const DAB_SCALE_MAX = 0.35; // fixed upper OD bound
       for (let i = 0; i < dabValues.length; i++) {
         const v = tissueMask[i]
           ? Math.round(Math.min(Math.max(dabValues[i] / DAB_SCALE_MAX, 0), 1) * 255)
