@@ -260,6 +260,11 @@ const TissueAnalysis = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [dragging, setDragging] = useState(false);
   const [loadingDemo, setLoadingDemo] = useState<string | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const canvasOrigRef = useRef<HTMLCanvasElement>(null);
