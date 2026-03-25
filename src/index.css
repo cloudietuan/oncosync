@@ -47,10 +47,10 @@
 
     --sidebar-background: 40 20% 97%;
     --sidebar-foreground: 220 8% 40%;
-    --sidebar-primary: 260 50% 65%;
+    --sidebar-primary: 258 65% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 260 40% 96%;
-    --sidebar-accent-foreground: 260 50% 40%;
+    --sidebar-accent: 258 50% 96%;
+    --sidebar-accent-foreground: 258 65% 40%;
     --sidebar-border: 40 12% 89%;
     --sidebar-ring: 260 50% 65%;
   }
