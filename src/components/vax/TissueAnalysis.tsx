@@ -631,9 +631,24 @@ const TissueAnalysis = () => {
                   <span className="font-bold text-primary">{opacity}%</span>
                 </div>
                 <input type="range" min={10} max={100} step={1} value={opacity} onChange={e => setOpacity(parseInt(e.target.value))} className="w-full accent-primary h-2 rounded-lg appearance-none cursor-pointer" style={{ background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((opacity - 10) / 90) * 100}%, hsl(var(--muted)) ${((opacity - 10) / 90) * 100}%, hsl(var(--muted)) 100%)` }} />
-                <div className="flex justify-between text-[10px] text-muted-foreground mt-0.5">
-                  <span>Subtle</span>
-                  <span>Full</span>
+                <div className="flex items-center justify-between mt-1.5">
+                  <div className="text-[10px] text-muted-foreground"><span>Subtle</span></div>
+                  <div className="flex gap-1">
+                    {[{ label: 'Subtle', value: 30 }, { label: 'Standard', value: 75 }, { label: 'Full', value: 100 }].map(preset => (
+                      <button
+                        key={preset.label}
+                        onClick={() => setOpacity(preset.value)}
+                        className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                          Math.abs(opacity - preset.value) < 5
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-accent'
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground"><span>Full</span></div>
                 </div>
               </div>
             </div>
