@@ -332,8 +332,8 @@ const TissueAnalysis = () => {
         const odG = -Math.log((g + 1) / 256);
         const odB = -Math.log((b + 1) / 256);
 
-        const dabConc = odR * DAB_VEC[0] + odG * DAB_VEC[1] + odB * DAB_VEC[2];
-        const hemaConc = odR * H_VEC[0] + odG * H_VEC[1] + odB * H_VEC[2];
+        const hemaConc = INV_MATRIX[0][0] * odR + INV_MATRIX[0][1] * odG + INV_MATRIX[0][2] * odB;
+        const dabConc = INV_MATRIX[1][0] * odR + INV_MATRIX[1][1] * odG + INV_MATRIX[1][2] * odB;
 
         dabValues[i] = Math.min(Math.max(dabConc / MAX_OD, 0), 1);
         hemaValues[i] = Math.min(Math.max(hemaConc / MAX_OD, 0), 1);
