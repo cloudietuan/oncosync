@@ -730,6 +730,28 @@ const TissueAnalysis = () => {
           <p className="text-[11px] text-muted-foreground leading-relaxed">
             Method: H-DAB color deconvolution (Ruifrok & Johnston, <em>Anal Quant Cytol Histol</em>, 2001). DAB channel isolated via inverse stain matrix decomposition.
           </p>
+
+          {/* Debug Panel */}
+          <details className="mt-3 border border-border rounded-md">
+            <summary className="text-[11px] font-mono text-muted-foreground cursor-pointer px-2 py-1 bg-muted/50 rounded-t-md select-none">
+              ⚙ Debug: Active Processing Parameters
+            </summary>
+            <div className="px-3 py-2 space-y-2 text-[10px] font-mono text-muted-foreground bg-muted/20 rounded-b-md">
+              <div>
+                <span className="font-semibold text-foreground/70">Deconvolution:</span> Inverse Matrix (Ruifrok–Johnston) — RES_VEC=[{RES_VEC.join(', ')}]
+              </div>
+              <div>
+                <span className="font-semibold text-foreground/70">DAB_SCALE_MAX:</span> 0.85 &nbsp;|&nbsp;
+                <span className="font-semibold text-foreground/70">HEMA_RATIO:</span> {HEMA_SUPPRESSION_RATIO} &nbsp;|&nbsp;
+                <span className="font-semibold text-foreground/70">GAP:</span> {MIN_DAB_HEMA_GAP} &nbsp;|&nbsp;
+                <span className="font-semibold text-foreground/70">BG px:</span> 25
+              </div>
+              <div>
+                <span className="font-semibold text-foreground/70">GRADIENT_STOPS α:</span>{' '}
+                [{GRADIENT_STOPS.map(s => s.a.toFixed(2)).join(', ')}]
+              </div>
+            </div>
+          </details>
         </>
       )}
     </div>
