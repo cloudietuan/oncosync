@@ -10,8 +10,8 @@ const H_VEC = [0.65, 0.704, 0.286] as const;
 const DAB_VEC = [0.269, 0.568, 0.778] as const;
 const MAX_OD = 2;
 const WHITE_BG_THRESHOLD = 240;
-const HEMA_SUPPRESSION_RATIO = 0.6;
-const MIN_DAB_HEMA_GAP = 0.01;
+const HEMA_SUPPRESSION_RATIO = 1.1;
+const MIN_DAB_HEMA_GAP = 0.04;
 
 // Inverse of [H_VEC; DAB_VEC; Residual] matrix for proper deconvolution
 const INV_MATRIX = [
