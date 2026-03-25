@@ -397,7 +397,7 @@ const TissueAnalysis = () => {
       for (let i = 0; i < dabValues.length; i++) {
         const isPositive = tissueMask[i] && dabValues[i] > threshNorm && dabValues[i] > hemaValues[i] * HEMA_SUPPRESSION_RATIO;
         if (isPositive) {
-          const stretchedDab = Math.min(dabValues[i] / 0.4, 1.0);
+          const stretchedDab = Math.min(dabValues[i] / 0.75, 1.0);
           const [cr, cg, cb, ca] = lerpGradient(stretchedDab);
           const alpha = ca * opacityMul;
           oPx[i * 4] = cr;
