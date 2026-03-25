@@ -154,7 +154,6 @@ const Simulation = ({ expr, clin }: SimulationProps) => {
               description="Configure parameters on the left and click 'Run Simulation' to generate bootstrap survival benefit estimates."
             />
           )}
-          )}
         </div>
       </div>
     </div>
