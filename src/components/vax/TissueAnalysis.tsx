@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import StatCard from './StatCard';
 import InfoTooltip from './InfoTooltip';
 import { FadeSection } from './MotionWrappers';
-import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2 } from 'lucide-react';
+import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2, Camera, SwitchCamera, X } from 'lucide-react';
 
 // H-DAB stain vectors (Ruifrok & Johnston 2001)
 const H_VEC = [0.65, 0.704, 0.286] as const;
@@ -260,6 +260,11 @@ const TissueAnalysis = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [dragging, setDragging] = useState(false);
   const [loadingDemo, setLoadingDemo] = useState<string | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const canvasOrigRef = useRef<HTMLCanvasElement>(null);
@@ -478,6 +483,68 @@ const TissueAnalysis = () => {
     if (inputRef.current) inputRef.current.value = '';
   };
 
+  const stopCamera = useCallback(() => {
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+  }, []);
+
+  const openCamera = useCallback(async () => {
+    setCameraError(null);
+    setCameraOpen(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch {
+      setCameraError('Camera not available — check permissions or use file upload.');
+      stopCamera();
+    }
+  }, [facingMode, stopCamera]);
+
+  const closeCamera = useCallback(() => {
+    stopCamera();
+    setCameraOpen(false);
+    setCameraError(null);
+  }, [stopCamera]);
+
+  const switchCamera = useCallback(async () => {
+    stopCamera();
+    const next = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(next);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: next },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch {
+      setCameraError('Could not switch camera.');
+    }
+  }, [facingMode, stopCamera]);
+
+  const captureFrame = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || !video.videoWidth) return;
+    const c = document.createElement('canvas');
+    c.width = video.videoWidth;
+    c.height = video.videoHeight;
+    const ctx = c.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    setFileName(`camera_capture_${ts}.jpg`);
+    setImageData(c.toDataURL('image/jpeg', 0.92));
+    closeCamera();
+  }, [closeCamera]);
+
   const views = [
     { key: 'original' as const, label: 'Original' },
     { key: 'heatmap' as const, label: 'ApoC-1 Heatmap' },
@@ -505,6 +572,51 @@ const TissueAnalysis = () => {
             </div>
             <input ref={inputRef} type="file" accept=".png,.jpg,.jpeg" className="hidden" onChange={e => handleFiles(e.target.files)} />
           </div>
+
+          {/* Camera capture */}
+          <button
+            onClick={openCamera}
+            className="vax-btn-secondary w-full flex items-center justify-center gap-2 py-2.5 text-xs"
+          >
+            <Camera className="w-4 h-4" />
+            Capture from Camera
+          </button>
+          {cameraError && !cameraOpen && (
+            <p className="text-[10px] text-destructive text-center">{cameraError}</p>
+          )}
+
+          {/* Camera modal */}
+          {cameraOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={closeCamera}>
+              <div className="vax-card relative w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                <button onClick={closeCamera} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground z-10">
+                  <X className="w-5 h-5" />
+                </button>
+                <p className="text-sm font-medium text-foreground mb-3">Camera Preview</p>
+                {cameraError ? (
+                  <p className="text-xs text-destructive py-8 text-center">{cameraError}</p>
+                ) : (
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full rounded-md bg-black aspect-video object-cover"
+                  />
+                )}
+                <div className="flex items-center justify-center gap-3 mt-4">
+                  <button onClick={closeCamera} className="vax-btn-secondary px-4 py-2 text-xs">Cancel</button>
+                  <button onClick={switchCamera} className="vax-btn-secondary px-4 py-2 text-xs flex items-center gap-1.5">
+                    <SwitchCamera className="w-3.5 h-3.5" />
+                    Switch
+                  </button>
+                  <button onClick={captureFrame} disabled={!!cameraError} className="vax-btn-primary px-5 py-2 text-xs disabled:opacity-50">
+                    Capture
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Demo images from Human Protein Atlas */}
           <div className="space-y-2">
