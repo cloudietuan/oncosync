@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import StatCard from './StatCard';
 import InfoTooltip from './InfoTooltip';
 import { FadeSection } from './MotionWrappers';
-import { Microscope, Upload, RotateCcw, FlaskConical } from 'lucide-react';
+import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2 } from 'lucide-react';
 
 // H-DAB stain vectors (Ruifrok & Johnston 2001)
 const H_VEC = [0.65, 0.704, 0.286];
