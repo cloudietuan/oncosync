@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { FlaskConical } from 'lucide-react';
 import AlertBox from './AlertBox';
+import EmptyState from './EmptyState';
 import { ChartSkeleton } from './ChartSkeleton';
 import { jStat } from '@/lib/statistics';
 import type { ExpressionData, ClinicalRecord } from '@/data/gse62452';
