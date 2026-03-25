@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/vax/AppSidebar';
 import LoadingScreen from '@/components/vax/LoadingScreen';
 import VaxHeader from '@/components/vax/VaxHeader';
-import VaxNav from '@/components/vax/VaxNav';
 import OnboardingTour from '@/components/vax/OnboardingTour';
 import Overview from '@/components/vax/Overview';
 import WetLab from '@/components/vax/WetLab';
@@ -24,6 +25,19 @@ import {
 } from '@/data/gse62452';
 import { DEMO_IMMUNE_DATA, type ImmuneMarkerEntry } from '@/data/immuneData';
 import type { TcellProxyState } from '@/lib/tcellProxy';
+
+const TAB_TITLES: Record<number, string> = {
+  0: 'Dashboard',
+  1: 'Lab Records',
+  2: 'Tissue Analysis',
+  3: 'Expression Analysis',
+  4: 'VLP Simulation',
+  5: 'Immune Tracking',
+  6: 'Safety Monitoring',
+  7: 'Export & Reports',
+  8: 'T-Cell Proxy',
+  9: 'Validation',
+};
 
 const Index = () => {
   const [appReady, setAppReady] = useState(false);
@@ -79,49 +93,70 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <LoadingScreen isLoading={!appReady} />
-      <OnboardingTour currentTab={tab} />
-      <VaxHeader />
-      <VaxNav tab={tab} setTab={setTab} />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="mb-4">
-          <SessionManager
-            sessions={sessions.saved}
-            onSave={handleSave}
-            onLoad={handleLoad}
-            onDelete={deleteSession}
-          />
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <LoadingScreen isLoading={!appReady} />
+        <OnboardingTour currentTab={tab} />
+        <AppSidebar tab={tab} setTab={setTab} />
+        <div className="flex-1 flex flex-col min-w-0">
+          <VaxHeader />
+          <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-[1200px] w-full mx-auto">
+            {/* Breadcrumb-style page title */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="vax-section-title text-xl">{TAB_TITLES[tab]}</h2>
+                <p className="text-[12px] text-muted-foreground/60 mt-0.5">
+                  {tab === 0 && 'Qβ–ApoC1 VLP vaccine development overview'}
+                  {tab === 1 && 'VLP batch production logs and quality control'}
+                  {tab === 2 && 'IHC image deconvolution and DAB quantification'}
+                  {tab === 3 && 'Kaplan-Meier survival and gene expression analysis'}
+                  {tab === 4 && 'Bootstrap modeling of hypothetical vaccine response'}
+                  {tab === 5 && 'Antibody production curves and decay analysis'}
+                  {tab === 6 && 'Adverse event tracking and CTCAE grading'}
+                  {tab === 7 && 'Generate PDF reports, CSV and JSON exports'}
+                  {tab === 8 && 'T-cell activation scoring from expression signatures'}
+                  {tab === 9 && 'Statistical validation and data quality metrics'}
+                </p>
+              </div>
+              <SessionManager
+                sessions={sessions.saved}
+                onSave={handleSave}
+                onLoad={handleLoad}
+                onDelete={deleteSession}
+              />
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={tab}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+              >
+                {tab === 0 && <Overview expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} setTab={setTab} />}
+                {tab === 1 && <WetLab batches={batches} setBatches={setBatches} />}
+                {tab === 2 && <TissueAnalysis />}
+                {tab === 3 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
+                {tab === 4 && <Simulation expr={expr} clin={clin} />}
+                {tab === 5 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} logs={logs} />}
+                {tab === 6 && <SafetyTracking logs={logs} setLogs={setLogs} immuneData={immuneData} />}
+                {tab === 7 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} tcellProxy={tcellProxy} />}
+                {tab === 8 && <TcellProxy initialState={tcellProxy} onStateChange={handleTcellChange} />}
+                {tab === 9 && <Validation expr={expr} clin={clin} />}
+              </motion.div>
+            </AnimatePresence>
+            <GuidedTutorial onNavigateTab={setTab} />
+          </main>
+          <footer className="border-t border-border/40 py-5">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <p className="text-[11px] text-muted-foreground/50 font-medium">© 2026 OncoSync — Pancreatic Cancer Vaccine Companion</p>
+              <p className="text-[11px] text-muted-foreground/40">Data: GSE62452 (GEO) · For research use only · Not for clinical decisions</p>
+            </div>
+          </footer>
         </div>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={tab}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-          >
-            {tab === 0 && <Overview expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} setTab={setTab} />}
-            {tab === 1 && <WetLab batches={batches} setBatches={setBatches} />}
-            {tab === 2 && <TissueAnalysis />}
-            {tab === 3 && <Analysis expr={expr} setExpr={setExpr} clin={clin} setClin={setClin} />}
-            {tab === 4 && <Simulation expr={expr} clin={clin} />}
-            {tab === 5 && <ImmuneTracking immuneData={immuneData} setImmuneData={setImmuneData} logs={logs} />}
-            {tab === 6 && <SafetyTracking logs={logs} setLogs={setLogs} immuneData={immuneData} />}
-            {tab === 7 && <Reports expr={expr} clin={clin} batches={batches} logs={logs} immuneData={immuneData} tcellProxy={tcellProxy} />}
-            {tab === 8 && <TcellProxy initialState={tcellProxy} onStateChange={handleTcellChange} />}
-            {tab === 9 && <Validation expr={expr} clin={clin} />}
-          </motion.div>
-        </AnimatePresence>
-        <GuidedTutorial onNavigateTab={setTab} />
-      </main>
-      <footer className="border-t border-border/50 py-6 mt-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[10.5px] text-muted-foreground/60 font-medium">OncoSync — Pancreatic Cancer Vaccine Companion</p>
-          <p className="text-[10.5px] text-muted-foreground/50">Data: GSE62452 (GEO) • Research use only</p>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 };
 
