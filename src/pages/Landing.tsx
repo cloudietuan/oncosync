@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import heroIllustration from '@/assets/hero-illustration.jpg';
 import {
   FlaskConical, BarChart3, ShieldCheck, Microscope,
   Dna, ArrowRight, Sparkles, Activity, FileText
@@ -132,6 +133,25 @@ const Landing = () => {
             >
               Install PWA
             </button>
+          </motion.div>
+
+          {/* Hero illustration */}
+          <motion.div
+            className="mt-12 max-w-lg mx-auto"
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' as const }}
+          >
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/40">
+              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent z-10" />
+              <img
+                src={heroIllustration}
+                alt="DNA helix and molecular structures illustration"
+                width={1280}
+                height={720}
+                className="w-full h-auto"
+              />
+            </div>
           </motion.div>
         </div>
       </section>
