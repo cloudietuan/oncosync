@@ -171,16 +171,7 @@ const Landing = () => {
             transition={{ duration: 0.9, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             The Future of{' '}
-            <span className="relative">
-              <span className="text-primary">Pancreatic Cancer</span>
-              <motion.span
-                className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full bg-primary/40"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                style={{ transformOrigin: 'left' }}
-              />
-            </span>{' '}
+            <span className="text-primary">Pancreatic Cancer</span>{' '}
             Vaccine Research
           </motion.h1>
 
