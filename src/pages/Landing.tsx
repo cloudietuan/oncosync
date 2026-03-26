@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import heroIllustration from '@/assets/hero-illustration.jpg';
+import { motion } from 'framer-motion';
 import {
   FlaskConical, BarChart3, ShieldCheck, Microscope,
   Dna, ArrowRight, Sparkles, Activity, FileText,
