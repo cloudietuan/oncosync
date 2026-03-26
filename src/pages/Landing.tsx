@@ -292,13 +292,13 @@ const Landing = () => {
 
       {/* Features */}
       <section className="max-w-6xl mx-auto px-6 py-20 sm:py-28">
-        <motion.div
-          className="text-center mb-14"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+          <motion.div
+            className="text-center mb-14"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            variants={smoothReveal}
+          >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted text-muted-foreground text-[10px] font-semibold tracking-wider mb-4">
             PLATFORM FEATURES
           </div>
