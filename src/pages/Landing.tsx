@@ -5,7 +5,7 @@ import heroIllustration from '@/assets/hero-illustration.jpg';
 import {
   FlaskConical, BarChart3, ShieldCheck, Microscope,
   Dna, ArrowRight, Sparkles, Activity, FileText,
-  Mail, Check, Zap, Lock, Globe
+  Zap, Lock, Globe
 } from 'lucide-react';
 
 const features = [
