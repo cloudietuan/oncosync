@@ -250,36 +250,49 @@ const Landing = () => {
             </p>
           </motion.div>
 
-          {/* Hero illustration */}
-          <motion.div
-            className="max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 48, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border border-border/40 group">
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent z-10" />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-10" />
-              <img
-                src={heroIllustration}
-                alt="DNA helix and molecular structures illustration"
-                width={1280}
-                height={720}
-                className="w-full h-auto group-hover:scale-[1.02] transition-transform duration-700"
-              />
-              {/* Floating badge on image */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
-                <motion.button
-                  onClick={() => navigate('/app')}
-                  className="vax-btn-primary text-xs py-2 px-5 rounded-full shadow-xl backdrop-blur-sm"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Preview the App <ArrowRight size={14} />
-                </motion.button>
-              </div>
-            </div>
-          </motion.div>
+          {/* Hero illustration with parallax */}
+          {(() => {
+            const heroRef = useRef<HTMLDivElement>(null);
+            const { scrollYProgress } = useScroll({
+              target: heroRef,
+              offset: ['start end', 'end start'],
+            });
+            const parallaxY = useTransform(scrollYProgress, [0, 1], ['-5%', '10%']);
+
+            return (
+              <motion.div
+                ref={heroRef}
+                className="max-w-2xl mx-auto"
+                initial={{ opacity: 0, y: 48, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border border-border/40 group">
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-10" />
+                  <motion.img
+                    src={heroIllustration}
+                    alt="DNA helix and molecular structures illustration"
+                    width={1280}
+                    height={720}
+                    className="w-full h-auto group-hover:scale-[1.02] transition-transform duration-700 scale-110"
+                    style={{ y: parallaxY }}
+                  />
+                  {/* Floating badge on image */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
+                    <motion.button
+                      onClick={() => navigate('/app')}
+                      className="vax-btn-primary text-xs py-2 px-5 rounded-full shadow-xl backdrop-blur-sm"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Preview the App <ArrowRight size={14} />
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })()}
         </div>
       </section>
 
