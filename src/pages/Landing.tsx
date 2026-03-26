@@ -227,7 +227,6 @@ const Landing = () => {
 
           {/* Hero illustration with parallax */}
           <motion.div
-            ref={heroRef}
             className="max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 50, scale: 0.88 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
