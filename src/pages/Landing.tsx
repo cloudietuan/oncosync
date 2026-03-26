@@ -222,12 +222,12 @@ const Landing = () => {
             </motion.button>
           </motion.div>
 
-          {/* Hero illustration with parallax */}
+          {/* Hero illustration */}
           <motion.div
             className="max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 50, scale: 0.88 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1.4, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="relative rounded-2xl overflow-hidden border border-border/30 group" style={{ boxShadow: '0 25px 80px -20px hsla(258, 65%, 50%, 0.15), 0 10px 30px -10px hsla(0, 0%, 0%, 0.08)' }}>
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/15 to-transparent z-10" />
