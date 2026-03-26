@@ -146,7 +146,7 @@ const Install = () => {
         >
           {isInstalled ? (
             <div
-              className="rounded-2xl p-6 flex items-center gap-4 border border-border bg-muted"
+              className="rounded-2xl p-6 flex items-center gap-4 bg-muted"
             >
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
                 <CheckCircle2 size={24} className="text-emerald-500" />
