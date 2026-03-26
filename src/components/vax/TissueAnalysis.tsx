@@ -266,6 +266,7 @@ const TissueAnalysis = () => {
   const [cropMode, setCropMode] = useState(false);
   const [cropData, setCropData] = useState<string | null>(null);
   const [cropRect, setCropRect] = useState({ x: 0, y: 0, w: 100, h: 100 });
+  const [cropZoom, setCropZoom] = useState(1);
   const [cropDragging, setCropDragging] = useState<'move' | 'nw' | 'ne' | 'sw' | 'se' | null>(null);
   const [cropDragStart, setCropDragStart] = useState({ mx: 0, my: 0, ox: 0, oy: 0, ow: 0, oh: 0 });
   const cropCanvasRef = useRef<HTMLCanvasElement>(null);
