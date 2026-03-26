@@ -345,10 +345,10 @@ const Landing = () => {
         <div className="max-w-5xl mx-auto px-6 py-16">
           <motion.div
             className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={smoothReveal}
           >
             {[
               { value: '10+', label: 'Gene markers' },
