@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import heroIllustration from '@/assets/hero-illustration.jpg';
 import {
   FlaskConical, BarChart3, ShieldCheck, Microscope,
