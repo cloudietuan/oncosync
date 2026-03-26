@@ -56,17 +56,17 @@ const navGroups = [
 ];
 
 // Unique hover animations per tab
-const iconAnimations: Record<number, object> = {
-  0: { scale: [1, 1.2, 1], rotate: [0, 360] },           // Dashboard — full spin (overview of everything)
-  1: { y: [0, -4, 0, -2, 0] },                            // Lab Records — test tubes bubbling up
-  2: { scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] },     // Microscope — zoom in wobble
-  3: { scaleY: [1, 1.3, 0.9, 1.1, 1] },                   // Expression Analysis — bar chart growing
-  4: { rotate: [0, -20, 20, -10, 0], y: [0, -2, 0] },     // VLP Simulation — flask swirling
-  5: { x: [0, 2, 0], y: [0, -6, 0] },                     // Immune Tracking — syringe injecting
-  6: { scale: [1, 1.25, 1], opacity: [1, 0.6, 1] },       // Safety Monitoring — shield pulse/flash
-  7: { y: [0, 4, 0] },                                     // Export — file downloading motion
-  8: { rotate: [0, 180, 360], scale: [1, 1.15, 1] },       // T-Cell / DNA — helix spin
-  9: { scale: [1, 1.2, 1], rotate: [0, 0, 360] },          // Validation — checkmark completing
+const iconAnimations: Record<number, { scale?: number[]; rotate?: number[]; x?: number[]; y?: number[]; scaleY?: number[]; opacity?: number[] }> = {
+  0: { scale: [1, 1.2, 1], rotate: [0, 360] },
+  1: { y: [0, -4, 0, -2, 0] },
+  2: { scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] },
+  3: { scaleY: [1, 1.3, 0.9, 1.1, 1] },
+  4: { rotate: [0, -20, 20, -10, 0], y: [0, -2, 0] },
+  5: { x: [0, 2, 0], y: [0, -6, 0] },
+  6: { scale: [1, 1.25, 1], opacity: [1, 0.6, 1] },
+  7: { y: [0, 4, 0] },
+  8: { rotate: [0, 180, 360], scale: [1, 1.15, 1] },
+  9: { scale: [1, 1.2, 1], rotate: [0, 0, 360] },
 };
 
 export function AppSidebar({ tab, setTab }: AppSidebarProps) {
