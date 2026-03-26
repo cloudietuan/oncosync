@@ -117,7 +117,7 @@ const Install = () => {
 
           <motion.div
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider mb-4"
-            style={{ background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))', color: 'hsl(var(--primary))' }}
+            style={{ background: 'hsl(var(--muted))', color: 'hsl(var(--primary))' }}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease, delay: 0.25 }}
