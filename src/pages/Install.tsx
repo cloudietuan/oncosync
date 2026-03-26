@@ -75,8 +75,7 @@ const Install = () => {
 
       {/* Nav */}
       <header
-        className="sticky top-0 z-40 px-6"
-        style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+        className="sticky top-0 z-40 px-6 bg-background"
       >
         <div className="max-w-3xl mx-auto flex items-center justify-between h-14">
           <button
