@@ -85,23 +85,27 @@ const Landing = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Floating particles background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {[...Array(5)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 rounded-full bg-primary/20"
+            className="absolute rounded-full bg-primary/15"
             style={{
-              left: `${15 + i * 18}%`,
-              top: `${20 + i * 12}%`,
+              width: `${2 + (i % 3)}px`,
+              height: `${2 + (i % 3)}px`,
+              left: `${10 + i * 11}%`,
+              top: `${15 + (i * 9) % 60}%`,
             }}
             animate={{
-              y: [0, -30, 0],
-              opacity: [0.2, 0.5, 0.2],
+              y: [0, -40 - i * 5, 0],
+              x: [0, (i % 2 === 0 ? 10 : -10), 0],
+              opacity: [0.1, 0.4, 0.1],
+              scale: [1, 1.3, 1],
             }}
             transition={{
-              duration: 4 + i,
+              duration: 5 + i * 0.7,
               repeat: Infinity,
               ease: 'easeInOut',
-              delay: i * 0.8,
+              delay: i * 0.6,
             }}
           />
         ))}
