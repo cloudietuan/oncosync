@@ -81,17 +81,6 @@ const stagger = {
 
 const Landing = () => {
   const navigate = useNavigate();
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const rawParallax = useTransform(scrollYProgress, [0, 1], ['-5%', '12%']);
-  const parallaxY = useSpring(rawParallax, springConfig);
-
-  const rawHeaderOpacity = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
-  const headerBorder = useSpring(rawHeaderOpacity, springConfig);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden scroll-smooth">
