@@ -171,22 +171,26 @@
 
   .vax-btn-primary {
     @apply vax-btn text-white;
-    background: hsl(258, 65%, 60%);
-    box-shadow: 0 1px 2px 0 hsl(258 65% 60% / 0.25);
+    background: linear-gradient(135deg, hsl(258, 65%, 60%), hsl(258, 80%, 52%));
+    box-shadow: 0 2px 8px 0 hsla(258, 65%, 60%, 0.3);
   }
 
   .vax-btn-primary:hover {
-    background: hsl(258, 65%, 50%);
-    box-shadow: 0 2px 4px 0 hsl(258 65% 60% / 0.3);
+    background: linear-gradient(135deg, hsl(258, 65%, 52%), hsl(258, 80%, 45%));
+    box-shadow: 0 4px 16px 0 hsla(258, 65%, 60%, 0.4);
   }
 
   .vax-btn-secondary {
-    @apply vax-btn bg-card text-foreground border border-border;
-    box-shadow: 0 1px 2px 0 hsl(220 20% 14% / 0.05);
+    @apply vax-btn text-foreground;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
   }
 
   .vax-btn-secondary:hover {
-    @apply bg-muted;
+    background: hsla(258, 50%, 96%, 0.5);
   }
 
   .vax-btn-ghost {
