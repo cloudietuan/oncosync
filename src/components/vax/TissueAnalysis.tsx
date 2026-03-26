@@ -735,12 +735,27 @@ const TissueAnalysis = () => {
                       playsInline
                       muted
                       className="w-full h-full object-cover"
+                      onClick={handleTapToFocus}
+                      onTouchEnd={handleTapToFocus}
                     />
                     {/* Center crosshair */}
                     <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                       <div className="w-48 h-48 sm:w-64 sm:h-64 border border-white/20 rounded-2xl" />
                       <div className="absolute w-px h-6 bg-white/30" />
                       <div className="absolute w-6 h-px bg-white/30" />
+                    </div>
+                    {/* Focus indicator */}
+                    {focusPoint && (
+                      <div
+                        className="absolute pointer-events-none"
+                        style={{ left: focusPoint.x - 30, top: focusPoint.y - 30 + 48 }}
+                      >
+                        <div className="w-[60px] h-[60px] border-2 border-yellow-400 rounded-lg animate-pulse" />
+                      </div>
+                    )}
+                    {/* Tap to focus hint */}
+                    <div className="absolute bottom-3 inset-x-0 text-center pointer-events-none">
+                      <span className="text-white/40 text-[10px]">Tap to focus</span>
                     </div>
                   </>
                 )}
