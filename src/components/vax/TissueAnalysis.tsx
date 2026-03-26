@@ -266,6 +266,7 @@ const TissueAnalysis = () => {
   const [cropMode, setCropMode] = useState(false);
   const [cropData, setCropData] = useState<string | null>(null);
   const [cropRect, setCropRect] = useState({ x: 0, y: 0, w: 100, h: 100 });
+  const [cropZoom, setCropZoom] = useState(1);
   const [cropDragging, setCropDragging] = useState<'move' | 'nw' | 'ne' | 'sw' | 'se' | null>(null);
   const [cropDragStart, setCropDragStart] = useState({ mx: 0, my: 0, ox: 0, oy: 0, ow: 0, oh: 0 });
   const cropCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -560,24 +561,29 @@ const TissueAnalysis = () => {
     if (!cropData) return;
     const img = new Image();
     img.onload = () => {
-      const sx = Math.round((cropRect.x / 100) * img.width);
-      const sy = Math.round((cropRect.y / 100) * img.height);
-      const sw = Math.round((cropRect.w / 100) * img.width);
-      const sh = Math.round((cropRect.h / 100) * img.height);
+      // The visible area when zoomed is centered: offset = (zoom-1)/(2*zoom) of full size
+      const visibleFrac = 1 / cropZoom;
+      const offsetFrac = (1 - visibleFrac) / 2;
+      // Crop rect is % of the visible container, map to full image coords
+      const sx = Math.round((offsetFrac + (cropRect.x / 100) * visibleFrac) * img.width);
+      const sy = Math.round((offsetFrac + (cropRect.y / 100) * visibleFrac) * img.height);
+      const sw = Math.round((cropRect.w / 100) * visibleFrac * img.width);
+      const sh = Math.round((cropRect.h / 100) * visibleFrac * img.height);
       const c = document.createElement('canvas');
-      c.width = sw;
-      c.height = sh;
+      c.width = Math.max(1, sw);
+      c.height = Math.max(1, sh);
       const ctx = c.getContext('2d');
       if (!ctx) return;
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
       const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       setFileName(`camera_capture_${ts}.jpg`);
       setImageData(c.toDataURL('image/jpeg', 0.92));
       setCropMode(false);
       setCropData(null);
+      setCropZoom(1);
     };
     img.src = cropData;
-  }, [cropData, cropRect]);
+  }, [cropData, cropRect, cropZoom]);
 
   const skipCrop = useCallback(() => {
     if (!cropData) return;
@@ -737,8 +743,28 @@ const TissueAnalysis = () => {
                   <Crop className="w-4 h-4 text-primary" />
                   Crop Image
                 </p>
+                {/* Zoom slider */}
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">Zoom</span>
+                  <input
+                    type="range"
+                    min={1}
+                    max={4}
+                    step={0.1}
+                    value={cropZoom}
+                    onChange={e => setCropZoom(parseFloat(e.target.value))}
+                    className="flex-1 accent-[hsl(var(--primary))] h-1.5"
+                  />
+                  <span className="text-[10px] text-muted-foreground font-mono w-8 text-right">{cropZoom.toFixed(1)}×</span>
+                </div>
                 <div ref={cropContainerRef} className="relative select-none rounded-md overflow-hidden" style={{ touchAction: 'none' }}>
-                  <img src={cropData} alt="Captured" className="w-full h-auto block" draggable={false} />
+                  <img
+                    src={cropData}
+                    alt="Captured"
+                    className="w-full h-auto block origin-center"
+                    style={{ transform: `scale(${cropZoom})` }}
+                    draggable={false}
+                  />
                   {/* Darkened overlay outside crop */}
                   <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute inset-0 bg-black/50" />
