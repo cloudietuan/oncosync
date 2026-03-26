@@ -826,13 +826,12 @@ const TissueAnalysis = () => {
                   />
                   {/* Darkened overlay outside crop */}
                   <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute inset-0 bg-black/50" />
                     <div
                       className="absolute bg-transparent"
                       style={{
                         left: `${cropRect.x}%`, top: `${cropRect.y}%`,
                         width: `${cropRect.w}%`, height: `${cropRect.h}%`,
-                        boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
+                        boxShadow: '0 0 0 9999px rgba(0,0,0,0.6)',
                         border: '2px solid hsl(var(--primary))',
                       }}
                     />
