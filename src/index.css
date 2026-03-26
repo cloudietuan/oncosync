@@ -114,6 +114,14 @@
     letter-spacing: -0.01em;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     transition: background-color 0.3s ease, color 0.3s ease;
+    background-image: radial-gradient(ellipse at 20% 0%, hsla(258, 65%, 60%, 0.04) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 100%, hsla(258, 65%, 60%, 0.03) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: radial-gradient(ellipse at 20% 0%, hsla(258, 65%, 60%, 0.06) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 100%, hsla(258, 65%, 60%, 0.04) 0%, transparent 50%);
   }
 
   h1, h2, h3, h4, h5, h6 {
