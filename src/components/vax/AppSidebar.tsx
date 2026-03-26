@@ -57,16 +57,16 @@ const navGroups = [
 
 // Unique hover animations per tab
 const iconAnimations: Record<number, { scale?: number[]; rotate?: number[]; x?: number[]; y?: number[]; scaleY?: number[]; opacity?: number[] }> = {
-  0: { scale: [1, 1.2, 1], rotate: [0, 360] },
-  1: { y: [0, -4, 0, -2, 0] },
-  2: { scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] },
-  3: { scaleY: [1, 1.3, 0.9, 1.1, 1] },
-  4: { rotate: [0, -20, 20, -10, 0], y: [0, -2, 0] },
-  5: { x: [0, 2, 0], y: [0, -6, 0] },
-  6: { scale: [1, 1.25, 1], opacity: [1, 0.6, 1] },
-  7: { y: [0, 4, 0] },
-  8: { rotate: [0, 180, 360], scale: [1, 1.15, 1] },
-  9: { scale: [1, 1.2, 1], rotate: [0, 0, 360] },
+  0: { scale: [1, 1.1, 1], rotate: [0, 180] },
+  1: { y: [0, -2, 0] },
+  2: { scale: [1, 1.12, 1], rotate: [0, 5, -5, 0] },
+  3: { scaleY: [1, 1.12, 0.95, 1] },
+  4: { rotate: [0, -8, 8, 0], y: [0, -1, 0] },
+  5: { y: [0, -3, 0] },
+  6: { scale: [1, 1.1, 1], opacity: [1, 0.75, 1] },
+  7: { y: [0, 2, 0] },
+  8: { rotate: [0, 90, 180], scale: [1, 1.08, 1] },
+  9: { scale: [1, 1.1, 1], rotate: [0, 180] },
 };
 
 export function AppSidebar({ tab, setTab }: AppSidebarProps) {
