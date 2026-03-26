@@ -47,6 +47,7 @@ const highlights = [
   { icon: Globe, text: 'Browser-based, no install' },
 ];
 
+const springConfig = { stiffness: 60, damping: 20, mass: 0.8 };
 const smoothEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const fadeUp = {
