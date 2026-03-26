@@ -204,7 +204,7 @@ const Install = () => {
             </div>
           ) : (
             <div
-              className="rounded-2xl p-6 border border-border bg-muted space-y-4"
+              className="rounded-2xl p-6 bg-muted space-y-4"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
