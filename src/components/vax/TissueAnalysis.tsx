@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import StatCard from './StatCard';
 import InfoTooltip from './InfoTooltip';
 import { FadeSection } from './MotionWrappers';
-import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2, Camera, SwitchCamera, X } from 'lucide-react';
+import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2, Camera, SwitchCamera, X, Crop } from 'lucide-react';
 
 // H-DAB stain vectors (Ruifrok & Johnston 2001)
 const H_VEC = [0.65, 0.704, 0.286] as const;
@@ -263,6 +263,14 @@ const TissueAnalysis = () => {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [cropMode, setCropMode] = useState(false);
+  const [cropData, setCropData] = useState<string | null>(null);
+  const [cropRect, setCropRect] = useState({ x: 0, y: 0, w: 100, h: 100 });
+  const [cropDragging, setCropDragging] = useState<'move' | 'nw' | 'ne' | 'sw' | 'se' | null>(null);
+  const [cropDragStart, setCropDragStart] = useState({ mx: 0, my: 0, ox: 0, oy: 0, ow: 0, oh: 0 });
+  const cropCanvasRef = useRef<HTMLCanvasElement>(null);
+  const cropImgRef = useRef<HTMLImageElement | null>(null);
+  const cropContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -539,11 +547,102 @@ const TissueAnalysis = () => {
     const ctx = c.getContext('2d');
     if (!ctx) return;
     ctx.drawImage(video, 0, 0);
-    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    setFileName(`camera_capture_${ts}.jpg`);
-    setImageData(c.toDataURL('image/jpeg', 0.92));
+    const dataUrl = c.toDataURL('image/jpeg', 0.92);
+    // Open crop UI instead of directly setting image
+    setCropData(dataUrl);
+    setCropRect({ x: 0, y: 0, w: 100, h: 100 }); // percentages
+    setCropMode(true);
     closeCamera();
   }, [closeCamera]);
+
+  // Crop helpers
+  const applyCrop = useCallback(() => {
+    if (!cropData) return;
+    const img = new Image();
+    img.onload = () => {
+      const sx = Math.round((cropRect.x / 100) * img.width);
+      const sy = Math.round((cropRect.y / 100) * img.height);
+      const sw = Math.round((cropRect.w / 100) * img.width);
+      const sh = Math.round((cropRect.h / 100) * img.height);
+      const c = document.createElement('canvas');
+      c.width = sw;
+      c.height = sh;
+      const ctx = c.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+      const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      setFileName(`camera_capture_${ts}.jpg`);
+      setImageData(c.toDataURL('image/jpeg', 0.92));
+      setCropMode(false);
+      setCropData(null);
+    };
+    img.src = cropData;
+  }, [cropData, cropRect]);
+
+  const skipCrop = useCallback(() => {
+    if (!cropData) return;
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    setFileName(`camera_capture_${ts}.jpg`);
+    setImageData(cropData);
+    setCropMode(false);
+    setCropData(null);
+  }, [cropData]);
+
+  const cancelCrop = useCallback(() => {
+    setCropMode(false);
+    setCropData(null);
+  }, []);
+
+  const getCropCoords = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    const container = cropContainerRef.current;
+    if (!container) return { px: 0, py: 0 };
+    const rect = container.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    return {
+      px: ((clientX - rect.left) / rect.width) * 100,
+      py: ((clientY - rect.top) / rect.height) * 100,
+    };
+  }, []);
+
+  const handleCropPointerDown = useCallback((type: 'move' | 'nw' | 'ne' | 'sw' | 'se', e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { px, py } = getCropCoords(e);
+    setCropDragging(type);
+    setCropDragStart({ mx: px, my: py, ox: cropRect.x, oy: cropRect.y, ow: cropRect.w, oh: cropRect.h });
+  }, [getCropCoords, cropRect]);
+
+  const handleCropPointerMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    if (!cropDragging) return;
+    const { px, py } = getCropCoords(e);
+    const dx = px - cropDragStart.mx;
+    const dy = py - cropDragStart.my;
+
+    if (cropDragging === 'move') {
+      const nx = Math.max(0, Math.min(100 - cropDragStart.ow, cropDragStart.ox + dx));
+      const ny = Math.max(0, Math.min(100 - cropDragStart.oh, cropDragStart.oy + dy));
+      setCropRect(r => ({ ...r, x: nx, y: ny }));
+    } else {
+      let { ox, oy, ow, oh } = cropDragStart;
+      if (cropDragging.includes('w')) { ox += dx; ow -= dx; }
+      if (cropDragging.includes('e')) { ow += dx; }
+      if (cropDragging.includes('n')) { oy += dy; oh -= dy; }
+      if (cropDragging.includes('s')) { oh += dy; }
+      // Enforce minimums
+      if (ow < 10) { ow = 10; if (cropDragging.includes('w')) ox = cropDragStart.ox + cropDragStart.ow - 10; }
+      if (oh < 10) { oh = 10; if (cropDragging.includes('n')) oy = cropDragStart.oy + cropDragStart.oh - 10; }
+      ox = Math.max(0, ox);
+      oy = Math.max(0, oy);
+      if (ox + ow > 100) ow = 100 - ox;
+      if (oy + oh > 100) oh = 100 - oy;
+      setCropRect({ x: ox, y: oy, w: ow, h: oh });
+    }
+  }, [cropDragging, cropDragStart, getCropCoords]);
+
+  const handleCropPointerUp = useCallback(() => {
+    setCropDragging(null);
+  }, []);
 
   const views = [
     { key: 'original' as const, label: 'Original' },
@@ -601,7 +700,8 @@ const TissueAnalysis = () => {
                     autoPlay
                     playsInline
                     muted
-                    className="w-full rounded-md bg-black aspect-video object-cover"
+                    className="w-full rounded-md bg-black object-contain"
+                    style={{ maxHeight: '70vh' }}
                   />
                 )}
                 <div className="flex items-center justify-center gap-3 mt-4">
@@ -612,6 +712,80 @@ const TissueAnalysis = () => {
                   </button>
                   <button onClick={captureFrame} disabled={!!cameraError} className="vax-btn-primary px-5 py-2 text-xs disabled:opacity-50">
                     Capture
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Crop modal */}
+          {cropMode && cropData && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={cancelCrop}>
+              <div
+                className="vax-card relative w-full max-w-lg"
+                onClick={e => e.stopPropagation()}
+                onMouseMove={handleCropPointerMove}
+                onMouseUp={handleCropPointerUp}
+                onMouseLeave={handleCropPointerUp}
+                onTouchMove={handleCropPointerMove}
+                onTouchEnd={handleCropPointerUp}
+              >
+                <button onClick={cancelCrop} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground z-10">
+                  <X className="w-5 h-5" />
+                </button>
+                <p className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                  <Crop className="w-4 h-4 text-primary" />
+                  Crop Image
+                </p>
+                <div ref={cropContainerRef} className="relative select-none rounded-md overflow-hidden" style={{ touchAction: 'none' }}>
+                  <img src={cropData} alt="Captured" className="w-full h-auto block" draggable={false} />
+                  {/* Darkened overlay outside crop */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute inset-0 bg-black/50" />
+                    <div
+                      className="absolute bg-transparent"
+                      style={{
+                        left: `${cropRect.x}%`, top: `${cropRect.y}%`,
+                        width: `${cropRect.w}%`, height: `${cropRect.h}%`,
+                        boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
+                        border: '2px solid hsl(var(--primary))',
+                      }}
+                    />
+                  </div>
+                  {/* Interactive crop area */}
+                  <div
+                    className="absolute cursor-move"
+                    style={{
+                      left: `${cropRect.x}%`, top: `${cropRect.y}%`,
+                      width: `${cropRect.w}%`, height: `${cropRect.h}%`,
+                    }}
+                    onMouseDown={e => handleCropPointerDown('move', e)}
+                    onTouchStart={e => handleCropPointerDown('move', e)}
+                  >
+                    {/* Corner handles */}
+                    {(['nw', 'ne', 'sw', 'se'] as const).map(corner => (
+                      <div
+                        key={corner}
+                        className="absolute w-4 h-4 bg-primary rounded-full border-2 border-primary-foreground shadow-md"
+                        style={{
+                          top: corner.includes('n') ? '-8px' : 'auto',
+                          bottom: corner.includes('s') ? '-8px' : 'auto',
+                          left: corner.includes('w') ? '-8px' : 'auto',
+                          right: corner.includes('e') ? '-8px' : 'auto',
+                          cursor: corner === 'nw' || corner === 'se' ? 'nwse-resize' : 'nesw-resize',
+                        }}
+                        onMouseDown={e => handleCropPointerDown(corner, e)}
+                        onTouchStart={e => handleCropPointerDown(corner, e)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-3 mt-4">
+                  <button onClick={cancelCrop} className="vax-btn-secondary px-4 py-2 text-xs">Cancel</button>
+                  <button onClick={skipCrop} className="vax-btn-secondary px-4 py-2 text-xs">Use Full Image</button>
+                  <button onClick={applyCrop} className="vax-btn-primary px-5 py-2 text-xs flex items-center gap-1.5">
+                    <Crop className="w-3.5 h-3.5" />
+                    Apply Crop
                   </button>
                 </div>
               </div>
