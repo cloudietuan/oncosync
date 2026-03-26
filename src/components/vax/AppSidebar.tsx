@@ -91,7 +91,14 @@ export function AppSidebar({ tab, setTab }: AppSidebarProps) {
                                 : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-foreground'
                             }`}
                           >
-                            <item.icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-primary' : ''}`} />
+                            <motion.div
+                              whileHover={{ rotate: [0, -12, 12, -6, 0], scale: 1.15 }}
+                              animate={isActive ? { scale: [1, 1.2, 1] } : {}}
+                              transition={{ duration: 0.5, ease: 'easeInOut' }}
+                              className="shrink-0"
+                            >
+                              <item.icon className={`h-4 w-4 ${isActive ? 'text-primary' : ''}`} />
+                            </motion.div>
                             {!collapsed && <span>{item.title}</span>}
                           </SidebarMenuButton>
                         </SidebarMenuItem>
