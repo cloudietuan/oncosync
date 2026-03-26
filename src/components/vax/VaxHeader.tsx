@@ -31,7 +31,7 @@ const VaxHeader = () => {
     <header className="h-14 px-4 flex items-center justify-between sticky top-0 z-40 bg-background">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-        <div className="w-px h-5 bg-border/60 mx-1 hidden sm:block" />
+        <div className="w-px h-5 bg-muted mx-1 hidden sm:block" />
         <img src={logo} alt="OncoSync logo" className="w-7 h-7 rounded-lg shrink-0 object-contain" />
         <div className="min-w-0 flex flex-col justify-center">
           <h1 className="text-[14px] sm:text-[15px] font-bold text-foreground tracking-tight truncate leading-tight">
