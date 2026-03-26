@@ -246,7 +246,7 @@ const Install = () => {
           {perks.map((perk, i) => (
             <motion.div
               key={perk.title}
-              className="flex items-start gap-4 rounded-xl p-4 border border-border bg-muted"
+              className="flex items-start gap-4 rounded-xl p-4 bg-muted"
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, ease, delay: 0.5 + i * 0.08 }}
