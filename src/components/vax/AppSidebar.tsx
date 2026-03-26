@@ -65,8 +65,8 @@ const iconAnimations: Record<number, { scale?: number[]; rotate?: number[]; x?: 
   5: { y: [0, -3, 0] },
   6: { scale: [1, 1.1, 1], opacity: [1, 0.75, 1] },
   7: { y: [0, 2, 0] },
-  8: { rotate: [0, 90, 180], scale: [1, 1.08, 1] },
-  9: { scale: [1, 1.15, 0.95, 1.05, 1] },
+  8: { rotate: [0, 180, 360], scale: [1, 1.08, 1] },
+  9: { scale: [1, 1.15, 0.95, 1.05, 1], rotate: [0, 0, 0] },
 };
 
 export function AppSidebar({ tab, setTab }: AppSidebarProps) {
