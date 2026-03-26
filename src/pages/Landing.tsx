@@ -76,6 +76,11 @@ const smoothReveal = {
 const Landing = () => {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start end', 'end start'],
+  });
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['-5%', '10%']);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
