@@ -400,9 +400,8 @@ table {
 }
 
   th {
-    @apply px-4 py-2.5 text-left text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground/80 border-b border-border/60;
-    background: var(--glass-bg);
-    backdrop-filter: blur(8px);
+    @apply px-4 py-2.5 text-left text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground/80;
+    background: hsl(var(--muted));
   }
 
 th:first-child {
