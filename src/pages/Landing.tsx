@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import heroIllustration from '@/assets/hero-illustration.jpg';
 import {
   FlaskConical, BarChart3, ShieldCheck, Microscope,
@@ -47,29 +47,35 @@ const highlights = [
   { icon: Globe, text: 'Browser-based, no install' },
 ];
 
-const smoothEase = [0.25, 0.46, 0.45, 0.94] as const;
+const spring = { stiffness: 60, damping: 20, mass: 0.8 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 28, scale: 0.97, filter: 'blur(6px)' },
+  hidden: { opacity: 0, y: 32, filter: 'blur(8px)' },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    scale: 1,
     filter: 'blur(0px)',
     transition: {
-      delay: i * 0.08,
-      duration: 0.7,
-      ease: smoothEase as unknown as [number, number, number, number],
+      delay: i * 0.07,
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1],
     },
   }),
 };
 
 const smoothReveal = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 28, filter: 'blur(4px)' },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: smoothEase as unknown as [number, number, number, number] },
+    filter: 'blur(0px)',
+    transition: { duration: 1, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const stagger = {
+  visible: {
+    transition: { staggerChildren: 0.06 },
   },
 };
 
@@ -80,50 +86,61 @@ const Landing = () => {
     target: heroRef,
     offset: ['start end', 'end start'],
   });
-  const parallaxY = useTransform(scrollYProgress, [0, 1], ['-5%', '10%']);
+
+  const rawParallax = useTransform(scrollYProgress, [0, 1], ['-5%', '12%']);
+  const parallaxY = useSpring(rawParallax, spring);
+
+  const rawHeaderOpacity = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
+  const headerBorder = useSpring(rawHeaderOpacity, spring);
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Floating particles background */}
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden scroll-smooth">
+      {/* Ambient glow orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-primary/15"
-            style={{
-              width: `${2 + (i % 3)}px`,
-              height: `${2 + (i % 3)}px`,
-              left: `${10 + i * 11}%`,
-              top: `${15 + (i * 9) % 60}%`,
-            }}
-            animate={{
-              y: [0, -40 - i * 5, 0],
-              x: [0, (i % 2 === 0 ? 10 : -10), 0],
-              opacity: [0.1, 0.4, 0.1],
-              scale: [1, 1.3, 1],
-            }}
-            transition={{
-              duration: 5 + i * 0.7,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: i * 0.6,
-            }}
-          />
-        ))}
+        <motion.div
+          className="absolute w-[600px] h-[600px] rounded-full opacity-[0.06] blur-[100px]"
+          style={{ background: 'hsl(var(--primary))', top: '5%', left: '15%' }}
+          animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.08, 1] }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute w-[400px] h-[400px] rounded-full opacity-[0.04] blur-[80px]"
+          style={{ background: 'hsl(258, 65%, 75%)', bottom: '10%', right: '10%' }}
+          animate={{ x: [0, -20, 0], y: [0, 25, 0], scale: [1, 1.1, 1] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+        />
       </div>
 
-      {/* Nav */}
-      <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border/30">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
-          <div className="flex items-center gap-2.5">
+      {/* Nav — glassmorphic */}
+      <motion.header
+        className="fixed top-0 inset-x-0 z-50 border-b px-6"
+        style={{
+          background: 'var(--glass-bg)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderColor: `hsla(0, 0%, 100%, ${0.15})`,
+        }}
+      >
+        <div className="max-w-6xl mx-auto flex items-center justify-between h-16">
+          <motion.div
+            className="flex items-center gap-2.5"
+            initial={{ opacity: 0, x: -12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25">
               <Dna size={18} className="text-primary-foreground" />
             </div>
             <span className="font-bold text-base tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               OncoSync
             </span>
-          </div>
-          <div className="flex items-center gap-3">
+          </motion.div>
+          <motion.div
+            className="flex items-center gap-3"
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+          >
             <button
               onClick={() => navigate('/app')}
               className="vax-btn-secondary text-xs py-2 px-4 rounded-lg hidden sm:inline-flex"
@@ -133,30 +150,25 @@ const Landing = () => {
             <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold tracking-wider">
               COMING SOON
             </div>
-          </div>
+          </motion.div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Hero */}
       <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 px-6">
-        {/* Multi-layer glow */}
         <div
-          className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full opacity-15 blur-[120px] pointer-events-none"
+          className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full opacity-[0.12] blur-[120px] pointer-events-none"
           style={{ background: 'hsl(var(--primary))' }}
-        />
-        <div
-          className="absolute top-40 left-1/3 w-[300px] h-[300px] rounded-full opacity-10 blur-[80px] pointer-events-none"
-          style={{ background: 'hsl(258, 65%, 75%)' }}
         />
 
         <div className="relative max-w-4xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            initial={{ opacity: 0, y: 12, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold tracking-wider">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[11px] font-semibold tracking-wider" style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderColor: 'var(--glass-border)', color: 'hsl(var(--primary))' }}>
               <Sparkles size={13} />
               COMING SOON — EARLY ACCESS 2026
             </div>
@@ -165,9 +177,9 @@ const Landing = () => {
           <motion.h1
             className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight leading-[1.08] mb-6"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
+            initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.9, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 1.1, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
           >
             The Future of{' '}
             <span className="text-primary">Pancreatic Cancer</span>{' '}
@@ -176,9 +188,9 @@ const Landing = () => {
 
           <motion.p
             className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={{ opacity: 0, y: 18, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
           >
             OncoSync brings together gene expression survival analysis, immune response modeling,
             and VLP simulation tools into one powerful, integrated research environment.
@@ -187,59 +199,71 @@ const Landing = () => {
           {/* Highlights */}
           <motion.div
             className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-10"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
           >
-            {highlights.map((h) => (
-              <div key={h.text} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            {highlights.map((h, i) => (
+              <motion.div
+                key={h.text}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground"
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.7, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] } },
+                }}
+              >
                 <h.icon size={14} className="text-primary/70" />
                 <span>{h.text}</span>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
 
-          {/* CTA button */}
+          {/* CTA */}
           <motion.div
             className="mb-12"
-            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            initial={{ opacity: 0, y: 20, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.9, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            <button
+            <motion.button
               onClick={() => navigate('/app')}
               className="vax-btn-primary text-sm py-3 px-8 rounded-xl shadow-lg shadow-primary/20 inline-flex items-center gap-2"
+              whileHover={{ scale: 1.04, boxShadow: '0 8px 30px hsla(258, 65%, 60%, 0.35)' }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
               Preview the App <ArrowRight size={16} />
-            </button>
+            </motion.button>
           </motion.div>
 
           {/* Hero illustration with parallax */}
           <motion.div
             ref={heroRef}
             className="max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 48, scale: 0.9 }}
+            initial={{ opacity: 0, y: 50, scale: 0.88 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.4, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border border-border/40 group">
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent z-10" />
+            <div className="relative rounded-2xl overflow-hidden border border-border/30 group" style={{ boxShadow: '0 25px 80px -20px hsla(258, 65%, 50%, 0.15), 0 10px 30px -10px hsla(0, 0%, 0%, 0.08)' }}>
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/15 to-transparent z-10" />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-10" />
               <motion.img
                 src={heroIllustration}
                 alt="DNA helix and molecular structures illustration"
                 width={1280}
                 height={720}
-                className="w-full h-auto group-hover:scale-[1.02] transition-transform duration-700 scale-110"
+                className="w-full h-auto transition-transform duration-1000 ease-out scale-110"
                 style={{ y: parallaxY }}
+                whileHover={{ scale: 1.13 }}
+                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
               />
-              {/* Floating badge on image */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
                 <motion.button
                   onClick={() => navigate('/app')}
                   className="vax-btn-primary text-xs py-2 px-5 rounded-full shadow-xl backdrop-blur-sm"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.06, y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 >
                   Preview the App <ArrowRight size={14} />
                 </motion.button>
@@ -251,14 +275,14 @@ const Landing = () => {
 
       {/* Features */}
       <section className="max-w-6xl mx-auto px-6 py-20 sm:py-28">
-          <motion.div
-            className="text-center mb-14"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
-            variants={smoothReveal}
-          >
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted text-muted-foreground text-[10px] font-semibold tracking-wider mb-4">
+        <motion.div
+          className="text-center mb-14"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-80px' }}
+          variants={smoothReveal}
+        >
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider mb-4" style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(8px)', color: 'hsl(var(--muted-foreground))' }}>
             PLATFORM FEATURES
           </div>
           <h2
@@ -283,12 +307,11 @@ const Landing = () => {
               whileInView="visible"
               viewport={{ once: true, margin: '-60px' }}
               variants={fadeUp}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              whileHover={{ y: -6, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
             >
-              {/* Subtle corner accent */}
-              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/[0.03] rounded-bl-[40px]" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/[0.03] rounded-bl-[48px] transition-all duration-500 group-hover:w-32 group-hover:h-32 group-hover:bg-primary/[0.06]" />
               <div className="relative">
-                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:shadow-lg group-hover:shadow-primary/10 transition-all duration-300">
+                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:shadow-lg group-hover:shadow-primary/10 transition-all duration-500">
                   <f.icon size={20} className="text-primary" />
                 </div>
                 <h3 className="text-[15px] font-bold mb-2 tracking-tight">{f.title}</h3>
@@ -299,28 +322,34 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Stats / Social proof */}
-      <section className="border-y border-border/40 bg-muted/20">
+      {/* Stats */}
+      <section className="border-y border-border/30" style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
         <div className="max-w-5xl mx-auto px-6 py-16">
           <motion.div
             className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
-            variants={smoothReveal}
+            variants={stagger}
           >
             {[
               { value: '10+', label: 'Gene markers' },
               { value: '6', label: 'Analysis modules' },
               { value: '3', label: 'Patient profiles' },
               { value: '∞', label: 'Simulations' },
-            ].map((s) => (
-              <div key={s.label}>
+            ].map((s, i) => (
+              <motion.div
+                key={s.label}
+                variants={{
+                  hidden: { opacity: 0, y: 20, scale: 0.95 },
+                  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] } },
+                }}
+              >
                 <div className="text-3xl sm:text-4xl font-extrabold text-primary tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                   {s.value}
                 </div>
                 <div className="text-xs text-muted-foreground mt-1 font-medium">{s.label}</div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         </div>
@@ -329,7 +358,7 @@ const Landing = () => {
       {/* CTA */}
       <section className="relative overflow-hidden">
         <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{
             backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary)) 1px, transparent 0)',
             backgroundSize: '32px 32px',
@@ -355,25 +384,31 @@ const Landing = () => {
               OncoSync is launching soon. Preview the full research platform now.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
+              <motion.button
                 onClick={() => navigate('/app')}
                 className="vax-btn-primary text-sm py-3 px-8 rounded-xl shadow-lg shadow-primary/20"
+                whileHover={{ scale: 1.04, boxShadow: '0 8px 30px hsla(258, 65%, 60%, 0.35)' }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
                 Preview the App <ArrowRight size={16} />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => navigate('/app')}
                 className="vax-btn-secondary text-sm py-3 px-8 rounded-xl"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
                 Preview App
-              </button>
+              </motion.button>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/40 py-8 px-6">
+      <footer className="border-t border-border/30 py-8 px-6" style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
