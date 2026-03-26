@@ -378,10 +378,10 @@ const Landing = () => {
         />
         <div className="max-w-3xl mx-auto text-center px-6 py-24 relative">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={smoothReveal}
           >
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
               <Dna size={28} className="text-primary" />
