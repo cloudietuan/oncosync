@@ -690,36 +690,50 @@ const TissueAnalysis = () => {
             <p className="text-[10px] text-destructive text-center">{cameraError}</p>
           )}
 
-          {/* Camera modal */}
+          {/* Camera — fullscreen native-style */}
           {cameraOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={closeCamera}>
-              <div className="vax-card relative w-full max-w-lg" onClick={e => e.stopPropagation()}>
-                <button onClick={closeCamera} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground z-10">
-                  <X className="w-5 h-5" />
-                </button>
-                <p className="text-sm font-medium text-foreground mb-3">Camera Preview</p>
+            <div className="fixed inset-0 z-50 bg-black flex flex-col">
+              {/* Viewfinder */}
+              <div className="flex-1 relative flex items-center justify-center overflow-hidden">
                 {cameraError ? (
-                  <p className="text-xs text-destructive py-8 text-center">{cameraError}</p>
+                  <p className="text-sm text-red-400 text-center px-6">{cameraError}</p>
                 ) : (
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full rounded-md bg-black object-contain"
-                    style={{ maxHeight: '70vh' }}
-                  />
+                  <>
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Center crosshair */}
+                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                      <div className="w-48 h-48 sm:w-64 sm:h-64 border border-white/20 rounded-2xl" />
+                      <div className="absolute w-px h-6 bg-white/30" />
+                      <div className="absolute w-6 h-px bg-white/30" />
+                    </div>
+                  </>
                 )}
-                <div className="flex items-center justify-center gap-3 mt-4">
-                  <button onClick={closeCamera} className="vax-btn-secondary px-4 py-2 text-xs">Cancel</button>
-                  <button onClick={switchCamera} className="vax-btn-secondary px-4 py-2 text-xs flex items-center gap-1.5">
-                    <SwitchCamera className="w-3.5 h-3.5" />
-                    Switch
+                {/* Top bar */}
+                <div className="absolute top-0 inset-x-0 flex items-center justify-between px-4 pt-4 pb-2 bg-gradient-to-b from-black/60 to-transparent">
+                  <button onClick={closeCamera} className="text-white/80 hover:text-white text-sm font-medium py-2 px-3">
+                    Cancel
                   </button>
-                  <button onClick={captureFrame} disabled={!!cameraError} className="vax-btn-primary px-5 py-2 text-xs disabled:opacity-50">
-                    Capture
+                  <span className="text-white/60 text-[11px] font-medium tracking-wider">MICROSCOPE CAPTURE</span>
+                  <button onClick={switchCamera} className="text-white/80 hover:text-white py-2 px-3">
+                    <SwitchCamera className="w-5 h-5" />
                   </button>
                 </div>
+              </div>
+              {/* Bottom controls */}
+              <div className="bg-black/90 px-6 py-6 flex items-center justify-center">
+                <button
+                  onClick={captureFrame}
+                  disabled={!!cameraError}
+                  className="w-[72px] h-[72px] rounded-full border-[4px] border-white/90 flex items-center justify-center active:scale-90 transition-transform disabled:opacity-30"
+                >
+                  <div className="w-[58px] h-[58px] rounded-full bg-white/90 active:bg-white/70 transition-colors" />
+                </button>
               </div>
             </div>
           )}

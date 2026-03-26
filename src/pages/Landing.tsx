@@ -1,11 +1,11 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import heroIllustration from '@/assets/hero-illustration.jpg';
 import {
   FlaskConical, BarChart3, ShieldCheck, Microscope,
   Dna, ArrowRight, Sparkles, Activity, FileText,
-  Mail, Check, Zap, Lock, Globe
+  Zap, Lock, Globe
 } from 'lucide-react';
 
 const features = [
@@ -75,19 +75,12 @@ const smoothReveal = {
 
 const Landing = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start end', 'end start'],
   });
   const parallaxY = useTransform(scrollYProgress, [0, 1], ['-5%', '10%']);
-
-  const handleNotify = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) setSubmitted(true);
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -206,54 +199,19 @@ const Landing = () => {
             ))}
           </motion.div>
 
-          {/* Email signup */}
+          {/* CTA button */}
           <motion.div
-            className="max-w-md mx-auto mb-12"
+            className="mb-12"
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <AnimatePresence mode="wait">
-              {!submitted ? (
-                <motion.form
-                  key="form"
-                  onSubmit={handleNotify}
-                  className="flex gap-2"
-                  exit={{ opacity: 0, scale: 0.95 }}
-                >
-                  <div className="flex-1 relative">
-                    <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email for early access"
-                      required
-                      className="vax-input pl-10 py-3 rounded-xl text-sm"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="vax-btn-primary text-sm py-3 px-6 rounded-xl shadow-lg shadow-primary/20 whitespace-nowrap"
-                  >
-                    Notify Me
-                  </button>
-                </motion.form>
-              ) : (
-                <motion.div
-                  key="success"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm font-medium"
-                >
-                  <Check size={18} />
-                  You're on the list! We'll notify you at launch.
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <p className="text-[11px] text-muted-foreground/50 mt-2.5">
-              No spam, ever. Unsubscribe anytime.
-            </p>
+            <button
+              onClick={() => navigate('/app')}
+              className="vax-btn-primary text-sm py-3 px-8 rounded-xl shadow-lg shadow-primary/20 inline-flex items-center gap-2"
+            >
+              Preview the App <ArrowRight size={16} />
+            </button>
           </motion.div>
 
           {/* Hero illustration with parallax */}
@@ -391,17 +349,17 @@ const Landing = () => {
               className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-4"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Be the first to know
+              Ready to explore?
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base mb-8 max-w-md mx-auto leading-relaxed">
-              OncoSync is launching soon. Get notified when early access opens and be among the first researchers to try it.
+              OncoSync is launching soon. Preview the full research platform now.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                onClick={() => navigate('/app')}
                 className="vax-btn-primary text-sm py-3 px-8 rounded-xl shadow-lg shadow-primary/20"
               >
-                Join the Waitlist <ArrowRight size={16} />
+                Preview the App <ArrowRight size={16} />
               </button>
               <button
                 onClick={() => navigate('/app')}
