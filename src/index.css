@@ -303,38 +303,36 @@
   }
 
   .vax-alert-info {
-    @apply vax-alert border;
+    @apply vax-alert;
     background: hsl(258, 60%, 97%);
-    border-color: hsl(258, 50%, 85%);
   }
 
   .dark .vax-alert-info {
     background: hsl(258, 40%, 12%);
-    border-color: hsl(258, 40%, 22%);
   }
 
   .vax-alert-warning {
-    @apply vax-alert bg-amber-50 border border-amber-200;
+    @apply vax-alert bg-amber-50;
   }
 
   .dark .vax-alert-warning {
-    @apply bg-amber-950/40 border-amber-800/50;
+    @apply bg-amber-950/40;
   }
 
   .vax-alert-success {
-    @apply vax-alert bg-emerald-50 border border-emerald-200;
+    @apply vax-alert bg-emerald-50;
   }
 
   .dark .vax-alert-success {
-    @apply bg-emerald-950/40 border-emerald-800/50;
+    @apply bg-emerald-950/40;
   }
 
   .vax-alert-error {
-    @apply vax-alert bg-red-50 border border-red-200;
+    @apply vax-alert bg-red-50;
   }
 
   .dark .vax-alert-error {
-    @apply bg-red-950/40 border-red-800/50;
+    @apply bg-red-950/40;
   }
 
   .vax-tab-bar {
