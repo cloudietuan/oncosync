@@ -210,9 +210,9 @@ const Landing = () => {
           {/* Email signup */}
           <motion.div
             className="max-w-md mx-auto mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <AnimatePresence mode="wait">
               {!submitted ? (
