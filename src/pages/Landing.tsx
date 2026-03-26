@@ -194,54 +194,19 @@ const Landing = () => {
             ))}
           </motion.div>
 
-          {/* Email signup */}
+          {/* CTA button */}
           <motion.div
-            className="max-w-md mx-auto mb-12"
+            className="mb-12"
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <AnimatePresence mode="wait">
-              {!submitted ? (
-                <motion.form
-                  key="form"
-                  onSubmit={handleNotify}
-                  className="flex gap-2"
-                  exit={{ opacity: 0, scale: 0.95 }}
-                >
-                  <div className="flex-1 relative">
-                    <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email for early access"
-                      required
-                      className="vax-input pl-10 py-3 rounded-xl text-sm"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="vax-btn-primary text-sm py-3 px-6 rounded-xl shadow-lg shadow-primary/20 whitespace-nowrap"
-                  >
-                    Notify Me
-                  </button>
-                </motion.form>
-              ) : (
-                <motion.div
-                  key="success"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm font-medium"
-                >
-                  <Check size={18} />
-                  You're on the list! We'll notify you at launch.
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <p className="text-[11px] text-muted-foreground/50 mt-2.5">
-              No spam, ever. Unsubscribe anytime.
-            </p>
+            <button
+              onClick={() => navigate('/app')}
+              className="vax-btn-primary text-sm py-3 px-8 rounded-xl shadow-lg shadow-primary/20 inline-flex items-center gap-2"
+            >
+              Preview the App <ArrowRight size={16} />
+            </button>
           </motion.div>
 
           {/* Hero illustration with parallax */}
