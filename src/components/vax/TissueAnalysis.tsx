@@ -700,7 +700,8 @@ const TissueAnalysis = () => {
                     autoPlay
                     playsInline
                     muted
-                    className="w-full rounded-md bg-black aspect-video object-cover"
+                    className="w-full rounded-md bg-black object-contain"
+                    style={{ maxHeight: '70vh' }}
                   />
                 )}
                 <div className="flex items-center justify-center gap-3 mt-4">
@@ -711,6 +712,80 @@ const TissueAnalysis = () => {
                   </button>
                   <button onClick={captureFrame} disabled={!!cameraError} className="vax-btn-primary px-5 py-2 text-xs disabled:opacity-50">
                     Capture
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Crop modal */}
+          {cropMode && cropData && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={cancelCrop}>
+              <div
+                className="vax-card relative w-full max-w-lg"
+                onClick={e => e.stopPropagation()}
+                onMouseMove={handleCropPointerMove}
+                onMouseUp={handleCropPointerUp}
+                onMouseLeave={handleCropPointerUp}
+                onTouchMove={handleCropPointerMove}
+                onTouchEnd={handleCropPointerUp}
+              >
+                <button onClick={cancelCrop} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground z-10">
+                  <X className="w-5 h-5" />
+                </button>
+                <p className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                  <Crop className="w-4 h-4 text-primary" />
+                  Crop Image
+                </p>
+                <div ref={cropContainerRef} className="relative select-none rounded-md overflow-hidden" style={{ touchAction: 'none' }}>
+                  <img src={cropData} alt="Captured" className="w-full h-auto block" draggable={false} />
+                  {/* Darkened overlay outside crop */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute inset-0 bg-black/50" />
+                    <div
+                      className="absolute bg-transparent"
+                      style={{
+                        left: `${cropRect.x}%`, top: `${cropRect.y}%`,
+                        width: `${cropRect.w}%`, height: `${cropRect.h}%`,
+                        boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
+                        border: '2px solid hsl(var(--primary))',
+                      }}
+                    />
+                  </div>
+                  {/* Interactive crop area */}
+                  <div
+                    className="absolute cursor-move"
+                    style={{
+                      left: `${cropRect.x}%`, top: `${cropRect.y}%`,
+                      width: `${cropRect.w}%`, height: `${cropRect.h}%`,
+                    }}
+                    onMouseDown={e => handleCropPointerDown('move', e)}
+                    onTouchStart={e => handleCropPointerDown('move', e)}
+                  >
+                    {/* Corner handles */}
+                    {(['nw', 'ne', 'sw', 'se'] as const).map(corner => (
+                      <div
+                        key={corner}
+                        className="absolute w-4 h-4 bg-primary rounded-full border-2 border-primary-foreground shadow-md"
+                        style={{
+                          top: corner.includes('n') ? '-8px' : 'auto',
+                          bottom: corner.includes('s') ? '-8px' : 'auto',
+                          left: corner.includes('w') ? '-8px' : 'auto',
+                          right: corner.includes('e') ? '-8px' : 'auto',
+                          cursor: corner === 'nw' || corner === 'se' ? 'nwse-resize' : 'nesw-resize',
+                        }}
+                        onMouseDown={e => handleCropPointerDown(corner, e)}
+                        onTouchStart={e => handleCropPointerDown(corner, e)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-3 mt-4">
+                  <button onClick={cancelCrop} className="vax-btn-secondary px-4 py-2 text-xs">Cancel</button>
+                  <button onClick={skipCrop} className="vax-btn-secondary px-4 py-2 text-xs">Use Full Image</button>
+                  <button onClick={applyCrop} className="vax-btn-primary px-5 py-2 text-xs flex items-center gap-1.5">
+                    <Crop className="w-3.5 h-3.5" />
+                    Apply Crop
                   </button>
                 </div>
               </div>
