@@ -131,29 +131,37 @@
 
 @layer components {
   .vax-card {
-    @apply bg-card border border-border/60 rounded-xl p-5;
-    box-shadow: 0 1px 3px 0 hsl(220 20% 14% / 0.04), 0 1px 2px -1px hsl(220 20% 14% / 0.03);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    @apply rounded-xl p-5;
+    box-shadow: var(--glass-shadow);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   }
 
   .vax-card:hover {
-    box-shadow: 0 4px 12px 0 hsl(220 20% 14% / 0.06);
-    border-color: hsl(200, 80%, 44%, 0.2);
+    box-shadow: 0 8px 32px hsla(258, 65%, 60%, 0.08);
+    border-color: hsla(258, 65%, 60%, 0.25);
   }
 
   .dark .vax-card:hover {
-    box-shadow: 0 4px 12px 0 hsl(0 0% 0% / 0.2);
-    border-color: hsl(200, 80%, 50%, 0.25);
+    box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
+    border-color: hsla(258, 65%, 63%, 0.3);
   }
 
   .dark .vax-card-compact:hover {
-    border-color: hsl(200, 80%, 50%, 0.25) !important;
+    border-color: hsla(258, 65%, 63%, 0.3) !important;
   }
 
   .vax-card-compact {
-    @apply bg-card border border-border/60 rounded-xl p-4;
-    box-shadow: 0 1px 3px 0 hsl(220 20% 14% / 0.04);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    @apply rounded-xl p-4;
+    box-shadow: var(--glass-shadow);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   }
 
   .vax-btn {
