@@ -348,10 +348,8 @@
 
   .vax-file-upload {
     @apply border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all duration-150;
-    border-color: var(--glass-border);
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-color: hsl(var(--muted));
+    background: hsl(var(--muted));
   }
 
   .vax-file-upload:hover {
