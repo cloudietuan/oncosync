@@ -77,6 +77,12 @@ const Landing = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start end', 'end start'],
+  });
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['-5%', '10%']);
 
   const handleNotify = (e: React.FormEvent) => {
     e.preventDefault();
