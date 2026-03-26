@@ -9,10 +9,10 @@
     --background: 240 20% 96%;
     --foreground: 220 20% 14%;
 
-    --card: 0 0% 100% / 0.55;
+    --card: 0 0% 100%;
     --card-foreground: 220 20% 14%;
 
-    --popover: 0 0% 100% / 0.7;
+    --popover: 0 0% 100%;
     --popover-foreground: 220 20% 14%;
 
     --primary: 258 65% 60%;
