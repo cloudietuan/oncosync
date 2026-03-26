@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import {
   LayoutDashboard, TestTubes, Microscope, BarChart3, FlaskConical,
   Syringe, Shield, FileDown, Dna, CheckCircle2, ChevronDown, Download
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
