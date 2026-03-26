@@ -547,11 +547,102 @@ const TissueAnalysis = () => {
     const ctx = c.getContext('2d');
     if (!ctx) return;
     ctx.drawImage(video, 0, 0);
-    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    setFileName(`camera_capture_${ts}.jpg`);
-    setImageData(c.toDataURL('image/jpeg', 0.92));
+    const dataUrl = c.toDataURL('image/jpeg', 0.92);
+    // Open crop UI instead of directly setting image
+    setCropData(dataUrl);
+    setCropRect({ x: 0, y: 0, w: 100, h: 100 }); // percentages
+    setCropMode(true);
     closeCamera();
   }, [closeCamera]);
+
+  // Crop helpers
+  const applyCrop = useCallback(() => {
+    if (!cropData) return;
+    const img = new Image();
+    img.onload = () => {
+      const sx = Math.round((cropRect.x / 100) * img.width);
+      const sy = Math.round((cropRect.y / 100) * img.height);
+      const sw = Math.round((cropRect.w / 100) * img.width);
+      const sh = Math.round((cropRect.h / 100) * img.height);
+      const c = document.createElement('canvas');
+      c.width = sw;
+      c.height = sh;
+      const ctx = c.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+      const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      setFileName(`camera_capture_${ts}.jpg`);
+      setImageData(c.toDataURL('image/jpeg', 0.92));
+      setCropMode(false);
+      setCropData(null);
+    };
+    img.src = cropData;
+  }, [cropData, cropRect]);
+
+  const skipCrop = useCallback(() => {
+    if (!cropData) return;
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    setFileName(`camera_capture_${ts}.jpg`);
+    setImageData(cropData);
+    setCropMode(false);
+    setCropData(null);
+  }, [cropData]);
+
+  const cancelCrop = useCallback(() => {
+    setCropMode(false);
+    setCropData(null);
+  }, []);
+
+  const getCropCoords = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    const container = cropContainerRef.current;
+    if (!container) return { px: 0, py: 0 };
+    const rect = container.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    return {
+      px: ((clientX - rect.left) / rect.width) * 100,
+      py: ((clientY - rect.top) / rect.height) * 100,
+    };
+  }, []);
+
+  const handleCropPointerDown = useCallback((type: 'move' | 'nw' | 'ne' | 'sw' | 'se', e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { px, py } = getCropCoords(e);
+    setCropDragging(type);
+    setCropDragStart({ mx: px, my: py, ox: cropRect.x, oy: cropRect.y, ow: cropRect.w, oh: cropRect.h });
+  }, [getCropCoords, cropRect]);
+
+  const handleCropPointerMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    if (!cropDragging) return;
+    const { px, py } = getCropCoords(e);
+    const dx = px - cropDragStart.mx;
+    const dy = py - cropDragStart.my;
+
+    if (cropDragging === 'move') {
+      const nx = Math.max(0, Math.min(100 - cropDragStart.ow, cropDragStart.ox + dx));
+      const ny = Math.max(0, Math.min(100 - cropDragStart.oh, cropDragStart.oy + dy));
+      setCropRect(r => ({ ...r, x: nx, y: ny }));
+    } else {
+      let { ox, oy, ow, oh } = cropDragStart;
+      if (cropDragging.includes('w')) { ox += dx; ow -= dx; }
+      if (cropDragging.includes('e')) { ow += dx; }
+      if (cropDragging.includes('n')) { oy += dy; oh -= dy; }
+      if (cropDragging.includes('s')) { oh += dy; }
+      // Enforce minimums
+      if (ow < 10) { ow = 10; if (cropDragging.includes('w')) ox = cropDragStart.ox + cropDragStart.ow - 10; }
+      if (oh < 10) { oh = 10; if (cropDragging.includes('n')) oy = cropDragStart.oy + cropDragStart.oh - 10; }
+      ox = Math.max(0, ox);
+      oy = Math.max(0, oy);
+      if (ox + ow > 100) ow = 100 - ox;
+      if (oy + oh > 100) oh = 100 - oy;
+      setCropRect({ x: ox, y: oy, w: ow, h: oh });
+    }
+  }, [cropDragging, cropDragStart, getCropCoords]);
+
+  const handleCropPointerUp = useCallback(() => {
+    setCropDragging(null);
+  }, []);
 
   const views = [
     { key: 'original' as const, label: 'Original' },
