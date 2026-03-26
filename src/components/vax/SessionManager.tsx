@@ -31,7 +31,7 @@ const SessionManager = ({ sessions, onSave, onLoad, onDelete }: SessionManagerPr
             <span className="vax-badge-blue">{sessions.length}</span>
           )}
         </div>
-        <span className="text-muted-foreground text-xs">{expanded ? '▲' : '▼'}</span>
+        <span className="text-muted-foreground text-xs ml-2">{expanded ? '▲' : '▼'}</span>
       </button>
 
       {expanded && (
