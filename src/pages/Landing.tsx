@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import heroIllustration from '@/assets/hero-illustration.jpg';
 import {
   FlaskConical, BarChart3, ShieldCheck, Microscope,
@@ -77,6 +77,12 @@ const Landing = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start end', 'end start'],
+  });
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ['-5%', '10%']);
 
   const handleNotify = (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,16 +177,7 @@ const Landing = () => {
             transition={{ duration: 0.9, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             The Future of{' '}
-            <span className="relative">
-              <span className="text-primary">Pancreatic Cancer</span>
-              <motion.span
-                className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full bg-primary/40"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                style={{ transformOrigin: 'left' }}
-              />
-            </span>{' '}
+            <span className="text-primary">Pancreatic Cancer</span>{' '}
             Vaccine Research
           </motion.h1>
 
@@ -259,8 +256,9 @@ const Landing = () => {
             </p>
           </motion.div>
 
-          {/* Hero illustration */}
+          {/* Hero illustration with parallax */}
           <motion.div
+            ref={heroRef}
             className="max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 48, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -269,12 +267,13 @@ const Landing = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border border-border/40 group">
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent z-10" />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-10" />
-              <img
+              <motion.img
                 src={heroIllustration}
                 alt="DNA helix and molecular structures illustration"
                 width={1280}
                 height={720}
-                className="w-full h-auto group-hover:scale-[1.02] transition-transform duration-700"
+                className="w-full h-auto group-hover:scale-[1.02] transition-transform duration-700 scale-110"
+                style={{ y: parallaxY }}
               />
               {/* Floating badge on image */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
