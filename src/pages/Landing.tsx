@@ -1,6 +1,5 @@
-import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 import heroIllustration from '@/assets/hero-illustration.jpg';
 import {
   FlaskConical, BarChart3, ShieldCheck, Microscope,
@@ -82,17 +81,6 @@ const stagger = {
 
 const Landing = () => {
   const navigate = useNavigate();
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const rawParallax = useTransform(scrollYProgress, [0, 1], ['-5%', '12%']);
-  const parallaxY = useSpring(rawParallax, springConfig);
-
-  const rawHeaderOpacity = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
-  const headerBorder = useSpring(rawHeaderOpacity, springConfig);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden scroll-smooth">
@@ -239,7 +227,6 @@ const Landing = () => {
 
           {/* Hero illustration with parallax */}
           <motion.div
-            ref={heroRef}
             className="max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 50, scale: 0.88 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
