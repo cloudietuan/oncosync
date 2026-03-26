@@ -184,9 +184,9 @@ const Landing = () => {
 
           <motion.p
             className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             OncoSync brings together gene expression survival analysis, immune response modeling,
             and VLP simulation tools into one powerful, integrated research environment.
