@@ -39,8 +39,8 @@
     --violet: 258 60% 58%;
     --violet-foreground: 0 0% 100%;
 
-    --border: 240 12% 85% / 0.15;
-    --input: 240 12% 85% / 0.15;
+    --border: 0 0% 0% / 0;
+    --input: 240 12% 85% / 0.2;
     --ring: 258 65% 60%;
 
     --radius: 0.75rem;
