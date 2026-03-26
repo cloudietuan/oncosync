@@ -263,14 +263,13 @@ const TissueAnalysis = () => {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
   const [cropMode, setCropMode] = useState(false);
   const [cropData, setCropData] = useState<string | null>(null);
-  const [cropRect, setCropRect] = useState({ x: 0, y: 0, w: 100, h: 100 });
+  const [cropRect, setCropRect] = useState({ x: 15, y: 15, w: 70, h: 70 });
   const [cropZoom, setCropZoom] = useState(1);
   const [cropDragging, setCropDragging] = useState<'move' | 'nw' | 'ne' | 'sw' | 'se' | null>(null);
   const [cropDragStart, setCropDragStart] = useState({ mx: 0, my: 0, ox: 0, oy: 0, ow: 0, oh: 0 });
-  const cropCanvasRef = useRef<HTMLCanvasElement>(null);
-  const cropImgRef = useRef<HTMLImageElement | null>(null);
   const cropContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
