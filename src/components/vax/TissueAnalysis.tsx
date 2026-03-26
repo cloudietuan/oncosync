@@ -738,8 +738,28 @@ const TissueAnalysis = () => {
                   <Crop className="w-4 h-4 text-primary" />
                   Crop Image
                 </p>
+                {/* Zoom slider */}
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">Zoom</span>
+                  <input
+                    type="range"
+                    min={1}
+                    max={4}
+                    step={0.1}
+                    value={cropZoom}
+                    onChange={e => setCropZoom(parseFloat(e.target.value))}
+                    className="flex-1 accent-[hsl(var(--primary))] h-1.5"
+                  />
+                  <span className="text-[10px] text-muted-foreground font-mono w-8 text-right">{cropZoom.toFixed(1)}×</span>
+                </div>
                 <div ref={cropContainerRef} className="relative select-none rounded-md overflow-hidden" style={{ touchAction: 'none' }}>
-                  <img src={cropData} alt="Captured" className="w-full h-auto block" draggable={false} />
+                  <img
+                    src={cropData}
+                    alt="Captured"
+                    className="w-full h-auto block origin-center"
+                    style={{ transform: `scale(${cropZoom})` }}
+                    draggable={false}
+                  />
                   {/* Darkened overlay outside crop */}
                   <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute inset-0 bg-black/50" />
