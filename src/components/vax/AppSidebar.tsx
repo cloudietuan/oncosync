@@ -111,7 +111,7 @@ export function AppSidebar({ tab, setTab }: AppSidebarProps) {
                               transition={{ duration: 0.5, ease: 'easeInOut' }}
                               className="shrink-0"
                             >
-                              <item.icon className={`h-4 w-4 ${isActive ? 'text-primary' : ''}`} />
+                              <item.icon className={`h-4 w-4 transition-colors duration-300 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
                             </motion.div>
                             {!collapsed && <span>{item.title}</span>}
                           </SidebarMenuButton>
