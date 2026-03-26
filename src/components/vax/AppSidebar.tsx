@@ -59,7 +59,7 @@ export function AppSidebar({ tab, setTab }: AppSidebarProps) {
   const navigate = useNavigate();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border" style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+    <Sidebar collapsible="icon" className="bg-background">
       <SidebarContent className="pt-2 gap-1">
         {navGroups.map((group) => (
           <Collapsible key={group.label} defaultOpen={true} className="group/collapsible">
