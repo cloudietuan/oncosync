@@ -561,24 +561,29 @@ const TissueAnalysis = () => {
     if (!cropData) return;
     const img = new Image();
     img.onload = () => {
-      const sx = Math.round((cropRect.x / 100) * img.width);
-      const sy = Math.round((cropRect.y / 100) * img.height);
-      const sw = Math.round((cropRect.w / 100) * img.width);
-      const sh = Math.round((cropRect.h / 100) * img.height);
+      // The visible area when zoomed is centered: offset = (zoom-1)/(2*zoom) of full size
+      const visibleFrac = 1 / cropZoom;
+      const offsetFrac = (1 - visibleFrac) / 2;
+      // Crop rect is % of the visible container, map to full image coords
+      const sx = Math.round((offsetFrac + (cropRect.x / 100) * visibleFrac) * img.width);
+      const sy = Math.round((offsetFrac + (cropRect.y / 100) * visibleFrac) * img.height);
+      const sw = Math.round((cropRect.w / 100) * visibleFrac * img.width);
+      const sh = Math.round((cropRect.h / 100) * visibleFrac * img.height);
       const c = document.createElement('canvas');
-      c.width = sw;
-      c.height = sh;
+      c.width = Math.max(1, sw);
+      c.height = Math.max(1, sh);
       const ctx = c.getContext('2d');
       if (!ctx) return;
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
       const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       setFileName(`camera_capture_${ts}.jpg`);
       setImageData(c.toDataURL('image/jpeg', 0.92));
       setCropMode(false);
       setCropData(null);
+      setCropZoom(1);
     };
     img.src = cropData;
-  }, [cropData, cropRect]);
+  }, [cropData, cropRect, cropZoom]);
 
   const skipCrop = useCallback(() => {
     if (!cropData) return;
