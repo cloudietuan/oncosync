@@ -139,37 +139,25 @@
 
 @layer components {
   .vax-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    @apply rounded-xl p-5;
-    box-shadow: var(--glass-shadow);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    @apply rounded-xl p-5 bg-muted;
+    transition: box-shadow 0.25s ease, background 0.25s ease;
   }
 
   .vax-card:hover {
     box-shadow: 0 8px 32px hsla(258, 65%, 60%, 0.08);
-    border-color: hsla(258, 65%, 60%, 0.25);
   }
 
   .dark .vax-card:hover {
     box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
-    border-color: hsla(258, 65%, 63%, 0.3);
   }
 
   .dark .vax-card-compact:hover {
-    border-color: hsla(258, 65%, 63%, 0.3) !important;
+    box-shadow: 0 4px 16px hsla(0, 0%, 0%, 0.2);
   }
 
   .vax-card-compact {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    @apply rounded-xl p-4;
-    box-shadow: var(--glass-shadow);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    @apply rounded-xl p-4 bg-muted;
+    transition: box-shadow 0.25s ease, background 0.25s ease;
   }
 
   .vax-btn {
