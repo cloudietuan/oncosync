@@ -55,6 +55,20 @@ const navGroups = [
   },
 ];
 
+// Unique hover animations per tab
+const iconAnimations: Record<number, object> = {
+  0: { scale: [1, 1.2, 1], rotate: [0, 360] },           // Dashboard — full spin (overview of everything)
+  1: { y: [0, -4, 0, -2, 0] },                            // Lab Records — test tubes bubbling up
+  2: { scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] },     // Microscope — zoom in wobble
+  3: { scaleY: [1, 1.3, 0.9, 1.1, 1] },                   // Expression Analysis — bar chart growing
+  4: { rotate: [0, -20, 20, -10, 0], y: [0, -2, 0] },     // VLP Simulation — flask swirling
+  5: { x: [0, 2, 0], y: [0, -6, 0] },                     // Immune Tracking — syringe injecting
+  6: { scale: [1, 1.25, 1], opacity: [1, 0.6, 1] },       // Safety Monitoring — shield pulse/flash
+  7: { y: [0, 4, 0] },                                     // Export — file downloading motion
+  8: { rotate: [0, 180, 360], scale: [1, 1.15, 1] },       // T-Cell / DNA — helix spin
+  9: { scale: [1, 1.2, 1], rotate: [0, 0, 360] },          // Validation — checkmark completing
+};
+
 export function AppSidebar({ tab, setTab }: AppSidebarProps) {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
@@ -79,6 +93,7 @@ export function AppSidebar({ tab, setTab }: AppSidebarProps) {
                   <SidebarMenu>
                     {group.items.map((item) => {
                       const isActive = tab === item.tab;
+                      const hoverAnim = iconAnimations[item.tab] || { scale: 1.15 };
                       return (
                         <SidebarMenuItem key={item.title}>
                           <SidebarMenuButton
@@ -92,8 +107,7 @@ export function AppSidebar({ tab, setTab }: AppSidebarProps) {
                             }`}
                           >
                             <motion.div
-                              whileHover={{ rotate: [0, -12, 12, -6, 0], scale: 1.15 }}
-                              animate={isActive ? { scale: [1, 1.2, 1] } : {}}
+                              whileHover={hoverAnim}
                               transition={{ duration: 0.5, ease: 'easeInOut' }}
                               className="shrink-0"
                             >
