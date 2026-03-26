@@ -45,12 +45,12 @@
 
     --radius: 0.75rem;
 
-    --glass-bg: hsla(0, 0%, 100%, 0.45);
-    --glass-border: hsla(0, 0%, 100%, 0.55);
-    --glass-blur: 16px;
-    --glass-shadow: 0 8px 32px hsla(220, 20%, 14%, 0.08);
+    --glass-bg: hsl(240, 20%, 96%);
+    --glass-border: hsl(240, 12%, 85%);
+    --glass-blur: 0px;
+    --glass-shadow: none;
 
-    --sidebar-background: 240 20% 96% / 0.6;
+    --sidebar-background: 240 20% 96%;
     --sidebar-foreground: 220 8% 40%;
     --sidebar-primary: 258 65% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
