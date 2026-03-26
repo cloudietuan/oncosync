@@ -146,8 +146,8 @@ const Install = () => {
         >
           {isInstalled ? (
             <div
-              className="rounded-2xl p-6 flex items-center gap-4 border"
-              style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderColor: 'hsla(158, 64%, 40%, 0.3)' }}
+              className="rounded-2xl p-6 flex items-center gap-4 border border-border bg-muted"
+            >
             >
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
                 <CheckCircle2 size={24} className="text-emerald-500" />
