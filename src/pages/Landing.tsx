@@ -46,30 +46,27 @@ const highlights = [
   { icon: Globe, text: 'Browser-based, no install' },
 ];
 
-const springConfig = { stiffness: 60, damping: 20, mass: 0.8 };
 const smoothEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 32, filter: 'blur(8px)' },
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
     transition: {
       delay: i * 0.07,
-      duration: 0.9,
+      duration: 0.7,
       ease: smoothEase,
     },
   }),
 };
 
 const smoothReveal = {
-  hidden: { opacity: 0, y: 28, filter: 'blur(4px)' },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 1, ease: smoothEase },
+    transition: { duration: 0.8, ease: smoothEase },
   },
 };
 
@@ -166,9 +163,9 @@ const Landing = () => {
           <motion.h1
             className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight leading-[1.08] mb-6"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 1.1, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.12, ease: smoothEase }}
           >
             The Future of{' '}
             <span className="text-primary">Pancreatic Cancer</span>{' '}
@@ -177,9 +174,9 @@ const Landing = () => {
 
           <motion.p
             className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10"
-            initial={{ opacity: 0, y: 18, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.25, ease: smoothEase }}
           >
             OncoSync brings together gene expression survival analysis, immune response modeling,
             and VLP simulation tools into one powerful, integrated research environment.
@@ -225,12 +222,12 @@ const Landing = () => {
             </motion.button>
           </motion.div>
 
-          {/* Hero illustration with parallax */}
+          {/* Hero illustration */}
           <motion.div
             className="max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 50, scale: 0.88 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1.4, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="relative rounded-2xl overflow-hidden border border-border/30 group" style={{ boxShadow: '0 25px 80px -20px hsla(258, 65%, 50%, 0.15), 0 10px 30px -10px hsla(0, 0%, 0%, 0.08)' }}>
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/15 to-transparent z-10" />
