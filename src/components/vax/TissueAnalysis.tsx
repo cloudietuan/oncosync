@@ -548,12 +548,43 @@ const TissueAnalysis = () => {
     if (!ctx) return;
     ctx.drawImage(video, 0, 0);
     const dataUrl = c.toDataURL('image/jpeg', 0.92);
-    // Open crop UI instead of directly setting image
     setCropData(dataUrl);
-    setCropRect({ x: 0, y: 0, w: 100, h: 100 }); // percentages
+    setCropRect({ x: 15, y: 15, w: 70, h: 70 });
+    setCropZoom(1);
     setCropMode(true);
     closeCamera();
   }, [closeCamera]);
+
+  // Tap-to-focus
+  const handleTapToFocus = useCallback(async (e: React.MouseEvent | React.TouchEvent) => {
+    const videoEl = videoRef.current;
+    const stream = streamRef.current;
+    if (!videoEl || !stream) return;
+
+    const rect = videoEl.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0]?.clientX ?? (e as React.TouchEvent).changedTouches[0]?.clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0]?.clientY ?? (e as React.TouchEvent).changedTouches[0]?.clientY : e.clientY;
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
+
+    // Show focus indicator
+    setFocusPoint({ x: clientX - rect.left, y: clientY - rect.top });
+    setTimeout(() => setFocusPoint(null), 800);
+
+    // Try to apply focus point via ImageCapture / track constraints
+    const track = stream.getVideoTracks()[0];
+    if (!track) return;
+    try {
+      const capabilities = track.getCapabilities?.() as any;
+      if (capabilities?.focusMode?.includes('manual') || capabilities?.focusMode?.includes('single-shot')) {
+        await track.applyConstraints({
+          advanced: [{ focusMode: 'single-shot', pointsOfInterest: [{ x, y }] } as any],
+        });
+      }
+    } catch {
+      // Focus control not supported — visual indicator still shows
+    }
+  }, []);
 
   // Crop helpers
   const applyCrop = useCallback(() => {
