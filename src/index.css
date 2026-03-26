@@ -248,11 +248,7 @@
 
   .vax-input {
     @apply rounded-lg px-3 py-2 text-foreground text-[13px] w-full transition-all duration-150;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    box-shadow: var(--glass-shadow);
+    background: hsl(var(--muted));
   }
 
   .vax-input:hover {
