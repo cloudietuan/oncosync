@@ -256,17 +256,22 @@
   }
 
   .vax-input {
-    @apply bg-card border border-border rounded-lg px-3 py-2 text-foreground text-[13px] w-full transition-all duration-150;
-    box-shadow: 0 1px 2px 0 hsl(220 20% 14% / 0.04);
+    @apply rounded-lg px-3 py-2 text-foreground text-[13px] w-full transition-all duration-150;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
   }
 
   .vax-input:hover {
-    border-color: hsl(220, 13%, 78%);
+    border-color: hsla(258, 65%, 60%, 0.3);
   }
 
   .vax-input:focus {
-    @apply outline-none border-primary;
-    box-shadow: 0 0 0 3px hsl(200, 80%, 44%, 0.12);
+    @apply outline-none;
+    border-color: hsl(258, 65%, 60%);
+    box-shadow: 0 0 0 3px hsla(258, 65%, 60%, 0.15);
   }
 
   .vax-input::placeholder {
