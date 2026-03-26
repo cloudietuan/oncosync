@@ -215,7 +215,7 @@ const OnboardingTour = ({ currentTab = 0 }: OnboardingTourProps) => {
   if (tipsOpen && tabTips) {
     return (
       <>
-        <div className="fixed bottom-5 right-5 z-50 w-[340px] max-w-[calc(100vw-2.5rem)] bg-card border border-border rounded-2xl shadow-xl animate-in" style={{ boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+        <div className="fixed bottom-5 right-5 z-50 w-[340px] max-w-[calc(100vw-2.5rem)] bg-card rounded-2xl shadow-xl animate-in" style={{ boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
           <div className="p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">

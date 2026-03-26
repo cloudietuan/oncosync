@@ -9,19 +9,19 @@
     --background: 240 20% 96%;
     --foreground: 220 20% 14%;
 
-    --card: 0 0% 100% / 0.55;
+    --card: 0 0% 100%;
     --card-foreground: 220 20% 14%;
 
-    --popover: 0 0% 100% / 0.7;
+    --popover: 0 0% 100%;
     --popover-foreground: 220 20% 14%;
 
     --primary: 258 65% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 14% 93% / 0.5;
+    --secondary: 240 14% 93%;
     --secondary-foreground: 220 20% 14%;
 
-    --muted: 240 14% 93% / 0.5;
+    --muted: 240 14% 93%;
     --muted-foreground: 220 8% 52%;
 
     --accent: 258 65% 60%;
@@ -39,8 +39,8 @@
     --violet: 258 60% 58%;
     --violet-foreground: 0 0% 100%;
 
-    --border: 240 12% 85% / 0.15;
-    --input: 240 12% 85% / 0.15;
+    --border: 0 0% 0% / 0;
+    --input: 240 12% 85% / 0.2;
     --ring: 258 65% 60%;
 
     --radius: 0.75rem;
@@ -63,22 +63,22 @@
   .dark {
     --background: 220 18% 7%;
     --foreground: 40 10% 92%;
-    --card: 220 16% 12% / 0.5;
+    --card: 220 16% 12%;
     --card-foreground: 40 10% 92%;
-    --popover: 220 16% 12% / 0.65;
+    --popover: 220 16% 12%;
     --popover-foreground: 40 10% 92%;
     --primary: 258 65% 63%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 16% / 0.5;
+    --secondary: 220 14% 16%;
     --secondary-foreground: 40 10% 92%;
-    --muted: 220 14% 16% / 0.5;
+    --muted: 220 14% 16%;
     --muted-foreground: 220 8% 58%;
-    --accent: 220 14% 16% / 0.5;
+    --accent: 220 14% 16%;
     --accent-foreground: 40 10% 92%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 40 10% 92%;
-    --border: 220 14% 20% / 0.15;
-    --input: 220 14% 20% / 0.15;
+    --border: 0 0% 0% / 0;
+    --input: 220 14% 20% / 0.2;
     --ring: 258 65% 63%;
 
     --glass-bg: hsl(220, 18%, 7%);
@@ -139,7 +139,7 @@
 
 @layer components {
   .vax-card {
-    @apply rounded-xl p-5 bg-muted;
+    @apply rounded-xl p-5 bg-muted border-0 shadow-none outline-none ring-0;
     transition: box-shadow 0.25s ease, background 0.25s ease;
   }
 
@@ -156,7 +156,7 @@
   }
 
   .vax-card-compact {
-    @apply rounded-xl p-4 bg-muted;
+    @apply rounded-xl p-4 bg-muted border-0 shadow-none outline-none ring-0;
     transition: box-shadow 0.25s ease, background 0.25s ease;
   }
 
@@ -248,21 +248,15 @@
 
   .vax-input {
     @apply rounded-lg px-3 py-2 text-foreground text-[13px] w-full transition-all duration-150;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    box-shadow: var(--glass-shadow);
+    background: hsl(var(--muted));
   }
 
   .vax-input:hover {
-    border-color: hsla(258, 65%, 60%, 0.3);
+    background: hsl(var(--muted));
   }
 
   .vax-input:focus {
-    @apply outline-none;
-    border-color: hsl(258, 65%, 60%);
-    box-shadow: 0 0 0 3px hsla(258, 65%, 60%, 0.15);
+    @apply outline-none ring-2 ring-primary/20;
   }
 
   .vax-input::placeholder {
@@ -303,42 +297,40 @@
   }
 
   .vax-alert-info {
-    @apply vax-alert border;
+    @apply vax-alert;
     background: hsl(258, 60%, 97%);
-    border-color: hsl(258, 50%, 85%);
   }
 
   .dark .vax-alert-info {
     background: hsl(258, 40%, 12%);
-    border-color: hsl(258, 40%, 22%);
   }
 
   .vax-alert-warning {
-    @apply vax-alert bg-amber-50 border border-amber-200;
+    @apply vax-alert bg-amber-50;
   }
 
   .dark .vax-alert-warning {
-    @apply bg-amber-950/40 border-amber-800/50;
+    @apply bg-amber-950/40;
   }
 
   .vax-alert-success {
-    @apply vax-alert bg-emerald-50 border border-emerald-200;
+    @apply vax-alert bg-emerald-50;
   }
 
   .dark .vax-alert-success {
-    @apply bg-emerald-950/40 border-emerald-800/50;
+    @apply bg-emerald-950/40;
   }
 
   .vax-alert-error {
-    @apply vax-alert bg-red-50 border border-red-200;
+    @apply vax-alert bg-red-50;
   }
 
   .dark .vax-alert-error {
-    @apply bg-red-950/40 border-red-800/50;
+    @apply bg-red-950/40;
   }
 
   .vax-tab-bar {
-    @apply flex gap-1 border-b border-border mb-5;
+    @apply flex gap-1 mb-5;
   }
 
   .vax-tab-btn {
@@ -356,10 +348,8 @@
 
   .vax-file-upload {
     @apply border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all duration-150;
-    border-color: var(--glass-border);
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-color: hsl(var(--muted));
+    background: hsl(var(--muted));
   }
 
   .vax-file-upload:hover {
@@ -370,16 +360,10 @@
   .vax-modal-overlay {
     @apply fixed inset-0 flex items-center justify-center z-50;
     background: hsla(220, 20%, 14%, 0.4);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
 
   .vax-modal {
-    @apply rounded-2xl p-6 max-w-[480px] w-full mx-4;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    @apply rounded-2xl p-6 max-w-[480px] w-full mx-4 bg-card;
     box-shadow: 0 25px 50px -12px hsla(220, 20%, 14%, 0.2);
   }
 
