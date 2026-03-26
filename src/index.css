@@ -330,7 +330,7 @@
   }
 
   .vax-tab-bar {
-    @apply flex gap-1 border-b border-border mb-5;
+    @apply flex gap-1 mb-5;
   }
 
   .vax-tab-btn {
