@@ -248,15 +248,12 @@ const Landing = () => {
             <div className="relative rounded-2xl overflow-hidden border border-border/30 group" style={{ boxShadow: '0 25px 80px -20px hsla(258, 65%, 50%, 0.15), 0 10px 30px -10px hsla(0, 0%, 0%, 0.08)' }}>
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/15 to-transparent z-10" />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-10" />
-              <motion.img
+              <img
                 src={heroIllustration}
                 alt="DNA helix and molecular structures illustration"
                 width={1280}
                 height={720}
-                className="w-full h-auto transition-transform duration-1000 ease-out scale-110"
-                style={{ y: parallaxY }}
-                whileHover={{ scale: 1.13 }}
-                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full h-auto"
               />
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
                 <motion.button
