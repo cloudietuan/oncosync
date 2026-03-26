@@ -263,14 +263,13 @@ const TissueAnalysis = () => {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
   const [cropMode, setCropMode] = useState(false);
   const [cropData, setCropData] = useState<string | null>(null);
-  const [cropRect, setCropRect] = useState({ x: 0, y: 0, w: 100, h: 100 });
+  const [cropRect, setCropRect] = useState({ x: 15, y: 15, w: 70, h: 70 });
   const [cropZoom, setCropZoom] = useState(1);
   const [cropDragging, setCropDragging] = useState<'move' | 'nw' | 'ne' | 'sw' | 'se' | null>(null);
   const [cropDragStart, setCropDragStart] = useState({ mx: 0, my: 0, ox: 0, oy: 0, ow: 0, oh: 0 });
-  const cropCanvasRef = useRef<HTMLCanvasElement>(null);
-  const cropImgRef = useRef<HTMLImageElement | null>(null);
   const cropContainerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -549,12 +548,43 @@ const TissueAnalysis = () => {
     if (!ctx) return;
     ctx.drawImage(video, 0, 0);
     const dataUrl = c.toDataURL('image/jpeg', 0.92);
-    // Open crop UI instead of directly setting image
     setCropData(dataUrl);
-    setCropRect({ x: 0, y: 0, w: 100, h: 100 }); // percentages
+    setCropRect({ x: 15, y: 15, w: 70, h: 70 });
+    setCropZoom(1);
     setCropMode(true);
     closeCamera();
   }, [closeCamera]);
+
+  // Tap-to-focus
+  const handleTapToFocus = useCallback(async (e: React.MouseEvent | React.TouchEvent) => {
+    const videoEl = videoRef.current;
+    const stream = streamRef.current;
+    if (!videoEl || !stream) return;
+
+    const rect = videoEl.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0]?.clientX ?? (e as React.TouchEvent).changedTouches[0]?.clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0]?.clientY ?? (e as React.TouchEvent).changedTouches[0]?.clientY : e.clientY;
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
+
+    // Show focus indicator
+    setFocusPoint({ x: clientX - rect.left, y: clientY - rect.top });
+    setTimeout(() => setFocusPoint(null), 800);
+
+    // Try to apply focus point via ImageCapture / track constraints
+    const track = stream.getVideoTracks()[0];
+    if (!track) return;
+    try {
+      const capabilities = track.getCapabilities?.() as any;
+      if (capabilities?.focusMode?.includes('manual') || capabilities?.focusMode?.includes('single-shot')) {
+        await track.applyConstraints({
+          advanced: [{ focusMode: 'single-shot', pointsOfInterest: [{ x, y }] } as any],
+        });
+      }
+    } catch {
+      // Focus control not supported — visual indicator still shows
+    }
+  }, []);
 
   // Crop helpers
   const applyCrop = useCallback(() => {
@@ -705,12 +735,27 @@ const TissueAnalysis = () => {
                       playsInline
                       muted
                       className="w-full h-full object-cover"
+                      onClick={handleTapToFocus}
+                      onTouchEnd={handleTapToFocus}
                     />
                     {/* Center crosshair */}
                     <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                       <div className="w-48 h-48 sm:w-64 sm:h-64 border border-white/20 rounded-2xl" />
                       <div className="absolute w-px h-6 bg-white/30" />
                       <div className="absolute w-6 h-px bg-white/30" />
+                    </div>
+                    {/* Focus indicator */}
+                    {focusPoint && (
+                      <div
+                        className="absolute pointer-events-none"
+                        style={{ left: focusPoint.x - 30, top: focusPoint.y - 30 + 48 }}
+                      >
+                        <div className="w-[60px] h-[60px] border-2 border-yellow-400 rounded-lg animate-pulse" />
+                      </div>
+                    )}
+                    {/* Tap to focus hint */}
+                    <div className="absolute bottom-3 inset-x-0 text-center pointer-events-none">
+                      <span className="text-white/40 text-[10px]">Tap to focus</span>
                     </div>
                   </>
                 )}
@@ -781,13 +826,12 @@ const TissueAnalysis = () => {
                   />
                   {/* Darkened overlay outside crop */}
                   <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute inset-0 bg-black/50" />
                     <div
                       className="absolute bg-transparent"
                       style={{
                         left: `${cropRect.x}%`, top: `${cropRect.y}%`,
                         width: `${cropRect.w}%`, height: `${cropRect.h}%`,
-                        boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)',
+                        boxShadow: '0 0 0 9999px rgba(0,0,0,0.6)',
                         border: '2px solid hsl(var(--primary))',
                       }}
                     />
