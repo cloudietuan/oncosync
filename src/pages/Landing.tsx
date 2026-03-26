@@ -344,17 +344,17 @@ const Landing = () => {
               className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-4"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Be the first to know
+              Ready to explore?
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base mb-8 max-w-md mx-auto leading-relaxed">
-              OncoSync is launching soon. Get notified when early access opens and be among the first researchers to try it.
+              OncoSync is launching soon. Preview the full research platform now.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                onClick={() => navigate('/app')}
                 className="vax-btn-primary text-sm py-3 px-8 rounded-xl shadow-lg shadow-primary/20"
               >
-                Join the Waitlist <ArrowRight size={16} />
+                Preview the App <ArrowRight size={16} />
               </button>
               <button
                 onClick={() => navigate('/app')}
