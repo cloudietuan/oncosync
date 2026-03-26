@@ -75,8 +75,7 @@ const Install = () => {
 
       {/* Nav */}
       <header
-        className="sticky top-0 z-40 px-6"
-        style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+        className="sticky top-0 z-40 px-6 bg-background"
       >
         <div className="max-w-3xl mx-auto flex items-center justify-between h-14">
           <button
@@ -118,7 +117,7 @@ const Install = () => {
 
           <motion.div
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider mb-4"
-            style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(8px)', border: '1px solid var(--glass-border)', color: 'hsl(var(--primary))' }}
+            style={{ background: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))', color: 'hsl(var(--primary))' }}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease, delay: 0.25 }}
@@ -147,8 +146,7 @@ const Install = () => {
         >
           {isInstalled ? (
             <div
-              className="rounded-2xl p-6 flex items-center gap-4 border"
-              style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderColor: 'hsla(158, 64%, 40%, 0.3)' }}
+              className="rounded-2xl p-6 flex items-center gap-4 border border-border bg-muted"
             >
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
                 <CheckCircle2 size={24} className="text-emerald-500" />
@@ -175,8 +173,7 @@ const Install = () => {
             </motion.button>
           ) : isIOS ? (
             <div
-              className="rounded-2xl p-6 border space-y-4"
-              style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderColor: 'var(--glass-border)' }}
+              className="rounded-2xl p-6 border border-border bg-muted space-y-4"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -207,8 +204,7 @@ const Install = () => {
             </div>
           ) : (
             <div
-              className="rounded-2xl p-6 border space-y-4"
-              style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderColor: 'var(--glass-border)' }}
+              className="rounded-2xl p-6 border border-border bg-muted space-y-4"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -250,8 +246,7 @@ const Install = () => {
           {perks.map((perk, i) => (
             <motion.div
               key={perk.title}
-              className="flex items-start gap-4 rounded-xl p-4 border"
-              style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderColor: 'var(--glass-border)' }}
+              className="flex items-start gap-4 rounded-xl p-4 border border-border bg-muted"
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, ease, delay: 0.5 + i * 0.08 }}
