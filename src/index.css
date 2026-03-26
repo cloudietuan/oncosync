@@ -139,16 +139,21 @@
 
 @layer components {
   .vax-card {
-    @apply rounded-xl p-5 bg-muted border-0 shadow-none outline-none ring-0;
+    @apply rounded-xl p-5 bg-muted border-0 outline-none ring-0;
+    box-shadow: 0 1px 3px hsla(220, 20%, 14%, 0.06), 0 1px 2px hsla(220, 20%, 14%, 0.04);
     transition: box-shadow 0.25s ease, background 0.25s ease;
   }
 
   .vax-card:hover {
-    box-shadow: 0 8px 32px hsla(258, 65%, 60%, 0.08);
+    box-shadow: 0 4px 16px hsla(220, 20%, 14%, 0.08), 0 2px 4px hsla(220, 20%, 14%, 0.04);
+  }
+
+  .dark .vax-card {
+    box-shadow: 0 1px 3px hsla(0, 0%, 0%, 0.2), 0 1px 2px hsla(0, 0%, 0%, 0.15);
   }
 
   .dark .vax-card:hover {
-    box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
+    box-shadow: 0 4px 16px hsla(0, 0%, 0%, 0.3), 0 2px 4px hsla(0, 0%, 0%, 0.2);
   }
 
   .dark .vax-card-compact:hover {
