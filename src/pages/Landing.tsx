@@ -195,9 +195,9 @@ const Landing = () => {
           {/* Highlights */}
           <motion.div
             className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             {highlights.map((h) => (
               <div key={h.text} className="flex items-center gap-1.5 text-xs text-muted-foreground">
