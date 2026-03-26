@@ -46,30 +46,27 @@ const highlights = [
   { icon: Globe, text: 'Browser-based, no install' },
 ];
 
-const springConfig = { stiffness: 60, damping: 20, mass: 0.8 };
 const smoothEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 32, filter: 'blur(8px)' },
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
     transition: {
       delay: i * 0.07,
-      duration: 0.9,
+      duration: 0.7,
       ease: smoothEase,
     },
   }),
 };
 
 const smoothReveal = {
-  hidden: { opacity: 0, y: 28, filter: 'blur(4px)' },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 1, ease: smoothEase },
+    transition: { duration: 0.8, ease: smoothEase },
   },
 };
 
