@@ -6,22 +6,22 @@
 
 @layer base {
   :root {
-    --background: 40 20% 97%;
+    --background: 240 20% 96%;
     --foreground: 220 20% 14%;
 
-    --card: 0 0% 100%;
+    --card: 0 0% 100% / 0.55;
     --card-foreground: 220 20% 14%;
 
-    --popover: 0 0% 100%;
+    --popover: 0 0% 100% / 0.7;
     --popover-foreground: 220 20% 14%;
 
     --primary: 258 65% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 14% 93%;
+    --secondary: 240 14% 93% / 0.5;
     --secondary-foreground: 220 20% 14%;
 
-    --muted: 40 14% 93%;
+    --muted: 240 14% 93% / 0.5;
     --muted-foreground: 220 8% 52%;
 
     --accent: 258 65% 60%;
@@ -39,49 +39,60 @@
     --violet: 258 60% 58%;
     --violet-foreground: 0 0% 100%;
 
-    --border: 40 12% 89%;
-    --input: 40 12% 89%;
+    --border: 240 12% 85% / 0.5;
+    --input: 240 12% 85% / 0.5;
     --ring: 258 65% 60%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 40 20% 97%;
+    --glass-bg: hsla(0, 0%, 100%, 0.45);
+    --glass-border: hsla(0, 0%, 100%, 0.55);
+    --glass-blur: 16px;
+    --glass-shadow: 0 8px 32px hsla(220, 20%, 14%, 0.08);
+
+    --sidebar-background: 240 20% 96% / 0.6;
     --sidebar-foreground: 220 8% 40%;
     --sidebar-primary: 258 65% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 258 50% 96%;
+    --sidebar-accent: 258 50% 96% / 0.5;
     --sidebar-accent-foreground: 258 65% 40%;
-    --sidebar-border: 40 12% 89%;
+    --sidebar-border: 240 12% 85% / 0.4;
     --sidebar-ring: 258 65% 60%;
   }
 
   .dark {
-    --background: 220 16% 8%;
+    --background: 220 18% 7%;
     --foreground: 40 10% 92%;
-    --card: 220 14% 11%;
+    --card: 220 16% 12% / 0.5;
     --card-foreground: 40 10% 92%;
-    --popover: 220 14% 11%;
+    --popover: 220 16% 12% / 0.65;
     --popover-foreground: 40 10% 92%;
     --primary: 258 65% 63%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 12% 16%;
+    --secondary: 220 14% 16% / 0.5;
     --secondary-foreground: 40 10% 92%;
-    --muted: 220 12% 16%;
+    --muted: 220 14% 16% / 0.5;
     --muted-foreground: 220 8% 58%;
-    --accent: 220 12% 16%;
+    --accent: 220 14% 16% / 0.5;
     --accent-foreground: 40 10% 92%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 40 10% 92%;
-    --border: 220 12% 18%;
-    --input: 220 12% 18%;
+    --border: 220 14% 20% / 0.5;
+    --input: 220 14% 20% / 0.5;
     --ring: 258 65% 63%;
-    --sidebar-background: 220 16% 8%;
+
+    --glass-bg: hsla(220, 16%, 12%, 0.4);
+    --glass-border: hsla(220, 16%, 22%, 0.5);
+    --glass-blur: 16px;
+    --glass-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
+
+    --sidebar-background: 220 18% 7% / 0.6;
     --sidebar-foreground: 40 10% 80%;
     --sidebar-primary: 258 65% 63%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 14%;
+    --sidebar-accent: 220 16% 15% / 0.5;
     --sidebar-accent-foreground: 40 10% 92%;
-    --sidebar-border: 220 12% 18%;
+    --sidebar-border: 220 14% 20% / 0.4;
     --sidebar-ring: 258 65% 63%;
   }
 }
@@ -103,6 +114,14 @@
     letter-spacing: -0.01em;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     transition: background-color 0.3s ease, color 0.3s ease;
+    background-image: radial-gradient(ellipse at 20% 0%, hsla(258, 65%, 60%, 0.04) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 100%, hsla(258, 65%, 60%, 0.03) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: radial-gradient(ellipse at 20% 0%, hsla(258, 65%, 60%, 0.06) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 100%, hsla(258, 65%, 60%, 0.04) 0%, transparent 50%);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -120,29 +139,37 @@
 
 @layer components {
   .vax-card {
-    @apply bg-card border border-border/60 rounded-xl p-5;
-    box-shadow: 0 1px 3px 0 hsl(220 20% 14% / 0.04), 0 1px 2px -1px hsl(220 20% 14% / 0.03);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    @apply rounded-xl p-5;
+    box-shadow: var(--glass-shadow);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   }
 
   .vax-card:hover {
-    box-shadow: 0 4px 12px 0 hsl(220 20% 14% / 0.06);
-    border-color: hsl(200, 80%, 44%, 0.2);
+    box-shadow: 0 8px 32px hsla(258, 65%, 60%, 0.08);
+    border-color: hsla(258, 65%, 60%, 0.25);
   }
 
   .dark .vax-card:hover {
-    box-shadow: 0 4px 12px 0 hsl(0 0% 0% / 0.2);
-    border-color: hsl(200, 80%, 50%, 0.25);
+    box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
+    border-color: hsla(258, 65%, 63%, 0.3);
   }
 
   .dark .vax-card-compact:hover {
-    border-color: hsl(200, 80%, 50%, 0.25) !important;
+    border-color: hsla(258, 65%, 63%, 0.3) !important;
   }
 
   .vax-card-compact {
-    @apply bg-card border border-border/60 rounded-xl p-4;
-    box-shadow: 0 1px 3px 0 hsl(220 20% 14% / 0.04);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    @apply rounded-xl p-4;
+    box-shadow: var(--glass-shadow);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   }
 
   .vax-btn {
@@ -152,22 +179,26 @@
 
   .vax-btn-primary {
     @apply vax-btn text-white;
-    background: hsl(258, 65%, 60%);
-    box-shadow: 0 1px 2px 0 hsl(258 65% 60% / 0.25);
+    background: linear-gradient(135deg, hsl(258, 65%, 60%), hsl(258, 80%, 52%));
+    box-shadow: 0 2px 8px 0 hsla(258, 65%, 60%, 0.3);
   }
 
   .vax-btn-primary:hover {
-    background: hsl(258, 65%, 50%);
-    box-shadow: 0 2px 4px 0 hsl(258 65% 60% / 0.3);
+    background: linear-gradient(135deg, hsl(258, 65%, 52%), hsl(258, 80%, 45%));
+    box-shadow: 0 4px 16px 0 hsla(258, 65%, 60%, 0.4);
   }
 
   .vax-btn-secondary {
-    @apply vax-btn bg-card text-foreground border border-border;
-    box-shadow: 0 1px 2px 0 hsl(220 20% 14% / 0.05);
+    @apply vax-btn text-foreground;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
   }
 
   .vax-btn-secondary:hover {
-    @apply bg-muted;
+    background: hsla(258, 50%, 96%, 0.5);
   }
 
   .vax-btn-ghost {
@@ -233,17 +264,22 @@
   }
 
   .vax-input {
-    @apply bg-card border border-border rounded-lg px-3 py-2 text-foreground text-[13px] w-full transition-all duration-150;
-    box-shadow: 0 1px 2px 0 hsl(220 20% 14% / 0.04);
+    @apply rounded-lg px-3 py-2 text-foreground text-[13px] w-full transition-all duration-150;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
   }
 
   .vax-input:hover {
-    border-color: hsl(220, 13%, 78%);
+    border-color: hsla(258, 65%, 60%, 0.3);
   }
 
   .vax-input:focus {
-    @apply outline-none border-primary;
-    box-shadow: 0 0 0 3px hsl(200, 80%, 44%, 0.12);
+    @apply outline-none;
+    border-color: hsl(258, 65%, 60%);
+    box-shadow: 0 0 0 3px hsla(258, 65%, 60%, 0.15);
   }
 
   .vax-input::placeholder {
@@ -336,23 +372,32 @@
   }
 
   .vax-file-upload {
-    @apply border-2 border-dashed border-border rounded-xl p-5 text-center cursor-pointer transition-all duration-150;
+    @apply border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all duration-150;
+    border-color: var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
   }
 
   .vax-file-upload:hover {
     border-color: hsl(258, 65%, 60%);
-    background: hsl(258, 65%, 98%);
+    background: hsla(258, 65%, 60%, 0.06);
   }
 
   .vax-modal-overlay {
     @apply fixed inset-0 flex items-center justify-center z-50;
-    background: hsl(220 20% 14% / 0.5);
-    backdrop-filter: blur(4px);
+    background: hsla(220, 20%, 14%, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .vax-modal {
-    @apply bg-card rounded-2xl p-6 max-w-[480px] w-full mx-4;
-    box-shadow: 0 25px 50px -12px hsl(220 20% 14% / 0.25);
+    @apply rounded-2xl p-6 max-w-[480px] w-full mx-4;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 25px 50px -12px hsla(220, 20%, 14%, 0.2);
   }
 
   .animate-in {
@@ -371,9 +416,11 @@ table {
   border-collapse: collapse;
 }
 
-th {
-  @apply px-4 py-2.5 text-left text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground/80 border-b border-border/60 bg-muted/50;
-}
+  th {
+    @apply px-4 py-2.5 text-left text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground/80 border-b border-border/60;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+  }
 
 th:first-child {
   @apply rounded-tl-lg;
