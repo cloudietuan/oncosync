@@ -57,7 +57,7 @@ const navGroups = [
 
 // Unique hover animations per tab
 const iconAnimations: Record<number, { scale?: number[]; rotate?: number[]; x?: number[]; y?: number[]; scaleY?: number[]; opacity?: number[] }> = {
-  0: { scale: [1, 1.1, 1], rotate: [0, 180] },
+  0: { scale: [1, 1.1, 1], rotate: [0, 360] },
   1: { y: [0, -2, 0] },
   2: { scale: [1, 1.12, 1], rotate: [0, 5, -5, 0] },
   3: { scaleY: [1, 1.12, 0.95, 1] },
