@@ -7,14 +7,21 @@ import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
+import { useAutoInstallPrompt } from "./hooks/useAutoInstallPrompt";
 
 const queryClient = new QueryClient();
+
+const AppInner = () => {
+  useAutoInstallPrompt();
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <AppInner />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
