@@ -103,7 +103,7 @@ export function AppSidebar({ tab, setTab }: AppSidebarProps) {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-2">
+      <SidebarFooter className="p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton

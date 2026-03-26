@@ -28,7 +28,7 @@ const VaxHeader = () => {
   }, []);
 
   return (
-    <header className="h-14 border-b border-border/40 px-4 flex items-center justify-between sticky top-0 z-40" style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+    <header className="h-14 px-4 flex items-center justify-between sticky top-0 z-40 bg-background">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
         <div className="w-px h-5 bg-border/60 mx-1 hidden sm:block" />

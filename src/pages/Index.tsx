@@ -148,7 +148,7 @@ const Index = () => {
             </AnimatePresence>
             <GuidedTutorial onNavigateTab={setTab} />
           </main>
-          <footer className="border-t border-border/40 py-5">
+          <footer className="py-5">
             <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
               <p className="text-[11px] text-muted-foreground/50 font-medium">© 2026 OncoSync — Pancreatic Cancer Vaccine Companion</p>
               <p className="text-[11px] text-muted-foreground/40">Data: GSE62452 (GEO) · For research use only · Not for clinical decisions</p>
