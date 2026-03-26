@@ -47,6 +47,8 @@ const highlights = [
   { icon: Globe, text: 'Browser-based, no install' },
 ];
 
+const smoothEase = [0.25, 0.46, 0.45, 0.94] as const;
+
 const fadeUp = {
   hidden: { opacity: 0, y: 28, scale: 0.97, filter: 'blur(6px)' },
   visible: (i: number) => ({
@@ -57,7 +59,7 @@ const fadeUp = {
     transition: {
       delay: i * 0.08,
       duration: 0.7,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: smoothEase as unknown as [number, number, number, number],
     },
   }),
 };
@@ -67,7 +69,7 @@ const smoothReveal = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.8, ease: smoothEase as unknown as [number, number, number, number] },
   },
 };
 
