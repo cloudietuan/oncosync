@@ -364,12 +364,16 @@
   }
 
   .vax-file-upload {
-    @apply border-2 border-dashed border-border rounded-xl p-5 text-center cursor-pointer transition-all duration-150;
+    @apply border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all duration-150;
+    border-color: var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
   }
 
   .vax-file-upload:hover {
     border-color: hsl(258, 65%, 60%);
-    background: hsl(258, 65%, 98%);
+    background: hsla(258, 65%, 60%, 0.06);
   }
 
   .vax-modal-overlay {
