@@ -174,8 +174,8 @@ const Install = () => {
             </motion.button>
           ) : isIOS ? (
             <div
-              className="rounded-2xl p-6 border space-y-4"
-              style={{ background: 'var(--glass-bg)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderColor: 'var(--glass-border)' }}
+              className="rounded-2xl p-6 border border-border bg-muted space-y-4"
+            >
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
