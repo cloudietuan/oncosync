@@ -39,8 +39,8 @@
     --violet: 258 60% 58%;
     --violet-foreground: 0 0% 100%;
 
-    --border: 240 12% 85% / 0.5;
-    --input: 240 12% 85% / 0.5;
+    --border: 240 12% 85% / 0.15;
+    --input: 240 12% 85% / 0.15;
     --ring: 258 65% 60%;
 
     --radius: 0.75rem;
@@ -77,8 +77,8 @@
     --accent-foreground: 40 10% 92%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 40 10% 92%;
-    --border: 220 14% 20% / 0.5;
-    --input: 220 14% 20% / 0.5;
+    --border: 220 14% 20% / 0.15;
+    --input: 220 14% 20% / 0.15;
     --ring: 258 65% 63%;
 
     --glass-bg: hsl(220, 18%, 7%);
@@ -400,9 +400,8 @@ table {
 }
 
   th {
-    @apply px-4 py-2.5 text-left text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground/80 border-b border-border/60;
-    background: var(--glass-bg);
-    backdrop-filter: blur(8px);
+    @apply px-4 py-2.5 text-left text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground/80;
+    background: hsl(var(--muted));
   }
 
 th:first-child {
