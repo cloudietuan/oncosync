@@ -47,15 +47,30 @@ const highlights = [
   { icon: Globe, text: 'Browser-based, no install' },
 ];
 
+const smoothEase = [0.25, 0.46, 0.45, 0.94] as const;
+
 const fadeUp = {
-  hidden: { opacity: 0, y: 32, scale: 0.95, filter: 'blur(4px)' },
+  hidden: { opacity: 0, y: 28, scale: 0.97, filter: 'blur(6px)' },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
     scale: 1,
     filter: 'blur(0px)',
-    transition: { delay: i * 0.1, duration: 0.6, ease: 'easeOut' as const },
+    transition: {
+      delay: i * 0.08,
+      duration: 0.7,
+      ease: smoothEase as unknown as [number, number, number, number],
+    },
   }),
+};
+
+const smoothReveal = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: smoothEase as unknown as [number, number, number, number] },
+  },
 };
 
 const Landing = () => {
@@ -72,23 +87,27 @@ const Landing = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Floating particles background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {[...Array(5)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 rounded-full bg-primary/20"
+            className="absolute rounded-full bg-primary/15"
             style={{
-              left: `${15 + i * 18}%`,
-              top: `${20 + i * 12}%`,
+              width: `${2 + (i % 3)}px`,
+              height: `${2 + (i % 3)}px`,
+              left: `${10 + i * 11}%`,
+              top: `${15 + (i * 9) % 60}%`,
             }}
             animate={{
-              y: [0, -30, 0],
-              opacity: [0.2, 0.5, 0.2],
+              y: [0, -40 - i * 5, 0],
+              x: [0, (i % 2 === 0 ? 10 : -10), 0],
+              opacity: [0.1, 0.4, 0.1],
+              scale: [1, 1.3, 1],
             }}
             transition={{
-              duration: 4 + i,
+              duration: 5 + i * 0.7,
               repeat: Infinity,
               ease: 'easeInOut',
-              delay: i * 0.8,
+              delay: i * 0.6,
             }}
           />
         ))}
@@ -133,9 +152,9 @@ const Landing = () => {
 
         <div className="relative max-w-4xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mb-8"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold tracking-wider">
@@ -147,9 +166,9 @@ const Landing = () => {
           <motion.h1
             className="text-4xl sm:text-5xl md:text-[3.5rem] lg:text-[4rem] font-extrabold tracking-tight leading-[1.08] mb-6"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
+            initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.9, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             The Future of{' '}
             <span className="relative">
@@ -167,9 +186,9 @@ const Landing = () => {
 
           <motion.p
             className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             OncoSync brings together gene expression survival analysis, immune response modeling,
             and VLP simulation tools into one powerful, integrated research environment.
@@ -178,9 +197,9 @@ const Landing = () => {
           {/* Highlights */}
           <motion.div
             className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             {highlights.map((h) => (
               <div key={h.text} className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -193,9 +212,9 @@ const Landing = () => {
           {/* Email signup */}
           <motion.div
             className="max-w-md mx-auto mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <AnimatePresence mode="wait">
               {!submitted ? (
@@ -243,9 +262,9 @@ const Landing = () => {
           {/* Hero illustration */}
           <motion.div
             className="max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 40, scale: 0.92 }}
+            initial={{ opacity: 0, y: 48, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1, delay: 0.5, ease: 'easeOut' as const }}
+            transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border border-border/40 group">
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent z-10" />
@@ -275,13 +294,13 @@ const Landing = () => {
 
       {/* Features */}
       <section className="max-w-6xl mx-auto px-6 py-20 sm:py-28">
-        <motion.div
-          className="text-center mb-14"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+          <motion.div
+            className="text-center mb-14"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            variants={smoothReveal}
+          >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted text-muted-foreground text-[10px] font-semibold tracking-wider mb-4">
             PLATFORM FEATURES
           </div>
@@ -328,10 +347,10 @@ const Landing = () => {
         <div className="max-w-5xl mx-auto px-6 py-16">
           <motion.div
             className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={smoothReveal}
           >
             {[
               { value: '10+', label: 'Gene markers' },
@@ -361,10 +380,10 @@ const Landing = () => {
         />
         <div className="max-w-3xl mx-auto text-center px-6 py-24 relative">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            variants={smoothReveal}
           >
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
               <Dna size={28} className="text-primary" />
