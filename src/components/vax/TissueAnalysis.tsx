@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import StatCard from './StatCard';
 import InfoTooltip from './InfoTooltip';
 import { FadeSection } from './MotionWrappers';
-import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2, Camera, SwitchCamera, X, Crop, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
+import { Microscope, Upload, RotateCcw, FlaskConical, Download, Loader2, Camera, SwitchCamera, X, Crop } from 'lucide-react';
 
 // H-DAB stain vectors (Ruifrok & Johnston 2001)
 const H_VEC = [0.65, 0.704, 0.286] as const;
@@ -259,10 +259,6 @@ const TissueAnalysis = () => {
   const [opacity, setOpacity] = useState(75);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [viewZoom, setViewZoom] = useState(1);
-  const zoomContainerRef = useRef<HTMLDivElement>(null);
-  const pinchStartDist = useRef<number | null>(null);
-  const pinchStartZoom = useRef<number>(1);
   const [loadingDemo, setLoadingDemo] = useState<string | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -491,49 +487,9 @@ const TissueAnalysis = () => {
     setImgDims(null);
     setResult(null);
     setActiveView('original');
-    setViewZoom(1);
     demoCanvasRef.current = null;
     if (inputRef.current) inputRef.current.value = '';
   };
-
-  // Pinch-to-zoom handlers
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      e.preventDefault();
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      pinchStartDist.current = Math.hypot(dx, dy);
-      pinchStartZoom.current = viewZoom;
-    }
-  }, [viewZoom]);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2 && pinchStartDist.current !== null) {
-      e.preventDefault();
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.hypot(dx, dy);
-      const scale = dist / pinchStartDist.current;
-      setViewZoom(Math.min(4, Math.max(0.25, pinchStartZoom.current * scale)));
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    pinchStartDist.current = null;
-  }, []);
-
-  // Mouse wheel zoom
-  useEffect(() => {
-    const el = zoomContainerRef.current;
-    if (!el) return;
-    const handler = (e: WheelEvent) => {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setViewZoom(z => Math.min(4, Math.max(0.25, +(z + delta).toFixed(2))));
-    };
-    el.addEventListener('wheel', handler, { passive: false });
-    return () => el.removeEventListener('wheel', handler);
-  }, [imageData]);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach(t => t.stop());
@@ -982,51 +938,16 @@ const TissueAnalysis = () => {
           {/* Image display */}
           <FadeSection>
             <div className="vax-card">
-              {/* Zoom controls */}
-              <div className="flex items-center gap-2 mb-2">
-                <button onClick={() => setViewZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))} className="vax-btn-secondary p-1.5" title="Zoom out">
-                  <ZoomOut className="w-4 h-4" />
-                </button>
-                <span className="text-xs font-mono text-muted-foreground w-14 text-center">{Math.round(viewZoom * 100)}%</span>
-                <button onClick={() => setViewZoom(z => Math.min(4, +(z + 0.25).toFixed(2)))} className="vax-btn-secondary p-1.5" title="Zoom in">
-                  <ZoomIn className="w-4 h-4" />
-                </button>
-                <button onClick={() => setViewZoom(1)} className="vax-btn-secondary p-1.5" title="Fit to view">
-                  <Maximize className="w-4 h-4" />
-                </button>
-                <input
-                  type="range"
-                  min={25}
-                  max={400}
-                  step={25}
-                  value={Math.round(viewZoom * 100)}
-                  onChange={e => setViewZoom(parseInt(e.target.value) / 100)}
-                  className="flex-1 accent-primary h-1.5 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
-              <div
-                ref={zoomContainerRef}
-                className="relative rounded-lg bg-muted/30 overflow-auto touch-none cursor-grab active:cursor-grabbing"
-                style={{ maxHeight: '75vh' }}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              >
-                <div style={{
-                  width: imgDims ? imgDims.w * viewZoom : '100%',
-                  height: imgDims ? imgDims.h * viewZoom : 'auto',
-                  maxWidth: viewZoom <= 1 ? '100%' : undefined,
-                }}>
-                  <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', width: '100%', height: '100%' }} />
-                  <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', width: '100%', height: '100%' }} />
-                  <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', width: '100%', height: '100%' }} />
-                  <canvas ref={canvasSideRef} style={{ display: activeView === 'sidebyside' ? 'block' : 'none', width: '100%', height: '100%' }} />
-                </div>
+              <div className="relative rounded-lg bg-muted/30 flex items-center justify-center">
+                <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+                <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+                <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+                <canvas ref={canvasSideRef} style={{ display: activeView === 'sidebyside' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
               </div>
               {fileName && imgDims && (
                 <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
                   <span className="font-mono">{fileName}</span>
-                  <span>{imgDims.w} × {imgDims.h} px · {Math.round(viewZoom * 100)}%</span>
+                  <span>{imgDims.w} × {imgDims.h} px</span>
                 </div>
               )}
             </div>
