@@ -522,6 +522,19 @@ const TissueAnalysis = () => {
     pinchStartDist.current = null;
   }, []);
 
+  // Mouse wheel zoom
+  useEffect(() => {
+    const el = zoomContainerRef.current;
+    if (!el) return;
+    const handler = (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setViewZoom(z => Math.min(4, Math.max(0.25, +(z + delta).toFixed(2))));
+    };
+    el.addEventListener('wheel', handler, { passive: false });
+    return () => el.removeEventListener('wheel', handler);
+  }, [imageData]);
+
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach(t => t.stop());
     streamRef.current = null;
