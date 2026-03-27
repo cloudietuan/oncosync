@@ -971,14 +971,14 @@ const TissueAnalysis = () => {
             <div className="vax-card">
               {/* Zoom controls */}
               <div className="flex items-center gap-2 mb-2">
-                <button onClick={() => setViewZoom(z => Math.max(0.25, z - 0.25))} className="vax-btn-secondary p-1.5" title="Zoom out">
+                <button onClick={() => setViewZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)))} className="vax-btn-secondary p-1.5" title="Zoom out">
                   <ZoomOut className="w-4 h-4" />
                 </button>
-                <span className="text-xs font-mono text-muted-foreground w-12 text-center">{Math.round(viewZoom * 100)}%</span>
-                <button onClick={() => setViewZoom(z => Math.min(4, z + 0.25))} className="vax-btn-secondary p-1.5" title="Zoom in">
+                <span className="text-xs font-mono text-muted-foreground w-14 text-center">{Math.round(viewZoom * 100)}%</span>
+                <button onClick={() => setViewZoom(z => Math.min(4, +(z + 0.25).toFixed(2)))} className="vax-btn-secondary p-1.5" title="Zoom in">
                   <ZoomIn className="w-4 h-4" />
                 </button>
-                <button onClick={() => setViewZoom(1)} className="vax-btn-secondary p-1.5" title="Reset zoom">
+                <button onClick={() => setViewZoom(1)} className="vax-btn-secondary p-1.5" title="Fit to view">
                   <Maximize className="w-4 h-4" />
                 </button>
                 <input
@@ -986,23 +986,34 @@ const TissueAnalysis = () => {
                   min={25}
                   max={400}
                   step={25}
-                  value={viewZoom * 100}
+                  value={Math.round(viewZoom * 100)}
                   onChange={e => setViewZoom(parseInt(e.target.value) / 100)}
                   className="flex-1 accent-primary h-1.5 rounded-lg appearance-none cursor-pointer"
                 />
               </div>
-              <div className="relative rounded-lg bg-muted/30 overflow-auto" style={{ maxHeight: viewZoom > 1 ? '70vh' : undefined }}>
-                <div style={{ transform: `scale(${viewZoom})`, transformOrigin: 'top left', width: viewZoom !== 1 ? `${100 / viewZoom}%` : '100%' }}>
-                  <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
-                  <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
-                  <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
-                  <canvas ref={canvasSideRef} style={{ display: activeView === 'sidebyside' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+              <div
+                ref={zoomContainerRef}
+                className="relative rounded-lg bg-muted/30 overflow-auto touch-none"
+                style={{ maxHeight: '75vh' }}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div style={{
+                  transform: `scale(${viewZoom})`,
+                  transformOrigin: 'top left',
+                  width: `${100 / viewZoom}%`,
+                }}>
+                  <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', width: '100%', height: 'auto' }} />
+                  <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', width: '100%', height: 'auto' }} />
+                  <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', width: '100%', height: 'auto' }} />
+                  <canvas ref={canvasSideRef} style={{ display: activeView === 'sidebyside' ? 'block' : 'none', width: '100%', height: 'auto' }} />
                 </div>
               </div>
               {fileName && imgDims && (
                 <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
                   <span className="font-mono">{fileName}</span>
-                  <span>{imgDims.w} × {imgDims.h} px</span>
+                  <span>{imgDims.w} × {imgDims.h} px · {Math.round(viewZoom * 100)}%</span>
                 </div>
               )}
             </div>
