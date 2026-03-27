@@ -938,7 +938,7 @@ const TissueAnalysis = () => {
           {/* Image display */}
           <FadeSection>
             <div className="vax-card">
-              <div className="relative overflow-auto max-h-[600px] rounded-lg bg-muted/30 flex items-center justify-center">
+              <div className="relative rounded-lg bg-muted/30 flex items-center justify-center">
                 <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
                 <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
                 <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
