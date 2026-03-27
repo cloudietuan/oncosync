@@ -259,6 +259,7 @@ const TissueAnalysis = () => {
   const [opacity, setOpacity] = useState(75);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [viewZoom, setViewZoom] = useState(1);
   const [loadingDemo, setLoadingDemo] = useState<string | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
