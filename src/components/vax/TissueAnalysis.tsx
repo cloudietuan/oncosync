@@ -939,11 +939,35 @@ const TissueAnalysis = () => {
           {/* Image display */}
           <FadeSection>
             <div className="vax-card">
-              <div className="relative rounded-lg bg-muted/30 flex items-center justify-center">
-                <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
-                <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
-                <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
-                <canvas ref={canvasSideRef} style={{ display: activeView === 'sidebyside' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+              {/* Zoom controls */}
+              <div className="flex items-center gap-2 mb-2">
+                <button onClick={() => setViewZoom(z => Math.max(0.25, z - 0.25))} className="vax-btn-secondary p-1.5" title="Zoom out">
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <span className="text-xs font-mono text-muted-foreground w-12 text-center">{Math.round(viewZoom * 100)}%</span>
+                <button onClick={() => setViewZoom(z => Math.min(4, z + 0.25))} className="vax-btn-secondary p-1.5" title="Zoom in">
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+                <button onClick={() => setViewZoom(1)} className="vax-btn-secondary p-1.5" title="Reset zoom">
+                  <Maximize className="w-4 h-4" />
+                </button>
+                <input
+                  type="range"
+                  min={25}
+                  max={400}
+                  step={25}
+                  value={viewZoom * 100}
+                  onChange={e => setViewZoom(parseInt(e.target.value) / 100)}
+                  className="flex-1 accent-primary h-1.5 rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
+              <div className="relative rounded-lg bg-muted/30 overflow-auto" style={{ maxHeight: viewZoom > 1 ? '70vh' : undefined }}>
+                <div style={{ transform: `scale(${viewZoom})`, transformOrigin: 'top left', width: viewZoom !== 1 ? `${100 / viewZoom}%` : '100%' }}>
+                  <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+                  <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+                  <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+                  <canvas ref={canvasSideRef} style={{ display: activeView === 'sidebyside' ? 'block' : 'none', maxWidth: '100%', height: 'auto' }} />
+                </div>
               </div>
               {fileName && imgDims && (
                 <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
