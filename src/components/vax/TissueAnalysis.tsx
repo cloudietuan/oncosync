@@ -1006,21 +1006,21 @@ const TissueAnalysis = () => {
               </div>
               <div
                 ref={zoomContainerRef}
-                className="relative rounded-lg bg-muted/30 overflow-auto touch-none"
+                className="relative rounded-lg bg-muted/30 overflow-auto touch-none cursor-grab active:cursor-grabbing"
                 style={{ maxHeight: '75vh' }}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
                 <div style={{
-                  transform: `scale(${viewZoom})`,
-                  transformOrigin: 'top left',
-                  width: `${100 / viewZoom}%`,
+                  width: imgDims ? imgDims.w * viewZoom : '100%',
+                  height: imgDims ? imgDims.h * viewZoom : 'auto',
+                  maxWidth: viewZoom <= 1 ? '100%' : undefined,
                 }}>
-                  <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', width: '100%', height: 'auto' }} />
-                  <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', width: '100%', height: 'auto' }} />
-                  <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', width: '100%', height: 'auto' }} />
-                  <canvas ref={canvasSideRef} style={{ display: activeView === 'sidebyside' ? 'block' : 'none', width: '100%', height: 'auto' }} />
+                  <canvas ref={canvasOrigRef} style={{ display: activeView === 'original' ? 'block' : 'none', width: '100%', height: '100%' }} />
+                  <canvas ref={canvasHeatRef} style={{ display: activeView === 'heatmap' ? 'block' : 'none', width: '100%', height: '100%' }} />
+                  <canvas ref={canvasDabRef} style={{ display: activeView === 'dab' ? 'block' : 'none', width: '100%', height: '100%' }} />
+                  <canvas ref={canvasSideRef} style={{ display: activeView === 'sidebyside' ? 'block' : 'none', width: '100%', height: '100%' }} />
                 </div>
               </div>
               {fileName && imgDims && (
