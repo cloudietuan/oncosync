@@ -260,6 +260,9 @@ const TissueAnalysis = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [dragging, setDragging] = useState(false);
   const [viewZoom, setViewZoom] = useState(1);
+  const zoomContainerRef = useRef<HTMLDivElement>(null);
+  const pinchStartDist = useRef<number | null>(null);
+  const pinchStartZoom = useRef<number>(1);
   const [loadingDemo, setLoadingDemo] = useState<string | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
